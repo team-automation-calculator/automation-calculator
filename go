@@ -10,6 +10,8 @@ case main_arg
     puts 'placeholder for init command'
   when 'rm'
     exec('docker ps -aq | xargs docker rm')
+  when 'rmi'
+    exec('docker rmi automationcalculator_dev:latest')
   when 'shell'
     exec('docker-compose run dev')
   when 'start'
