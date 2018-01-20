@@ -1,14 +1,7 @@
-FROM ruby:2.3.6-alpine
+FROM ruby:2.2.9-slim-jessie
 
 #Install dependencies
 RUN gem install bundler
-RUN apk add --update \
-  build-base \
-  libxml2-dev \
-  libxslt-dev \
-  && rm -rf /var/cache/apk/*
-# Use libxml2, libxslt a packages from alpine for building nokogiri
-RUN bundle config build.nokogiri --use-system-libraries
 
-COPY . /app/src/
-WORKDIR /app/src
+COPY . /usr/src/app
+WORKDIR /usr/src/app
