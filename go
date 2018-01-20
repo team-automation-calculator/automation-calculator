@@ -4,6 +4,8 @@ cmds = ARGF.argv
 main_arg = cmds[0] || 'init'
 
 case main_arg
+  when 'build'
+    exec('docker build -t automationcalculator_dev:latest -f Dockerfile.development .')
   when 'init'
     puts 'placeholder for init command'
   when 'shell'
