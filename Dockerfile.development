@@ -1,2 +1,7 @@
 FROM ruby:2.3.6-alpine
+
+#Install dependencies
+RUN gem install bundler
+
 COPY . /app/src/
+WORKDIR /app/src
