@@ -8,6 +8,8 @@ case main_arg
     exec('docker build -t automationcalculator_dev:latest -f Dockerfile.development .')
   when 'init'
     puts 'placeholder for init command'
+  when 'rm'
+    exec('docker ps -aq | xargs docker rm')
   when 'shell'
     exec('docker-compose run dev')
   when 'start'
