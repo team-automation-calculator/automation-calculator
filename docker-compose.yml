@@ -5,3 +5,5 @@ services:
       context: ./
       dockerfile: Dockerfile.development
     entrypoint: /bin/sh
+    volumes:
+      - ./:/app/src
