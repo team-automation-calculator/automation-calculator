@@ -13,7 +13,7 @@ case main_arg
   when 'start'
     puts 'placeholder for start command'
   when 'stop'
-    puts 'placeholder for stop command'
+    exec('docker-compose down')
   when 'test'
     puts 'placeholder for test command'
   else
