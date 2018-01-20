@@ -7,7 +7,7 @@ case main_arg
   when 'init'
     puts 'placeholder for init command'
   when 'shell'
-    puts 'placeholder for shell command'
+    exec('docker-compose run dev')
   when 'start'
     puts 'placeholder for start command'
   when 'stop'
