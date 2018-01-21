@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/team-automation-calculator/automation-calculator/tree/master.svg?style=svg)](https://circleci.com/gh/team-automation-calculator/automation-calculator/tree/master)
+
 # automation-calculator
 
 ## Setup
