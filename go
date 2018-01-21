@@ -20,7 +20,7 @@ case main_arg
   when 'stop'
     exec('docker-compose down')
   when 'test'
-    puts 'placeholder for test command'
+    exec('docker-compose run dev rspec')
   else
     warn "Unrecognized command: #{main_arg}"
 end
