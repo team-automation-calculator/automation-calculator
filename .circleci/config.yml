@@ -24,10 +24,15 @@ jobs:
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
       - setup_remote_docker
+
+      # build test image to test
+      - run:
+          name: ./go build ci
+          command: ./go build ci
       
       # run tests!
       - run:
-          name: ./go test
+          name: ./go test ci
           command: ./go test ci
 
       # collect reports
