@@ -5,9 +5,9 @@ main_arg = cmds[0] || 'init'
 
 case main_arg
   when 'build'
-    username = ENV['USER']
-    exec("docker build -t automationcalculator_dev:latest -f Dockerfile.development --build-arg username=#{username}  .")
+    build
   when 'init'
+    build
     exec('docker-compose run dev "/usr/src/app/bin/setup"')
   when 'rm'
     exec('docker ps -aq | xargs docker rm')
@@ -23,4 +23,9 @@ case main_arg
     exec('docker-compose run dev rspec')
   else
     warn "Unrecognized command: #{main_arg}"
+end
+
+def build()
+  username = ENV['USER']
+  exec("docker build -t automationcalculator_dev:latest -f Dockerfile.development --build-arg username=#{username}  .")
 end
