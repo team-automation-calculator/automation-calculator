@@ -16,7 +16,6 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
 
       - run:
           name: Install Docker Compose
@@ -25,6 +24,8 @@ jobs:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
+      - setup_remote_docker
+      
       # init
       - run:
           name: ./go init
@@ -33,8 +34,6 @@ jobs:
       # run tests!
       - run:
           name: ./go test
-          environment:
-            - USER: "circleci"
           command: ./go test
 
       # collect reports
