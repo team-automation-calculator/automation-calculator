@@ -9,7 +9,7 @@ services:
       - db
     entrypoint: /bin/bash
     environment:
-      - DB_URL="db:5432"
+      - USER=${USER}
     user: ${USER}
     volumes:
       - ./:/usr/src/app

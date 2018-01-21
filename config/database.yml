@@ -4,7 +4,8 @@ development:
   encoding: unicode
   password: automation-calculator-password
   pool: 5
-  url: <%= ENV['DB_URL'].gsub('?', 'db:5432') %>
+  hostname: db
+  port: 5432
   username: <%= ENV['USER'] %>
 
   # Connect on a TCP socket. Omitted by default since the client uses a
@@ -31,7 +32,8 @@ test:
   encoding: unicode
   password: automation-calculator-test
   pool: 5
-  url: <%= ENV['DB_URL'].gsub('?', 'db:5432') %>
+  hostname: db
+  port: 5432
   username: <%= ENV['USER'] %>
 
 production:
@@ -40,5 +42,6 @@ production:
   encoding: unicode
   password: automation-calculator-production
   pool: 5
-  url: <%= ENV['DB_URL'].gsub('?', 'db:5432') %>
+  hostname: db
+  port: 5432
   username: <%= ENV['USER'] %>
