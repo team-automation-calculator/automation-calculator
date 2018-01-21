@@ -8,7 +8,7 @@ case main_arg
     username = ENV['USER']
     exec("docker build -t automationcalculator_dev:latest -f Dockerfile.development --build-arg username=#{username}  .")
   when 'init'
-    puts 'placeholder for init command'
+    exec('docker-compose run dev "/usr/src/app/bin/setup"')
   when 'rm'
     exec('docker ps -aq | xargs docker rm')
   when 'rmi'

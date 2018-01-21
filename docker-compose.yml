@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile.development
     depends_on:
       - db
-    entrypoint: /bin/bash
+    command: /bin/bash
     environment:
       - DB_URL="postgresql://${USER}:automation-calculator-password@db:5432/automation-calculator-development"
       - USER=${USER}
