@@ -12,11 +12,11 @@ services:
       - ./:/usr/src/app
 
   db:
+    container_name: db
     environment:
       - POSTGRES_USER=${USER}
       - POSTGRES_PASSWORD=automation-calculator-password
     image: postgres:10.1-alpine
-    container_name: db
     volumes:
       - postgres:/var/lib/postgresql/data
 
