@@ -5,7 +5,8 @@ main_arg = cmds[0] || 'init'
 
 case main_arg
   when 'build'
-    exec('docker build -t automationcalculator_dev:latest -f Dockerfile.development .')
+    username = ENV['USER']
+    exec("docker build -t automationcalculator_dev:latest -f Dockerfile.development --build-arg username=#{username}  .")
   when 'init'
     puts 'placeholder for init command'
   when 'rm'
