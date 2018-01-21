@@ -1,4 +1,5 @@
 version: '3.4'
+
 services:
   dev:
     build:
@@ -7,6 +8,8 @@ services:
     depends_on:
       - db
     entrypoint: /bin/bash
+    environment:
+      - DB_URL="db:5432"
     user: ${USER}
     volumes:
       - ./:/usr/src/app
@@ -16,6 +19,7 @@ services:
     environment:
       - POSTGRES_USER=${USER}
       - POSTGRES_PASSWORD=automation-calculator-password
+      - POSTGRES_DB=automation-calculator-development
     image: postgres:10.1-alpine
     volumes:
       - postgres:/var/lib/postgresql/data
