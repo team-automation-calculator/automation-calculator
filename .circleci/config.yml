@@ -5,9 +5,8 @@
 version: 2
 jobs:
   build:
-    docker:
-      # specify the version you desire here
-       - image: circleci/ruby:2.4.1-node-browsers
+    machine:
+       - image: circleci/classic:latest
 
     environment:
        - USER: "circleci"
