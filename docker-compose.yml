@@ -4,7 +4,21 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.development
+    depends_on:
+      - db
     entrypoint: /bin/bash
     user: ${USER}
     volumes:
       - ./:/usr/src/app
+
+  db:
+    environment:
+      - POSTGRES_USER=${USER}
+      - POSTGRES_PASSWORD=automation-calculator-password
+    image: postgres:10.1-alpine
+    container_name: db
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
