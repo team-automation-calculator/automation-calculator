@@ -1,20 +1,6 @@
 version: '3.4'
 
 services:
-  dev:
-    build:
-      context: ./
-      dockerfile: Dockerfile.development
-    depends_on:
-      - db
-    entrypoint: /bin/bash
-    environment:
-      - DB_URL="postgresql://${USER}:automation-calculator-password@db:5432/automation-calculator-development"
-      - USER=${USER}
-    user: ${USER}
-    volumes:
-      - ./:/usr/src/app
-
   db:
     container_name: db
     environment:
@@ -32,6 +18,20 @@ services:
     container_name: db_client
     entrypoint: psql
     image: jbergknoff/postgresql-client:latest
+
+  dev:
+    build:
+      context: ./
+      dockerfile: Dockerfile.development
+    depends_on:
+      - db
+    entrypoint: /bin/bash
+    environment:
+      - DB_URL="postgresql://${USER}:automation-calculator-password@db:5432/automation-calculator-development"
+      - USER=${USER}
+    user: ${USER}
+    volumes:
+      - ./:/usr/src/app
 
 volumes:
   postgres:
