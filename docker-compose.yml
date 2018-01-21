@@ -4,6 +4,6 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.development
-    entrypoint: /bin/sh
+    entrypoint: /bin/bash
     volumes:
       - ./:/usr/src/app
