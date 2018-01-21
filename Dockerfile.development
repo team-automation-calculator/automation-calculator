@@ -16,3 +16,7 @@ RUN gem install bundler
 
 COPY . /usr/src/app
 WORKDIR /usr/src/app
+
+#Calling bundle install in image creation to install dependencies,
+# and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
+RUN bundle install
