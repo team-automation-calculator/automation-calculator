@@ -9,6 +9,7 @@ services:
       - db
     entrypoint: /bin/bash
     environment:
+      - DB_URL="postgresql://${USER}:automation-calculator-password@db:5432/automation-calculator-development"
       - USER=${USER}
     user: ${USER}
     volumes:
@@ -21,8 +22,16 @@ services:
       - POSTGRES_PASSWORD=automation-calculator-password
       - POSTGRES_DB=automation-calculator-development
     image: postgres:10.1-alpine
+    ports:
+      - 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
+
+  db_client:
+    command: postgresql://${USER}:automation-calculator-password@db:5432/automation-calculator-development
+    container_name: db_client
+    entrypoint: psql
+    image: jbergknoff/postgresql-client:latest
 
 volumes:
   postgres:

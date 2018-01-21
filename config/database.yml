@@ -4,8 +4,7 @@ development:
   encoding: unicode
   password: automation-calculator-password
   pool: 5
-  hostname: db
-  port: 5432
+  url: <%= ENV['DB_URL'] %>
   username: <%= ENV['USER'] %>
 
   # Connect on a TCP socket. Omitted by default since the client uses a
@@ -30,18 +29,16 @@ test:
   adapter: postgresql
   database: automation-calculator-test
   encoding: unicode
-  password: automation-calculator-test
+  password: automation-calculator-password
   pool: 5
-  hostname: db
-  port: 5432
+  url: <%= ENV['DB_URL'] %>
   username: <%= ENV['USER'] %>
 
 production:
   adapter: postgresql
   database: automation-calculator-production
   encoding: unicode
-  password: automation-calculator-production
+  password: automation-calculator-password
   pool: 5
-  hostname: db
-  port: 5432
+  url: <%= ENV['DB_URL'] %>
   username: <%= ENV['USER'] %>
