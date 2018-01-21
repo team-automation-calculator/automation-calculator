@@ -21,6 +21,18 @@ def build_image(tag, file)
   exec("docker build -t #{tag} -f #{file} --build-arg username=#{username}  .")
 end
 
+def test(cmds)
+  env = cmds.shift || 'dev'
+  case env
+    when 'dev'
+      exec('docker-compose run dev rspec')
+    when 'ci'
+      exec('docker-compose run ci')
+    else
+      warn "Unrecognized command: #{env}"
+  end
+end
+
 case main_arg
   when 'build'
     build(cmds)
@@ -38,7 +50,7 @@ case main_arg
   when 'stop'
     exec('docker-compose down')
   when 'test'
-    exec('docker-compose run test')
+    test(cmds)
   else
     warn "Unrecognized command: #{main_arg}"
 end

@@ -5,8 +5,8 @@
 version: 2
 jobs:
   build:
-    docker:
-       - image: circleci/ruby:2.4.1-node-browsers
+    machine:
+      image: circleci/classic:latest
 
     environment:
        - USER: "circleci"
