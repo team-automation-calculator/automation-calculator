@@ -36,9 +36,7 @@ services:
     working_dir: /usr/src/app
 
   ci:
-    build:
-      context: ./
-      dockerfile: Dockerfile.ci
+    image: automationcalculator_ci:latest
     depends_on:
       - db
     command: rspec
