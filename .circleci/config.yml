@@ -25,11 +25,16 @@ jobs:
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
       - setup_remote_docker
+      
+      # init
+      - run:
+          name: ./go init
+          command: ./go init
 
       # run tests!
       - run:
-          name: ./go init and test
-          command: ./go init && ./go test
+          name: ./go test
+          command: ./go test
 
       # collect reports
       - store_test_results:
