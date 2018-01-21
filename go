@@ -1,18 +1,31 @@
 #! /usr/bin/env ruby
 
 cmds = ARGF.argv
-main_arg = cmds[0] || 'init'
+main_arg = cmds.shift || 'init'
 
-def build
+def build(cmds)
+  sub_cmd = cmds.shift || 'dev'
+
+  case sub_cmd
+    when 'dev'
+      build_image('automationcalculator_dev:latest', 'Dockerfile.development')
+    when 'ci'
+      build_image('automationcalculator_ci:latest', 'Dockerfile.ci')
+    else
+      warn "Unrecognized command: #{sub_cmd}"
+  end
+end
+
+def build_image(tag, file)
   username = ENV['USER']
-  exec("docker build -t automationcalculator_dev:latest -f Dockerfile.development --build-arg username=#{username}  .")
+  exec("docker build -t #{tag} -f #{file} --build-arg username=#{username}  .")
 end
 
 case main_arg
   when 'build'
-    build
+    build(cmds)
   when 'init'
-    build
+    build(cmds)
     exec('docker-compose run dev "/usr/src/app/bin/setup"')
   when 'rm'
     exec('docker ps -aq | xargs docker rm')
