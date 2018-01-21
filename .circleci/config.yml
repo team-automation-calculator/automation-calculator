@@ -25,15 +25,10 @@ jobs:
 
       - setup_remote_docker
       
-      # init
-      - run:
-          name: ./go init
-          command: ./go init
-
       # run tests!
       - run:
           name: ./go test
-          command: ./go test
+          command: ./go test ci
 
       # collect reports
       - store_test_results:
