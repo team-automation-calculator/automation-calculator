@@ -33,6 +33,8 @@ jobs:
       # run tests!
       - run:
           name: ./go test
+          environment:
+            - USER: "circleci"
           command: ./go test
 
       # collect reports
