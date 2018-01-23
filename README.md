@@ -2,6 +2,10 @@
 
 # automation-calculator
 
+## Purpose
+
+To help people make and communicate automation decisions quickly and effectively. 
+
 ## Setup
 ### Dependencies
 * Ruby 2.0.0+
