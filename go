@@ -40,6 +40,8 @@ case main_arg
     build(cmds)
     exec('docker-compose run dev "/usr/src/app/bin/setup"')
   when 'rm'
+    # stop, then remove
+    exec('docker-compose down')
     exec('docker ps -aq | xargs docker rm')
   when 'rmi'
     exec('docker rmi automationcalculator_dev:latest')
