@@ -44,9 +44,9 @@ case main_arg
   when 'rmi'
     exec('docker rmi automationcalculator_dev:latest')
   when 'shell'
-    exec('docker-compose run dev')
+    exec('docker-compose run dev /bin/bash')
   when 'start'
-    puts 'placeholder for start command'
+    exec('docker-compose run dev rails s')
   when 'stop'
     exec('docker-compose down')
   when 'test'
