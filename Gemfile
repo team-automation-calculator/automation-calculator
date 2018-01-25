@@ -21,6 +21,11 @@ group :development, :test do
   gem 'capybara', '~> 2.13'
   gem 'rspec-rails', '~> 3.7'
   gem 'selenium-webdriver'
+
+  # A Ruby static code analyzer
+  gem 'rubocop', require: false
+  # Rspec cops for rubocop
+  gem 'rubocop-rspec'
 end
 
 group :development do
