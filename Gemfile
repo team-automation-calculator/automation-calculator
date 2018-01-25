@@ -24,6 +24,8 @@ group :development, :test do
   gem 'capybara', '~> 2.13'
   gem 'rspec-rails', '~> 3.7'
   gem 'selenium-webdriver'
+  # A library for setting up Ruby objects as test data
+  gem 'factory_bot_rails'
 
   # A Ruby static code analyzer
   gem 'rubocop', require: false
