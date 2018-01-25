@@ -57,3 +57,7 @@ Style/Send:
 
 Style/SymbolArray:
   Enabled: true
+
+Style/MixinUsage:
+  Exclude:
+    - bin/*
