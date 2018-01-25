@@ -25,7 +25,7 @@ def test(cmds)
   env = cmds.shift || 'dev'
   case env
     when 'dev'
-      exec('docker-compose run dev rspec')
+      exec('docker-compose run dev rubocop && rspec')
     when 'ci'
       exec('docker-compose run ci')
     else
