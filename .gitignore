@@ -56,3 +56,6 @@ build-iPhoneSimulator/
 
 # RubyMine folder
 .idea/
+
+# For different project-related files
+project_files
