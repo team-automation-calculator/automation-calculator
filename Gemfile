@@ -26,6 +26,8 @@ group :development, :test do
   gem 'selenium-webdriver'
   # A library for setting up Ruby objects as test data
   gem 'factory_bot_rails'
+  #  A library for generating fake data
+  gem 'faker'
 
   # A Ruby static code analyzer
   gem 'rubocop', require: false
