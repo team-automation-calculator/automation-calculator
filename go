@@ -25,7 +25,7 @@ def test(cmds)
   env = cmds.shift || 'dev'
   case env
   when 'dev'
-    exec('docker-compose run dev bundle exec rubocop && rspec')
+    exec('docker-compose run dev /bin/bash -c "rubocop; rspec"')
   when 'ci'
     exec('docker-compose run ci')
   else
@@ -41,7 +41,7 @@ when 'init'
   exec('docker-compose run dev "/usr/src/app/bin/setup"')
 when 'rm'
   # stop, then remove
-  exec('docker-compose down')
+  system('docker-compose down')
   exec('docker ps -aq | xargs docker rm')
 when 'rmi'
   exec('docker rmi automationcalculator_dev:latest')
