@@ -36,4 +36,7 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'web-console', '>= 3.3.0'
+
+  # Annotate Rails classes with schema and routes info
+  gem 'annotate'
 end
