@@ -12,7 +12,7 @@ def build(cmds)
     when 'ci'
       build_image('automationcalculator_ci:latest', 'Dockerfile.ci')
     else
-      warn "Unrecognized command: #{sub_cmd}"
+      warn("Unrecognized command: #{sub_cmd}")
   end
 end
 
@@ -29,7 +29,7 @@ def test(cmds)
     when 'ci'
       exec('docker-compose run ci')
     else
-      warn "Unrecognized command: #{env}"
+      warn("Unrecognized command: #{env}")
   end
 end
 
@@ -55,7 +55,7 @@ def help(cmds)
     if help_hash.has_key?(sub_cmd.to_sym)
       print_help_key_value(sub_cmd.to_sym, help_hash[sub_cmd.to_sym])
     else
-      warn "Unrecognized command: #{sub_cmd}"
+      warn("Unrecognized command: #{sub_cmd}")
     end
   end
 end
@@ -90,5 +90,5 @@ case main_arg
   when 'test'
     test(cmds)
   else
-    warn "Unrecognized command: #{main_arg}"
+    warn("Unrecognized command: #{main_arg}")
 end
