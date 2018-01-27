@@ -50,27 +50,22 @@ def help(cmds)
   sub_cmd = cmds.shift
 
   if sub_cmd.nil?
-    help_hash.each_pair do |key, value|
-      if(value.class == Hash)
-        puts(" #{key}:")
-        value.each_pair { |sub_key, sub_value| puts("   #{sub_key} - #{sub_value}") }
-      else
-        puts(" #{key} - #{value}")
-      end
-    end
-    return
-  end
-
-  if help_hash.has_key?(sub_cmd.to_sym)
-    value = sub_cmd.to_sym
-    if(help_hash[value].class == Hash)
-      puts(" #{sub_cmd}:")
-      help_hash[value].each_pair { |sub_key, sub_value| puts("   #{sub_key} - #{sub_value}") }
-    else
-      puts(" #{sub_cmd} - #{help_hash[sub_cmd]}")
-    end
+    help_hash.each_pair { |key, value| print_help_key_value(key, value) }
   else
-    warn "Unrecognized command: #{sub_cmd}"
+    if help_hash.has_key?(sub_cmd.to_sym)
+      print_help_key_value(sub_cmd.to_sym, help_hash[sub_cmd.to_sym])
+    else
+      warn "Unrecognized command: #{sub_cmd}"
+    end
+  end
+end
+
+def print_help_key_value(key, value)
+  if(value.class == Hash)
+    puts(" #{key}:")
+    value.each_pair { |sub_key, sub_value| puts("   #{sub_key} - #{sub_value}") }
+  else
+    puts(" #{key} - #{value}")
   end
 end
 
