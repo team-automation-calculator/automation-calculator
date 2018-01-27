@@ -33,12 +33,55 @@ def test(cmds)
   end
 end
 
+def help(cmds)
+  help_hash = {
+      build: {
+          dev: 'Build docker containers for your development environment.',
+          ci: 'Build docker containers to simulate the ci environment.'
+      },
+      init: 'Setup your development environment with docker.',
+      rm: 'Remove running or stopped docker containers for a clean restart.',
+      rmi: 'Remove the development docker image. ',
+      start: 'Startup the application and it\'s dependencies in docker.',
+      stop: 'Stop running docker containers.',
+      test: 'Run all tests in the docker containers.'
+  }
+
+  sub_cmd = cmds.shift
+
+  if sub_cmd.nil?
+    help_hash.each_pair do |key, value|
+      if(value.class == Hash)
+        puts(" #{key}:")
+        value.each_pair { |sub_key, sub_value| puts("   #{sub_key} - #{sub_value}") }
+      else
+        puts(" #{key} - #{value}")
+      end
+    end
+    return
+  end
+
+  if help_hash.has_key?(sub_cmd.to_sym)
+    value = sub_cmd.to_sym
+    if(help_hash[value].class == Hash)
+      puts(" #{sub_cmd}:")
+      help_hash[value].each_pair { |sub_key, sub_value| puts("   #{sub_key} - #{sub_value}") }
+    else
+      puts(" #{sub_cmd} - #{help_hash[sub_cmd]}")
+    end
+  else
+    warn "Unrecognized command: #{sub_cmd}"
+  end
+end
+
 case main_arg
   when 'build'
     build(cmds)
   when 'init'
     build(cmds)
     exec('docker-compose run dev "/usr/src/app/bin/setup"')
+  when 'help'
+    help(cmds)
   when 'rm'
     exec('docker ps -aq | xargs docker rm')
   when 'rmi'
