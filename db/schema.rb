@@ -10,10 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180128004619) do
+ActiveRecord::Schema.define(version: 20180128004909) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "automation_scenarios", force: :cascade do |t|
+    t.string "owner_type"
+    t.bigint "owner_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_type", "owner_id"], name: "index_automation_scenarios_on_owner_type_and_owner_id"
+  end
 
   create_table "visitors", force: :cascade do |t|
     t.datetime "first_visit_time"
