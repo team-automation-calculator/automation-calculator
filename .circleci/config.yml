@@ -64,7 +64,7 @@ jobs:
 
       - run:
           name: Push CI image to Heroku
-          command: heroku container:push web
+          command: heroku container:push ci
 
 workflows:
   version: 2
