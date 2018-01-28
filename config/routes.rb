@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  get 'automation_scenario/create'
+
+  get 'automation_scenario/read'
+
+  get 'automation_scenario/update'
+
+  get 'automation_scenario/delete'
+
   get 'visitor/create'
 
   get 'visitor/read'
