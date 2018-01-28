@@ -43,8 +43,8 @@ jobs:
           destination: test-results
 
   deploy:
-    docker:
-      - image: circleci/ruby:2.4.1-node-browsers
+    machine:
+      enabled: true
 
     working_directory: ~/repo
 
