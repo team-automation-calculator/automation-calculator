@@ -1,0 +1,16 @@
+FROM ruby:2.2.9-slim-jessie
+
+#Install dependencies as root
+RUN apt-get update
+RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev libpq-dev
+
+#Install rails dependencies
+RUN gem install nokogiri
+RUN gem install bundler
+
+COPY . /usr/src/app
+WORKDIR /usr/src/app
+
+#Calling bundle install in image creation to install dependencies,
+# and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
+RUN bundle install
