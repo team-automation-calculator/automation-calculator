@@ -43,7 +43,14 @@ jobs:
           destination: test-results
 
   deployment:
-    production:
-      branch: master
-      heroku:
-        appname: automation-calculator-rails
+    working_directory: ~/repo
+
+    environment:
+      - HEROKU_APP: automation-calculator-rails
+
+    steps:
+      - checkout
+      
+      - run:
+          name: Setup Heroku
+          command: bash .circleci/setup-heroku.sh
