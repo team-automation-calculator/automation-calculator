@@ -43,6 +43,9 @@ jobs:
           destination: test-results
 
   deployment:
+    docker:
+      - image: circleci/ruby:2.4.1-node-browsers
+
     working_directory: ~/repo
 
     environment:
@@ -50,7 +53,7 @@ jobs:
 
     steps:
       - checkout
-      
+
       - run:
           name: Setup Heroku
           command: bash .circleci/setup-heroku.sh
