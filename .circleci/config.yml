@@ -64,7 +64,7 @@ jobs:
 
       - run:
           name: Push CI image to Heroku
-          command: heroku container:push ci --recursive
+          command: heroku container:push production --recursive
 
 workflows:
   version: 2
