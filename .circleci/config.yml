@@ -42,7 +42,7 @@ jobs:
           path: /tmp/test-results
           destination: test-results
 
-  deployment:
+  deploy:
     docker:
       - image: circleci/ruby:2.4.1-node-browsers
 
@@ -57,3 +57,9 @@ jobs:
       - run:
           name: Setup Heroku
           command: bash .circleci/setup-heroku.sh
+
+workflows:
+  build_and_test:
+    jobs:
+      - build
+      - deploy
