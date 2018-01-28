@@ -58,6 +58,14 @@ jobs:
           name: Setup Heroku
           command: bash .circleci/setup-heroku.sh
 
+      - run:
+          name: Login to heroku container registry
+          command: heroku container:login
+
+      - run:
+          name: Push CI image to Heroku
+          command: heroku container:push web
+
 workflows:
   version: 2
   build_and_test:
