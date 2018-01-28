@@ -13,7 +13,3 @@ USER $username
 #Install rails dependencies as development user
 RUN gem install nokogiri
 RUN gem install bundler
-
-#Calling bundle install in image creation to install dependencies,
-# and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
-RUN bundle install
