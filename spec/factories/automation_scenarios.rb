@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :automation_scenario do
-    owner nil
+    owner { create(:visitor) }
   end
 end
