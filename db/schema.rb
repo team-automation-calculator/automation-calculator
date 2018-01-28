@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180128004909) do
+ActiveRecord::Schema.define(version: 20180128005558) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,16 @@ ActiveRecord::Schema.define(version: 20180128004909) do
     t.index ["owner_type", "owner_id"], name: "index_automation_scenarios_on_owner_type_and_owner_id"
   end
 
+  create_table "solutions", force: :cascade do |t|
+    t.integer "initial_cost"
+    t.integer "iteration_cost"
+    t.integer "iteration_count"
+    t.bigint "automation_scenario_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["automation_scenario_id"], name: "index_solutions_on_automation_scenario_id"
+  end
+
   create_table "visitors", force: :cascade do |t|
     t.datetime "first_visit_time"
     t.string "ip"
@@ -32,4 +42,5 @@ ActiveRecord::Schema.define(version: 20180128004909) do
     t.index ["uuid"], name: "index_visitors_on_uuid", unique: true
   end
 
+  add_foreign_key "solutions", "automation_scenarios"
 end
