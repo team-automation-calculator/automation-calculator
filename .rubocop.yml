@@ -36,8 +36,9 @@ Layout/FirstMethodParameterLineBreak:
 Layout/MultilineAssignmentLayout:
   Enabled: true
 
-# Metrics/BlockLength:
-#  ExcludedMethods:
+Metrics/BlockLength:
+ ExcludedMethods:
+   - describe
 
 # Seems to be breaking tests when recommended fixes for this cop are applied
 Rails/HttpPositionalArguments:
