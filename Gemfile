@@ -7,7 +7,7 @@ end
 
 gem 'coffee-rails'
 gem 'jbuilder'
-gem 'pg'
+gem 'pg', '~> 0.2'
 gem 'puma'
 gem 'rails'
 gem 'rake'
