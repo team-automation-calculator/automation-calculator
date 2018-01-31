@@ -48,7 +48,7 @@ when 'rmi'
 when 'shell'
   exec('docker-compose run dev /bin/bash')
 when 'start'
-  exec('docker-compose run dev rails s')
+  exec('docker-compose up -d dev')
 when 'stop'
   exec('docker-compose down')
 when 'test'
