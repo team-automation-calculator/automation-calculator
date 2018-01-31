@@ -21,6 +21,17 @@ def build_image(tag, file)
   exec("docker build -t #{tag} -f #{file} --build-arg username=#{username}  .")
 end
 
+def create_host(cmds)
+  name = cmds.shift || 'automation-calculator-host'
+  aws_access_key_id = ENV['AWS_ACCESS_KEY_ID']
+  aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+  exec("docker-machine create --driver amazonec2 --amazonec2-access-key #{aws_access_key_id} --amazonec2-secret-key #{aws_secret_access_key} #{name}")
+end
+
+def deploy
+
+end
+
 def test(cmds)
   env = cmds.shift || 'dev'
   case env
@@ -36,6 +47,8 @@ end
 case main_arg
   when 'build'
     build(cmds)
+  when 'create_host'
+    create_host(cmds)
   when 'init'
     build(cmds)
     exec('docker-compose run dev "/usr/src/app/bin/setup"')
