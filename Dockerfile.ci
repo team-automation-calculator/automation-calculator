@@ -14,7 +14,7 @@ USER $username
 RUN gem install nokogiri
 RUN gem install bundler
 
-COPY . /usr/src/app
+COPY --chown=circleci . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN bundle install
