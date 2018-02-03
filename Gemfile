@@ -33,14 +33,15 @@ group :development, :test do
   gem 'rubocop', require: false
   # Rspec cops for rubocop
   gem 'rubocop-rspec'
+  gem 'shoulda-matchers', '~> 3.1'
 end
 
 group :development do
+  # Annotate Rails classes with schema and routes info
+  gem 'annotate'
+
   gem 'listen'
   gem 'spring'
   gem 'spring-watcher-listen'
   gem 'web-console'
-
-  # Annotate Rails classes with schema and routes info
-  gem 'annotate'
 end
