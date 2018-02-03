@@ -40,6 +40,9 @@ Metrics/BlockLength:
  ExcludedMethods:
    - describe
 
+Metrics/LineLength:
+  Max: 120
+
 # Seems to be breaking tests when recommended fixes for this cop are applied
 Rails/HttpPositionalArguments:
   Enabled: false
