@@ -38,7 +38,7 @@ def test(cmds)
   env = cmds.shift || 'dev'
   case env
   when 'dev'
-    exec('docker-compose run dev /bin/bash -c "rubocop; rspec"')
+    exec('docker-compose run dev rspec')
   when 'ci'
     exec('docker-compose run ci')
   else
@@ -55,6 +55,16 @@ def help(cmds, help_hash)
     print_help_key_value(sub_cmd.to_sym, help_hash[sub_cmd.to_sym])
   else
     warn("Unrecognized command: #{sub_cmd}")
+  end
+end
+
+def lint(cmds)
+  env = cmds.shift.to_s
+
+  if env == 'ci'
+    exec('docker-compose run ci rubocop')
+  else
+    exec('docker-compose run dev rubocop')
   end
 end
 
@@ -75,6 +85,8 @@ when 'init'
   exec('docker-compose run dev "/usr/src/app/bin/setup"')
 when 'help'
   help(cmds, help_hash)
+when 'lint'
+  lint(cmds)
 when 'rm'
   # stop, then remove
   system('docker-compose down')

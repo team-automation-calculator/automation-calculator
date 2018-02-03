@@ -30,6 +30,11 @@ jobs:
           name: ./go build ci
           command: ./go build ci
 
+      # lint
+      - run:
+          name: ./go lint ci
+          command: ./go lint ci
+
       # run tests!
       - run:
           name: ./go test ci
