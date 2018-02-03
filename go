@@ -58,8 +58,14 @@ def help(cmds, help_hash)
   end
 end
 
-def lint
-  exec('docker-compose run dev rubocop')
+def lint(cmds)
+  env = cmds.shift.to_s
+
+  if env == 'ci'
+    exec('docker-compose run ci rubocop')
+  else
+    exec('docker-compose run dev rubocop')
+  end
 end
 
 def print_help_key_value(key, value)
@@ -80,7 +86,7 @@ when 'init'
 when 'help'
   help(cmds, help_hash)
 when 'lint'
-  lint
+  lint(cmds)
 when 'rm'
   # stop, then remove
   system('docker-compose down')
