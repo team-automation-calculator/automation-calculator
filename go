@@ -31,7 +31,7 @@ def build(cmds)
   end
 end
 
-def build_image(tag, file, username=ENV['USER'])
+def build_image(tag, file, username = ENV['USER'])
   exec("docker build -t #{tag} -f #{file} --build-arg username=#{username}  .")
 end
 
