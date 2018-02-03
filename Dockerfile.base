@@ -13,3 +13,9 @@ USER $username
 #Install rails dependencies as development user
 RUN gem install nokogiri
 RUN gem install bundler
+
+#Installing gems here even though they will need to be installed again to save 90 seconds on build server
+# not installing every dependency every build
+COPY --chown=circleci Gemfile /usr/src/app/Gemfile
+WORKDIR /usr/src/app
+RUN bundle install

@@ -1,4 +1,4 @@
-FROM automationcalculators/automation-calculator-base:0.0.1
+FROM automationcalculators/automation-calculator-base:0.0.2
 
 COPY --chown=circleci . /usr/src/app
 WORKDIR /usr/src/app
