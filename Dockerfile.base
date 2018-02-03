@@ -1,0 +1,15 @@
+FROM ruby:2.2.9-slim-jessie
+
+#Install dependencies as root
+RUN apt-get update
+RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev libpq-dev
+
+#Setup development user
+ARG username
+RUN useradd -ms /bin/bash $username
+RUN usermod -a -G staff $username
+USER $username
+
+#Install rails dependencies as development user
+RUN gem install nokogiri
+RUN gem install bundler
