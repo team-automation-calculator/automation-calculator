@@ -4,3 +4,14 @@ FactoryBot.define do
     uuid { SecureRandom.uuid }
   end
 end
+
+# == Schema Information
+#
+# Table name: visitors
+#
+#  id         :integer          not null, primary key
+#  ip         :string
+#  uuid       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#

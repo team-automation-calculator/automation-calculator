@@ -5,11 +5,11 @@ RSpec.describe AutomationScenario, type: :model do
 
   describe 'validations' do
     context 'with valid model' do
-      it 'should be valid' do
-        expect(scenario.valid?).to be_truthy
+      it 'is valid' do
+        expect(scenario).to be_valid
       end
     end
 
-    it { should belong_to(:owner) }
+    it { is_expected.to belong_to(:owner) }
   end
 end

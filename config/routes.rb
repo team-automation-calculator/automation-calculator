@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  devise_for :users
+  # For details on the DSL available within this file,
+  # see http://guides.rubyonrails.org/routing.html
+
   get 'automation_scenario/create'
 
   get 'automation_scenario/read'
@@ -15,5 +19,5 @@ Rails.application.routes.draw do
 
   get 'visitor/delete'
 
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  root to: 'home#index'
 end

@@ -5,12 +5,12 @@ RSpec.describe Visitor, type: :model do
 
   describe 'validations' do
     context 'with valid model' do
-      it 'should be valid' do
-        expect(visitor.valid?).to be_truthy
+      it 'is valid' do
+        expect(visitor).to be_valid
       end
     end
 
-    it { should validate_presence_of(:ip) }
-    it { should validate_presence_of(:uuid) }
+    it { is_expected.to validate_presence_of(:ip) }
+    it { is_expected.to validate_presence_of(:uuid) }
   end
 end
