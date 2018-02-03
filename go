@@ -24,6 +24,8 @@ def build(cmds)
     build_image('automationcalculator_dev:latest', 'Dockerfile.development')
   when 'ci'
     build_image('automationcalculator_ci:latest', 'Dockerfile.ci')
+  when 'base'
+    build_image('automationcalculators/automation-calculator-base:0.0.1', 'Dockerfile.base')
   else
     warn "Unrecognized command: #{sub_cmd}"
   end
