@@ -38,7 +38,7 @@ def test(cmds)
   env = cmds.shift || 'dev'
   case env
   when 'dev'
-    exec('docker-compose run dev /bin/bash -c "rubocop; rspec"')
+    exec('docker-compose run dev rspec')
   when 'ci'
     exec('docker-compose run ci')
   else
@@ -58,6 +58,10 @@ def help(cmds, help_hash)
   end
 end
 
+def lint
+  exec('docker-compose run dev rubocop')
+end
+
 def print_help_key_value(key, value)
   if value.class == Hash
     puts(" #{key}:")
@@ -75,6 +79,8 @@ when 'init'
   exec('docker-compose run dev "/usr/src/app/bin/setup"')
 when 'help'
   help(cmds, help_hash)
+when 'lint'
+  lint
 when 'rm'
   # stop, then remove
   system('docker-compose down')
