@@ -50,7 +50,7 @@ def test(cmds)
   when 'dev'
     exec('docker-compose run dev rspec')
   when 'ci'
-    exec('docker-compose run ci')
+    exec('docker-compose -f docker-compose.yml -f docker-compose.ci.yml run ci')
   else
     warn "Unrecognized command: #{env}"
   end

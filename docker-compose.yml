@@ -36,17 +36,5 @@ services:
       - ./:/usr/src/app
     working_dir: /usr/src/app
 
-  ci:
-    image: automationcalculator_ci:latest
-    depends_on:
-      - db
-    command: rspec
-    environment:
-      - DB_URL="postgresql://${USER}:automation-calculator-password@db:5432/automation-calculator-development"
-      - SECRET_KEY_BASE=9a9a13734ecf8dda1157caedcd7ee7d8f1aac8bd7b53ef40f6f065ceb0e0d89672965be4c1a36ea223925f7f9075cb56c6c9711e9b273fb64ed9e3e5801c81f3
-      - USER=${USER}
-    user: ${USER}
-    working_dir: /usr/src/app
-
 volumes:
   postgres:
