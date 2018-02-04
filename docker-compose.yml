@@ -48,5 +48,16 @@ services:
     user: ${USER}
     working_dir: /usr/src/app
 
+  production:
+    image: automationcalculators/automation-calculator-production:development
+    command: rails s --environment=production
+    environment:
+      - DB_URL=${DB_URL}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - USER=${USER}
+    ports:
+      - 3000:3000
+    working_dir: /usr/src/app
+
 volumes:
   postgres:
