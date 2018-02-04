@@ -14,6 +14,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'pry'
 require 'factory_bot_rails'
 
 RSpec.configure do |config|
