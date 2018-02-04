@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe VisitorController, type: :controller do
-  describe 'GET #create' do
+  describe 'POST #create' do
     it 'returns http success' do
-      get :create
+      post :create
       expect(response).to have_http_status(:success)
     end
   end
@@ -15,16 +15,16 @@ RSpec.describe VisitorController, type: :controller do
     end
   end
 
-  describe 'GET #update' do
+  describe 'PUT #update' do
     it 'returns http success' do
-      get :update
+      put :update
       expect(response).to have_http_status(:success)
     end
   end
 
-  describe 'GET #delete' do
+  describe 'DELETE #delete' do
     it 'returns http success' do
-      get :delete
+      delete :delete
       expect(response).to have_http_status(:success)
     end
   end
