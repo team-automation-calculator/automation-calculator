@@ -1,22 +1,6 @@
-FROM ruby:2.2.9-slim-jessie
+FROM automationcalculators/automation-calculator-base:0.0.2
 
-#Install dependencies as root
-RUN apt-get update
-RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev libpq-dev
-
-#Setup development user
-ARG username
-RUN useradd -ms /bin/bash $username
-RUN usermod -a -G staff $username
-USER $username
-
-#Install rails dependencies as development user
-RUN gem install nokogiri
-RUN gem install bundler
-
-COPY . /usr/src/app
+COPY --chown=circleci . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN bundle install
-
-
