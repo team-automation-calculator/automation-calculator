@@ -4,11 +4,11 @@ class VisitorController < ApplicationController
   end
 
   def index
-    #fill in index
+    # fill in index
   end
 
   def update
-    #fill in read
+    # fill in read
   end
 
   def destroy

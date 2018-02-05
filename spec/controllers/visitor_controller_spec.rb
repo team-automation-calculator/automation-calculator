@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe VisitorController, type: :controller do
   describe 'POST #create' do
-
     describe 'new visitor creation' do
       let(:create_post) { post :create }
 
@@ -28,11 +27,11 @@ RSpec.describe VisitorController, type: :controller do
     let(:visitor) { create(:visitor) }
 
     it 'routes correctly' do
-      assert_generates '/visitor/1', { controller: 'visitor', action: 'show', id: '1' }
+      assert_generates '/visitor/1', controller: 'visitor', action: 'show', id: '1'
     end
 
     it 'returns http success' do
-      get :show, { params: { id: visitor.id } }
+      get :show, params: { id: visitor.id }
       expect(response).to have_http_status(:success)
     end
   end
@@ -43,7 +42,7 @@ RSpec.describe VisitorController, type: :controller do
 
     before do
       visitor_id
-      delete :destroy, { params: { id: visitor.id} }
+      delete :destroy, params: { id: visitor.id }
     end
 
     it 'returns http success' do

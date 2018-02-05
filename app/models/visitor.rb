@@ -3,7 +3,7 @@ class Visitor < ApplicationRecord
   validates :ip, :uuid, presence: true
 
   def self.create_with_random_uuid(ip)
-    Visitor.create({uuid: SecureRandom.uuid, ip: ip})
+    Visitor.create(uuid: SecureRandom.uuid, ip: ip)
   end
 end
 
