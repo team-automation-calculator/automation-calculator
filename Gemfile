@@ -28,7 +28,7 @@ group :development, :test do
   gem 'factory_bot_rails'
   #  A library for generating fake data
   gem 'faker'
-
+  gem 'pry'
   # A Ruby static code analyzer
   gem 'rubocop', require: false
   # Rspec cops for rubocop
