@@ -3,21 +3,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file,
   # see http://guides.rubyonrails.org/routing.html
 
-  post 'automation_scenario/create'
-
-  get 'automation_scenario/read'
-
-  put 'automation_scenario/update'
-
-  delete 'automation_scenario/delete'
-
-  post 'visitor/create'
-
-  get 'visitor/read'
-
-  put 'visitor/update'
-
-  delete 'visitor/delete'
+  resources :visitor
 
   root to: 'home#index'
 end
