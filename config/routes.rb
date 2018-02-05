@@ -3,7 +3,10 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file,
   # see http://guides.rubyonrails.org/routing.html
 
-  resources :visitor
+  get '/visitor', to: 'visitor#index'
+  post '/visitor', to: 'visitor#create'
+  get '/visitor/:id', to: 'visitor#show'
+  delete 'visitor/:id', to: 'visitor#destroy'
 
   root to: 'home#index'
 end

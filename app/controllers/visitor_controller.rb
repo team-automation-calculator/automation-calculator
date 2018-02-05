@@ -12,10 +12,11 @@ class VisitorController < ApplicationController
   end
 
   def destroy
-    #fill in read
+    @visitor = Visitor.find(params[:id])
+    @visitor.destroy
   end
 
   def show
-    #fill in show with users solutions?
+    @visitor = Visitor.find(params[:id])
   end
 end
