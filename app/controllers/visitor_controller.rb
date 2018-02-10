@@ -4,7 +4,7 @@ class VisitorController < ApplicationController
   end
 
   def index
-    # fill in index
+    redirect_to(action: :create)
   end
 
   def update

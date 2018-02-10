@@ -17,9 +17,9 @@ RSpec.describe VisitorController, type: :controller do
   end
 
   describe 'GET #index' do
-    it 'returns http success' do
+    it 'redirects to create' do
       get :index
-      expect(response).to have_http_status(:success)
+      expect(response).to redirect_to(action: :create)
     end
   end
 
