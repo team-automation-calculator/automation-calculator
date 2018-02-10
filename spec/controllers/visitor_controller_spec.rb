@@ -9,9 +9,9 @@ RSpec.describe VisitorController, type: :controller do
         expect { create_post }.to change(Visitor, :count).by 1
       end
 
-      it 'returns http success' do
+      it 'redirects to visitor page' do
         create_post
-        expect(response).to have_http_status(:success)
+        expect(response).to redirect_to(action: :show, id: Visitor.last.id)
       end
     end
   end

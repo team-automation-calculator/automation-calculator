@@ -1,6 +1,7 @@
 class VisitorController < ApplicationController
   def create
-    Visitor.create_with_random_uuid(request.remote_ip)
+    @visitor = Visitor.create_with_random_uuid(request.remote_ip)
+    redirect_to(action: :show, id: @visitor.id)
   end
 
   def index
