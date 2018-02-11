@@ -5,20 +5,11 @@ Dir['./scripts/*.rb'].each { |file| require file }
 cmds = ARGF.argv
 main_arg = cmds.shift || 'init'
 
-def create_host(cmds)
-  name = cmds.shift || 'automation-calculator-host'
-  aws_access_key_id = ENV['AWS_ACCESS_KEY_ID']
-  aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
-  exec("docker-machine create --driver amazonec2
-        --amazonec2-access-key #{aws_access_key_id}
-        --amazonec2-secret-key #{aws_secret_access_key} #{name}")
-end
-
 case main_arg
 when 'build'
   DockerBuild.build(cmds)
 when 'create_host'
-  create_host(cmds)
+  DockerMachine.create_host(cmds)
 when 'help'
   HelpText.help(cmds)
 when 'init'
