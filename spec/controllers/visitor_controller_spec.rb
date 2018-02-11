@@ -8,7 +8,6 @@ RSpec.describe VisitorController, type: :controller do
       it 'creates a new visitor model' do
         expect { create_post }.to change(Visitor, :count).by 1
       end
-
       it 'redirects to visitor page' do
         create_post
         expect(response).to redirect_to(action: :show, id: Visitor.last.id)
