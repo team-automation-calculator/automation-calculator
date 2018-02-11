@@ -6,6 +6,7 @@ class HelpText
     }.freeze,
     create_host: 'Create a docker-machine host for the application.',
     init: 'Setup your development environment with docker.',
+    lint: 'Use a linter on the application and test code to ensure code style is consistent.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
     rmi: 'Remove the development docker image. ',
     start: 'Startup the application and it\'s dependencies in docker.',
