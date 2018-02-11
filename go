@@ -1,7 +1,6 @@
 #! /usr/bin/env ruby
 
-require './scripts/help_text'
-require './scripts/docker_build'
+Dir['./scripts/*.rb'].each { |file| require file }
 
 cmds = ARGF.argv
 main_arg = cmds.shift || 'init'
