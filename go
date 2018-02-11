@@ -14,28 +14,6 @@ def create_host(cmds)
         --amazonec2-secret-key #{aws_secret_access_key} #{name}")
 end
 
-def test(cmds)
-  env = cmds.shift || 'dev'
-  case env
-  when 'dev'
-    exec('docker-compose run dev rspec')
-  when 'ci'
-    exec('docker-compose -f docker-compose.yml -f docker-compose.ci.yml run ci')
-  else
-    warn "Unrecognized command: #{env}"
-  end
-end
-
-def lint(cmds)
-  env = cmds.shift.to_s
-
-  if env == 'ci'
-    exec('docker-compose -f docker-compose.yml -f docker-compose.ci.yml run ci rubocop')
-  else
-    exec('docker-compose run dev rubocop')
-  end
-end
-
 case main_arg
 when 'build'
   DockerBuild.build(cmds)
@@ -44,10 +22,10 @@ when 'create_host'
 when 'help'
   HelpText.help(cmds)
 when 'init'
-  build(cmds)
+  DockerBuild.build(cmds)
   exec('docker-compose run dev "/usr/src/app/bin/setup"')
 when 'lint'
-  lint(cmds)
+  Verify.lint(cmds)
 when 'rm'
   # stop, then remove
   system('docker-compose down')
@@ -61,7 +39,7 @@ when 'start'
 when 'stop'
   exec('docker-compose down')
 when 'test'
-  test(cmds)
+  Verify.rspec_test(cmds)
 else
   warn "Unrecognized command: #{main_arg}"
 end
