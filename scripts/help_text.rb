@@ -4,6 +4,7 @@ class HelpText
       dev: 'Build docker containers for your development environment.',
       ci: 'Build docker containers to simulate the ci environment.'
     }.freeze,
+    create_host: 'Create a docker-machine host for the application.',
     init: 'Setup your development environment with docker.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
     rmi: 'Remove the development docker image. ',
