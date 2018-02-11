@@ -9,6 +9,7 @@ class HelpText
     lint: 'Use a linter on the application and test code to ensure code style is consistent.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
     rmi: 'Remove the development docker image. ',
+    shell: 'Open a terminal inside of the development container.',
     start: 'Startup the application and it\'s dependencies in docker.',
     stop: 'Stop running docker containers.',
     test: 'Run all tests in the docker containers.'
