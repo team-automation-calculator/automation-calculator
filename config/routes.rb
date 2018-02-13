@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   # see http://guides.rubyonrails.org/routing.html
 
   get '/visitor', to: 'visitor#index'
-  post '/visitor', to: 'visitor#create'
+  get '/visitor/create', to: 'visitor#create'
   get '/visitor/:id', to: 'visitor#show'
   delete 'visitor/:id', to: 'visitor#destroy'
 

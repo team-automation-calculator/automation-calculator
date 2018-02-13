@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe VisitorController, type: :controller do
-  describe 'POST #create' do
+  describe 'GET #create' do
     describe 'new visitor creation' do
-      let(:create_post) { post :create }
+      let(:create_get) { get :create }
 
       it 'creates a new visitor model' do
-        expect { create_post }.to change(Visitor, :count).by 1
+        expect { create_get }.to change(Visitor, :count).by 1
       end
       it 'redirects to visitor page' do
-        create_post
+        create_get
         expect(response).to redirect_to(action: :show, id: Visitor.last.id)
       end
     end
