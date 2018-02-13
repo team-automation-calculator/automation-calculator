@@ -16,7 +16,18 @@ To help people make and communicate automation decisions quickly and effectively
 `./go init`
 
 ## Use
-* `./go shell`
+
+### View app in local browser
 * `./go start`
+* Open browser, go to `http://localhost:3001/`.
+* If you wish to configure the port to be something else, edit `RAILS_SERVER_PORT` inside `docker-compose.yml`.
+
+### Interact with the app via terminal
+* `./go shell`
+
+### Run the tests
 * `./go test`
+* `./go lint`
+
+### View available functions
 * `./go help`
