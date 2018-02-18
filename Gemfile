@@ -15,6 +15,7 @@ gem 'sass-rails'
 gem 'therubyracer', platforms: :ruby
 gem 'turbolinks'
 gem 'uglifier'
+gem 'jquery-rails'
 
 # Flexible authentication solution for Rails with Warden
 gem 'devise'

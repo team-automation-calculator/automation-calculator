@@ -1,2 +1,9 @@
-<h1>Visitor#show</h1>
-<p>Find me in app/views/visitor/show.html.erb</p>
+<%= form_tag '', id: 'chart-form' do %>
+  <%= label_tag 'x-axis', 'x-axis' %>
+  <%= text_field_tag 'x', nil, id: 'x-axis', placeholder: '1,2,3,4' %>
+  <%= label_tag 'y-axis', 'y-axis' %>
+  <%= text_field_tag 'y', nil, id: 'y-axis', placeholder: '1,2,3,4' %>
+  <%= button_tag 'Render Chart', type: :button, class: 'render-chart' %>
+<% end %>
+
+<div id="renderChart"></div>
