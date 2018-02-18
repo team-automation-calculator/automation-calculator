@@ -7,6 +7,7 @@ end
 
 gem 'coffee-rails'
 gem 'jbuilder'
+gem 'jquery-rails'
 gem 'pg', '~> 0.2'
 gem 'puma'
 gem 'rails'
@@ -15,7 +16,6 @@ gem 'sass-rails'
 gem 'therubyracer', platforms: :ruby
 gem 'turbolinks'
 gem 'uglifier'
-gem 'jquery-rails'
 
 # Flexible authentication solution for Rails with Warden
 gem 'devise'
