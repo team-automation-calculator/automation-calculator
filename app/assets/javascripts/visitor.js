@@ -13,7 +13,7 @@ document.addEventListener("turbolinks:load", function() {
       var y_axis = [];
       for (i = 1; i <= iterations; i++) {
           x_axis.push(i);
-          y_axis.push(Number(i*cost_per_iteration+initial_cost));
+          y_axis.push(Number(initial_cost)+(Number(i)*Number(cost_per_iteration)));
       }
       return {"xAxis":x_axis, "yAxis":y_axis};
   }
