@@ -23,6 +23,7 @@ gem 'devise'
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
   gem 'capybara'
+  gem 'letter_opener'
   gem 'rspec-rails'
   gem 'selenium-webdriver'
   # A library for setting up Ruby objects as test data
