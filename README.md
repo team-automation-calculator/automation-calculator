@@ -31,3 +31,8 @@ To help people make and communicate automation decisions quickly and effectively
 
 ### View available functions
 * `./go help`
+
+## Troubleshooting/Gotchas
+
+* Problem: If you update the Gemfile and run `./go test`, `./go shell` or a similar command, you will see `Could not find NEW_GEM_DEPENDENCY_NAME_HERE`.
+* Solution: Run `./go build` to update your development docker image to include the new dependency.
