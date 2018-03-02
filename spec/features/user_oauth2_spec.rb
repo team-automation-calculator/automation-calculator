@@ -15,18 +15,18 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
 
     context 'when it is successful' do
       let(:oauth_data) do
-        OmniAuth::AuthHash.new({
+        OmniAuth::AuthHash.new(
           provider: provider,
           uid: user.uid,
           info: {
-            email: user.email,
+            email: user.email
           },
           credentials: {
             token: Faker::Lorem.characters(10),
             refresh_token: Faker::Lorem.characters(10),
-            expires_at: DateTime.now,
+            expires_at: Time.current
           }
-        })
+        )
       end
 
       before do
@@ -40,7 +40,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
           expect { oauth2_sign_in }.to change(User, :count).by(1)
         end
 
-        context 'after sign in' do
+        context 'when a user is signed in' do
           before { oauth2_sign_in }
 
           it 'displays the user email' do
@@ -48,7 +48,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
           end
 
           it 'signs in the user and displays a Logout link' do
-            expect(page).to have_link("Sign out")
+            expect(page).to have_link('Sign out')
           end
         end
       end
@@ -60,7 +60,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
           expect { oauth2_sign_in }.not_to change(User, :count)
         end
 
-        context 'after sign in' do
+        context 'when a user is signed in' do
           before { oauth2_sign_in }
 
           it 'displays the user email' do
@@ -68,7 +68,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
           end
 
           it 'signs in the user and displays a Logout link' do
-            expect(page).to have_link("Sign out")
+            expect(page).to have_link('Sign out')
           end
         end
       end
@@ -90,17 +90,17 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
     end
   end
 
-	context 'for google provider' do
+  context 'with google provider' do
     let(:provider_link_name) { 'GoogleOauth2' }
     let(:provider) { :google_oauth2 }
 
     it_behaves_like :an_oauth2_provider
-	end
+  end
 
-	context 'for github provider' do
+  context 'with github provider' do
     let(:provider_link_name) { 'GitHub' }
     let(:provider) { :github }
 
     it_behaves_like :an_oauth2_provider
-	end
+  end
 end
