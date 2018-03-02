@@ -16,4 +16,6 @@ end
 #  updated_at             :datetime         not null
 #  reset_password_token   :string
 #  reset_password_sent_at :datetime
+#  provider               :string
+#  uid                    :string
 #
