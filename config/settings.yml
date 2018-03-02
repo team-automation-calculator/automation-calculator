@@ -1,0 +1,7 @@
+oauth2:
+  google:
+    client_id: ''
+    client_secret: ''
+  github:
+    app_id: ''
+    app_secret: ''
