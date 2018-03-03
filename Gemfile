@@ -20,6 +20,13 @@ gem 'uglifier'
 # Flexible authentication solution for Rails with Warden
 gem 'devise'
 
+# Strategy to authenticate with Google via OAuth2 in OmniAuth.
+gem 'omniauth-google-oauth2'
+#  GitHub strategy for OmniAuth
+gem 'omniauth-github'
+# Easiest way to add multi-environment yaml settings
+gem 'config'
+
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
   gem 'capybara'

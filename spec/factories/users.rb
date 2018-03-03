@@ -2,6 +2,8 @@ FactoryBot.define do
   factory :user do
     email     { Faker::Internet.email }
     password  { Faker::Internet.password }
+    provider  { Devise.omniauth_providers.sample }
+    uid       { Faker::Number.number(10) }
   end
 end
 
@@ -16,4 +18,6 @@ end
 #  updated_at             :datetime         not null
 #  reset_password_token   :string
 #  reset_password_sent_at :datetime
+#  provider               :string
+#  uid                    :string
 #
