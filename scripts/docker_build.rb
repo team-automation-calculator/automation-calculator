@@ -11,6 +11,7 @@ class DockerBuild
         repo = 'automationcalculator/automation-calculator-rails'
         image = "#{repo}:#{tag}"
         build_image(image, 'Dockerfile.ci')
+        puts "exec string is: docker tag #{image} #{repo}:latest"
         exec("docker tag #{image} #{repo}:latest")
       when 'base'
         build_image('automationcalculators/automation-calculator-base:0.0.2', 'Dockerfile.base', 'circleci')
