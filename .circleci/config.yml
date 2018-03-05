@@ -44,6 +44,10 @@ jobs:
           name: Login to Docker Hub
           command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
 
+      - run:
+          name: Create container tag
+          command: export CONTAINER_TAG=$SEMVER_MAJOR_VERSION.$SEMVER_MINOR_VERSION-$CIRCLE_BUILD_NUM
+
   deploy:
     machine:
       enabled: true
