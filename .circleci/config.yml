@@ -46,18 +46,6 @@ jobs:
           command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
 
       - run:
-          name: Create container tag
-          command: export CONTAINER_TAG=$SEMVER_MAJOR_VERSION.$SEMVER_MINOR_VERSION.$SEMVER_PATCH-$CIRCLE_BUILD_NUM && echo $CONTAINER_TAG
-
-      - run:
-          name: Set container image and tag
-          command: export CONTAINER_IMAGE="automationcalculator/automation-calculator-rails:$CONTAINER_TAG" && echo $CONTAINER_IMAGE
-
-      - run:
-          name: Tag constructed image correctly
-          command: docker tag automationcalculator_dev $CONTAINER_IMAGE
-
-      - run:
           name: Upload docker image
           command: docker push $CONTAINER_IMAGE
 
