@@ -47,7 +47,7 @@ jobs:
 
       - run:
           name: Upload docker image
-          command: docker push $CONTAINER_IMAGE
+          command: docker push automationcalculator/automation-calculator-rails:latest
 
   deploy:
     machine:
