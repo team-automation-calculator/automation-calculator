@@ -46,7 +46,7 @@ jobs:
 
       - run:
           name: Create container tag
-          command: export CONTAINER_TAG=$SEMVER_MAJOR_VERSION.$SEMVER_MINOR_VERSION-$CIRCLE_BUILD_NUM
+          command: export CONTAINER_TAG=$SEMVER_MAJOR_VERSION.$SEMVER_MINOR_VERSION-$CIRCLE_BUILD_NUM && echo $CONTAINER_TAG
 
   deploy:
     machine:
