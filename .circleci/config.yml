@@ -40,6 +40,7 @@ jobs:
           name: ./go test ci
           command: ./go test ci
 
+      # login to docker hub and push image
       - run:
           name: Login to Docker Hub
           command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
@@ -47,6 +48,10 @@ jobs:
       - run:
           name: Create container tag
           command: export CONTAINER_TAG=$SEMVER_MAJOR_VERSION.$SEMVER_MINOR_VERSION.$SEMVER_PATCH-$CIRCLE_BUILD_NUM && echo $CONTAINER_TAG
+
+      - run:
+          name: Tag constructed image correctly
+          command: docker tag automationcalculator_dev automationcalculator/automation-calculator-rails:$CONTAINER_TAG
 
   deploy:
     machine:
