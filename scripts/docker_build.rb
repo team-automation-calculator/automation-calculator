@@ -7,7 +7,10 @@ class DockerBuild
       when 'dev'
         build_image('automationcalculator_dev:latest', 'Dockerfile.development')
       when 'ci'
-        tag = "#{ENV['SEMVER_MAJOR_VERSION']}.#{ENV['SEMVER_MINOR_VERSION']}.#{ENV['SEMVER_PATCH']}-#{ENV['CIRCLE_BUILD_NUM']}"
+        tag = "#{ENV['SEMVER_MAJOR_VERSION']}."\
+              "#{ENV['SEMVER_MINOR_VERSION']}."\
+              "#{ENV['SEMVER_PATCH']}-"\
+              "#{ENV['CIRCLE_BUILD_NUM']}"
         repo = 'automationcalculator/automation-calculator-rails'
         image = "#{repo}:#{tag}"
         build_image(image, 'Dockerfile.ci')
