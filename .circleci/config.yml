@@ -51,7 +51,7 @@ jobs:
 
       - run:
           name: Set container image and tag
-          command: export CONTAINER_IMAGE=automationcalculator/automation-calculator-rails:$CONTAINER_TAG && echo $CONTAINER_IMAGE
+          command: export CONTAINER_IMAGE="automationcalculator/automation-calculator-rails:$CONTAINER_TAG" && echo $CONTAINER_IMAGE
 
       - run:
           name: Tag constructed image correctly
