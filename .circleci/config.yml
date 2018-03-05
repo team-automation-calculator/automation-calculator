@@ -40,6 +40,10 @@ jobs:
           name: ./go test ci
           command: ./go test ci
 
+      - run:
+          name: Login to Docker Hub
+          command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
+
   deploy:
     machine:
       enabled: true
