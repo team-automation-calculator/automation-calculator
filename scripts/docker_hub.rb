@@ -1,5 +1,5 @@
 class DockerHub
-  REPO='automationcalculator/automation-calculator-rails'.freeze
+  REPO = 'automationcalculator/automation-calculator-rails'.freeze
 
   class << self
     def docker_image_tag
