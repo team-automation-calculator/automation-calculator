@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build_and_verify:
+  build_verify_push:
     docker:
       - image: circleci/ruby:2.4.1-node-browsers
 
@@ -25,10 +25,15 @@ jobs:
 
       - setup_remote_docker
 
-      # build test image to test
+      # build test image to test, create semver tag
       - run:
           name: ./go build ci
           command: ./go build ci
+
+      # tag image with semver
+      - run:
+          name: ./go tag
+          command: ./go tag
 
       # lint
       - run:
@@ -40,14 +45,14 @@ jobs:
           name: ./go test ci
           command: ./go test ci
 
-      # login to docker hub and push image
+      # login to docker hub in preparation for pushing image
       - run:
           name: Login to Docker Hub
           command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
 
       - run:
-          name: Upload docker image
-          command: docker push automationcalculator/automation-calculator-rails:latest
+          name: Upload Docker image to Docker Hub
+          command: ./go push
 
   deploy:
     machine:
@@ -60,9 +65,9 @@ jobs:
 
 workflows:
   version: 2
-  build_and_test:
+  build_verify_push:
     jobs:
-      - build_and_verify
+      - build_verify_push
       - deploy:
           requires:
-            - build_and_verify
+            - build_verify_push
