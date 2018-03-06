@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build_and_verify:
+  build_verify_push:
     docker:
       - image: circleci/ruby:2.4.1-node-browsers
 
@@ -65,9 +65,9 @@ jobs:
 
 workflows:
   version: 2
-  build_and_test:
+  build_verify_push:
     jobs:
-      - build_and_verify
+      - build_verify_push
       - deploy:
           requires:
-            - build_and_verify
+            - build_verify_push
