@@ -25,10 +25,10 @@ jobs:
 
       - setup_remote_docker
 
-      # build test image to test
+      # build test image to test, create semver tag
       - run:
           name: ./go build ci
-          command: ./go build ci
+          command: ./go build ci && ./scripts/tag_docker_image_with_semver.sh
 
       # lint
       - run:
@@ -47,7 +47,7 @@ jobs:
 
       - run:
           name: Upload docker image
-          command: docker push automationcalculator/automation-calculator-rails:latest
+          command: docker push $(automationcalculator/automation-calculator-rails:$(./create_docker_image_tag.sh))
 
   deploy:
     machine:
