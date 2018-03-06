@@ -28,7 +28,12 @@ jobs:
       # build test image to test, create semver tag
       - run:
           name: ./go build ci
-          command: ./go build ci && ./scripts/tag_docker_image_with_semver.sh
+          command: ./go build ci
+
+      # tag image with semver
+      - run:
+          name: ./go tag
+          command: ./go tag
 
       # lint
       - run:
@@ -40,14 +45,14 @@ jobs:
           name: ./go test ci
           command: ./go test ci
 
-      # login to docker hub and push image
+      # login to docker hub in preparation for pushing image
       - run:
           name: Login to Docker Hub
           command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
 
       - run:
-          name: Upload docker image
-          command: ./scripts/push_to_docker_hub.sh
+          name: Upload Docker image to Docker Hub
+          command: ./go push
 
   deploy:
     machine:

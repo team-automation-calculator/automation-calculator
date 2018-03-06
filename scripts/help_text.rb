@@ -6,12 +6,14 @@ class HelpText
     }.freeze,
     create_host: 'Create a docker-machine host for the application.',
     init: 'Setup your development environment with docker.',
+    push: 'Push docker image to docker hub. Useful for debugging when CI fails to do this properly.',
     lint: 'Use a linter on the application and test code to ensure code style is consistent.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
     rmi: 'Remove the development docker image. ',
     shell: 'Open a terminal inside of the development container.',
     start: 'Startup the application and it\'s dependencies in docker.',
     stop: 'Stop running docker containers.',
+    tag: 'Tag CI\'s docker image with semver. Useful for debugging when CI fails to do this properly.',
     test: 'Run all tests in the docker containers.'
   }.freeze
 

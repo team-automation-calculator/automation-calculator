@@ -17,6 +17,8 @@ when 'init'
   exec('docker-compose run dev "/usr/src/app/bin/setup"')
 when 'lint'
   Verify.lint(cmds)
+when 'push'
+  DockerHub.push_to_docker_hub
 when 'rm'
   # stop, then remove
   system('docker-compose down')
@@ -29,6 +31,8 @@ when 'start'
   exec('docker-compose up -d dev')
 when 'stop'
   exec('docker-compose down')
+when 'tag'
+  DockerHub.tag_latest_with_semver
 when 'test'
   Verify.rspec_test(cmds)
 else
