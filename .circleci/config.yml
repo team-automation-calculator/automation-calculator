@@ -47,7 +47,7 @@ jobs:
 
       - run:
           name: Upload docker image
-          command: docker push $(automationcalculator/automation-calculator-rails:$(./create_docker_image_tag.sh))
+          command: docker push $(automationcalculator/automation-calculator-rails:$(./scripts/create_docker_image_tag.sh))
 
   deploy:
     machine:
