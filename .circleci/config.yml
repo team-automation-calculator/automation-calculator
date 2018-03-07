@@ -55,13 +55,18 @@ jobs:
           command: ./go push
 
   deploy:
-    machine:
-      enabled: true
+    docker:
+      - image: circleci/ruby:2.4.1-node-browsers
 
     working_directory: ~/repo
 
     steps:
       - checkout
+
+    # build test image to test, create semver tag
+      - run:
+          name: ./go deploy
+          command: ./go deploy
 
 workflows:
   version: 2
