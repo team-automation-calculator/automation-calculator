@@ -68,6 +68,10 @@ jobs:
           command: ./go dependencies
 
       - run:
+          name: Connect to server with Docker Machine
+          command: eval $(docker-machine env staging)
+
+      - run:
           name: ./go deploy
           command: ./go deploy
 
