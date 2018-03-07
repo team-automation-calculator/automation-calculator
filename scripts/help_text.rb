@@ -5,6 +5,7 @@ class HelpText
       ci: 'Build docker containers to simulate the ci environment.'
     }.freeze,
     create_host: 'Create a docker-machine host for the application.',
+    deploy: 'Deploy the app with Docker Machine.',
     init: 'Setup your development environment with docker.',
     push: 'Push docker image to docker hub. Useful for debugging when CI fails to do this properly.',
     lint: 'Use a linter on the application and test code to ensure code style is consistent.',

@@ -10,6 +10,8 @@ when 'build'
   DockerBuild.build(cmds)
 when 'create_host'
   DockerMachine.create_host(cmds)
+when 'deploy'
+  DockerMachine.build_docker_machine_certs_from_env_vars
 when 'help'
   HelpText.help(cmds)
 when 'init'
