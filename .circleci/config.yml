@@ -63,7 +63,10 @@ jobs:
     steps:
       - checkout
 
-    # build test image to test, create semver tag
+      - run:
+          name: Install Docker Machine
+          command: ./go dependencies
+
       - run:
           name: ./go deploy
           command: ./go deploy
