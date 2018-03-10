@@ -69,7 +69,7 @@ jobs:
 
       - run:
           name: Connect to server with Docker Machine
-          command: eval $(docker-machine env staging)
+          command: cd repo && eval $(docker-machine env staging)
 
       - run:
           name: ./go deploy
