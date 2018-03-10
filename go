@@ -28,7 +28,7 @@ when 'rmi'
 when 'shell'
   exec('docker-compose run dev /bin/bash')
 when 'start'
-  exec('docker-compose up -d dev')
+  Lifecycle.start(cmds)
 when 'stop'
   exec('docker-compose down')
 when 'tag'
