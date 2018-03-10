@@ -4,7 +4,8 @@ class DockerMachine
     [
       Struct::EnvVarFile.new('DOCKER_CAPEM', 'ca.pem'),
       Struct::EnvVarFile.new('DOCKER_CERTPEM', 'cert.pem'),
-      Struct::EnvVarFile.new('DOCKER_IDRSA', 'id.rsa')
+      Struct::EnvVarFile.new('DOCKER_IDRSA', 'id.rsa'),
+      Struct::EnvVarFile.new('DOCKER_CONFIG', 'config.json')
     ].freeze
 
   class << self
