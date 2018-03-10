@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   production:
-      image: automationcalculators/automation-calculator-production:development
+      image: automationcalculators/automation-calculator-production:latest
       command: rails s --environment=production
       environment:
         - DB_URL=${DB_URL}
@@ -11,3 +11,10 @@ services:
       ports:
         - 3000:3000
       working_dir: /usr/src/app
+
+  watchtower:
+      command: --interval 30
+      image: v2tec/watchtower:latest
+      container_name: watchtower
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
