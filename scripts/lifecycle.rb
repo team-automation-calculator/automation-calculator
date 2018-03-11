@@ -5,6 +5,12 @@ class Lifecycle
   }.freeze
 
   class << self
+    def rm
+      # stop, then remove
+      system('docker-compose down')
+      exec('docker ps -aq | xargs docker rm')
+    end
+
     def start(cmds)
       sub_cmd = cmds.shift || 'dev'
 
@@ -15,6 +21,10 @@ class Lifecycle
         puts
         warn("Unrecognized command: #{sub_cmd}")
       end
+    end
+
+    def stop
+      exec('docker-compose down')
     end
   end
 end

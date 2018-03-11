@@ -20,9 +20,7 @@ when 'lint'
 when 'push'
   DockerHub.push_to_docker_hub
 when 'rm'
-  # stop, then remove
-  system('docker-compose down')
-  exec('docker ps -aq | xargs docker rm')
+  Lifecycle.rm
 when 'rmi'
   exec('docker rmi automationcalculator_dev:latest')
 when 'shell'
@@ -30,7 +28,7 @@ when 'shell'
 when 'start'
   Lifecycle.start(cmds)
 when 'stop'
-  exec('docker-compose down')
+  Lifecycle.stop
 when 'tag'
   DockerHub.tag_latest_with_semver
 when 'test'
