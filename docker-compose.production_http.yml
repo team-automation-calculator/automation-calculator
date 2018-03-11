@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   production:
-      image: automationcalculators/automation-calculator-production:latest
+      image: automationcalculator/automation-calculator-rails:latest
       command: rails s --environment=production
       environment:
         - DB_URL=${DB_URL}
