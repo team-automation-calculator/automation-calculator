@@ -30,6 +30,7 @@ class Lifecycle
     end
 
     def start_debug_production
+      EnvironmentVariables.set_mock_production_vars
       system('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d')
     end
 
