@@ -5,6 +5,11 @@ class Lifecycle
   }.freeze
 
   class << self
+    def init(cmds)
+      DockerBuild.build(cmds)
+      exec('docker-compose run dev "/usr/src/app/bin/setup"')
+    end
+
     def rm
       # stop, then remove
       system('docker-compose down')
