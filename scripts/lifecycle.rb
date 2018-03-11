@@ -1,7 +1,7 @@
 class Lifecycle
   COMMAND_HASH = {
     dev: 'docker-compose up -d dev',
-    production: 'docker-compose -f docker-compose.production_http.yml up -d'
+    production: 'docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d'
   }.freeze
 
   class << self

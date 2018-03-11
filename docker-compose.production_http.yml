@@ -1,20 +1,28 @@
 version: '3.4'
 
 services:
+  db:
+    environment:
+      - POSTGRES_USER=${USER}
+      - POSTGRES_PASSWORD=automation-calculator-password
+      - POSTGRES_DB=automation-calculator-development
+
   production:
-      image: automationcalculator/automation-calculator-rails:latest
-      command: rails s --environment=production
-      environment:
-        - DB_URL=${DB_URL}
-        - SECRET_KEY_BASE=${SECRET_KEY_BASE}
-        - USER=${USER}
-      ports:
-        - 3000:3000
-      working_dir: /usr/src/app
+    command: rails s --environment=production
+    depends_on:
+      - db
+    environment:
+          - DB_URL=${DB_URL}
+          - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+          - USER=${USER}
+    image: automationcalculator/automation-calculator-rails:latest
+    ports:
+      - 3000:3000
+    working_dir: /usr/src/app
 
   watchtower:
-      command: --interval 30
-      image: v2tec/watchtower:latest
-      container_name: watchtower
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
+    image: v2tec/watchtower:latest
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
