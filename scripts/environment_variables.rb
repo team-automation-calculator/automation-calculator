@@ -3,8 +3,10 @@ class EnvironmentVariables
 
   PRODUCTION_VARS = [
     EnvVar.new('POSTGRESS_PASSWORD', 'automation-calculator-production'),
-    EnvVar.new('SECRET_KEY_BASE','a588cf98f7e28d5024826d7142fe7b69582d9252218b289df7b80366f9b19efdc56af2'\
-    'aa8820a8543cf26913134014a41f3058ffdd5f3d5f1b93d964b3baba52')
+    EnvVar.new(
+      'SECRET_KEY_BASE', 'a588cf98f7e28d5024826d7142fe7b69582d9252218b289df7b80366f9b19efdc56af2'\
+                         'aa8820a8543cf26913134014a41f3058ffdd5f3d5f1b93d964b3baba52'
+    )
   ].freeze
 
   class << self
