@@ -1,7 +1,8 @@
 class Lifecycle
   COMMAND_HASH = {
-    dev: 'docker-compose up -d dev',
-    production: 'docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d'
+    debug_production: -> { start_debug_production },
+    dev: -> { system('docker-compose up -d dev') },
+    production: -> { system('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d') }
   }.freeze
 
   class << self
@@ -20,12 +21,16 @@ class Lifecycle
       sub_cmd = cmds.shift || 'dev'
 
       if COMMAND_HASH.key? sub_cmd.to_sym
-        system(COMMAND_HASH[sub_cmd.to_sym])
+        COMMAND_HASH[sub_cmd.to_sym].call
       else
-        HelpText.help(cmds)
+        HelpText.help(['start'])
         puts
         warn("Unrecognized command: #{sub_cmd}")
       end
+    end
+
+    def start_debug_production
+      system('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d')
     end
 
     def stop

@@ -12,8 +12,9 @@ class HelpText
     rmi: 'Remove the development docker image. ',
     shell: 'Open a terminal inside of the development container.',
     start: {
-      dev: '[Default] Startup the application and it\'s dependencies in docker for the development environment',
-      production: 'Startup the application and it\'s dependencies in docker for the production environment'
+      debug_production: 'Simulate the production application, locally, to debug it.',
+      dev: '[Default] Startup the application and it\'s dependencies in docker for the development environment.',
+      production: 'Startup the application and it\'s dependencies in docker for the production environment.'
     }.freeze,
     stop: 'Stop running docker containers.',
     tag: 'Tag CI\'s docker image with semver. Useful for debugging when CI fails to do this properly.',
