@@ -31,3 +31,10 @@ To help people make and communicate automation decisions quickly and effectively
 
 ### View available functions
 * `./go help`
+
+## Troubleshooting/Gotchas
+
+* Problem: If you update the Gemfile and run `./go test`, `./go shell` or a similar command, you will see `Could not find NEW_GEM_DEPENDENCY_NAME_HERE`.
+* Solution: Run `./go build` to update your development docker image to include the new dependency.
+* Problem: `./go start` starts the development container, but it stops with exit code 1 after a few seconds. You check the logs and see a message like: `A server is already running. Check /usr/src/app/tmp/pids/server.pid`. 
+* Solution: Run `./go shell`, `cd /usr/src/app/tmp/pids`, `rm server.pid`. Then exit the shell container and run `./go start` again.

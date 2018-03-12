@@ -59,3 +59,9 @@ build-iPhoneSimulator/
 
 # For different project-related files
 project_files
+
+config/settings.local.yml
+config/settings/*.local.yml
+config/environments/*.local.yml
+
+.byebug_history

@@ -7,7 +7,9 @@ class DockerBuild
       when 'dev'
         build_image('automationcalculator_dev:latest', 'Dockerfile.development')
       when 'ci'
-        build_image('automationcalculator_ci:latest', 'Dockerfile.ci')
+        repo = 'automationcalculator/automation-calculator-rails'
+        image = "#{repo}:latest"
+        build_image(image, 'Dockerfile.ci')
       when 'base'
         build_image('automationcalculators/automation-calculator-base:0.0.2', 'Dockerfile.base', 'circleci')
       else
@@ -16,7 +18,7 @@ class DockerBuild
     end
 
     def build_image(tag, file, username = ENV['USER'])
-      exec("docker build -t #{tag} -f #{file} --build-arg username=#{username}  .")
+      system("docker build -t #{tag} -f #{file} --build-arg username=#{username}  .")
     end
   end
 end
