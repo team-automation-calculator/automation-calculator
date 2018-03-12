@@ -2,7 +2,7 @@ class DockerHub
   REPO = 'automationcalculator/automation-calculator-rails'.freeze
 
   class << self
-    def docker_image_tag
+    def semver_tag
       "#{ENV['SEMVER_MAJOR_VERSION']}."\
       "#{ENV['SEMVER_MINOR_VERSION']}."\
       "#{ENV['SEMVER_PATCH']}-"\
@@ -10,15 +10,19 @@ class DockerHub
     end
 
     def image_with_semver
-      "#{REPO}:#{docker_image_tag}"
+      "#{REPO}:#{semver_tag}"
     end
 
     def tag_latest_with_semver
-      system("docker tag #{REPO}:latest #{image_with_semver}")
+      system("docker tag #{latest_tag} #{image_with_semver}")
+    end
+
+    def latest_tag
+      "#{REPO}:latest"
     end
 
     def push_to_docker_hub
-      system("docker push #{REPO}:#{docker_image_tag}")
+      [semver_tag, latest_tag].each { |tag| system("docker push #{tag}") }
     end
   end
 end
