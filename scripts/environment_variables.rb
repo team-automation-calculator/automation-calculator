@@ -16,7 +16,7 @@ class EnvironmentVariables
 
     def create_if_not_already_defined(var)
       if ENV.include? var.name
-        puts var.value
+        puts "#{var.name} has already been set, not using mock for it."
       else
         ENV[var.name] = var.value
       end
