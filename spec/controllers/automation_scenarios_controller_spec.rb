@@ -7,7 +7,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
     describe 'new automation_scenario creation' do
       let(:visitor) { create(:visitor) }
       let(:create_params) { { owner_type: 'Visitor', owner_id: visitor.id } }
-      let(:create_post) { post :create, params: { automation_scenario_create_params: create_params } }
+      let(:create_post) { post :create, params: { automation_scenario: create_params } }
 
       context 'with correct params' do
         it 'creates a new automation_scenario model' do

@@ -20,7 +20,7 @@ class AutomationScenariosController < ApplicationController
   private
 
   def creation_params
-    params.require(:automation_scenario_create_params).permit(:owner_type, :owner_id)
+    params.require(:automation_scenario).permit(:owner_type, :owner_id)
   end
 
   def automation_scenario_params
