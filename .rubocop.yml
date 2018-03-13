@@ -55,6 +55,9 @@ Rails/HttpPositionalArguments:
 Rails/InverseOf:
   Enabled: false
 
+RSpec/NestedGroups:
+  Max: 7
+
 Style/Documentation:
   Enabled: false
 
@@ -73,6 +76,3 @@ Style/SymbolArray:
 Style/MixinUsage:
   Exclude:
     - bin/*
-
-RSpec/NestedGroups:
-  Max: 4
