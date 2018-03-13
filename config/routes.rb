@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get '/visitor/create', to: 'visitor#create'
   get '/visitor/:id', to: 'visitor#show'
   delete 'visitor/:id', to: 'visitor#destroy'
+  get '/health', to: 'health_check#health', defaults: { format: 'json' }
 
   root to: 'home#index'
 end
