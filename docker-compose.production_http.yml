@@ -17,7 +17,7 @@ services:
       - USER=${USER}
     image: automationcalculator/automation-calculator-rails:latest
     ports:
-      - 3000:3000
+      - 80:3000
     working_dir: /usr/src/app
 
   watchtower:
