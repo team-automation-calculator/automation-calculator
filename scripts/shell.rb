@@ -22,7 +22,7 @@ class Shell
     end
 
     def production_shell
-      # exec('docker-compose run dev /bin/bash')
+      exec('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml run production /bin/bash')
     end
   end
 end
