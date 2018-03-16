@@ -10,7 +10,10 @@ class HelpText
     lint: 'Use a linter on the application and test code to ensure code style is consistent.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
     rmi: 'Remove the development docker image. ',
-    shell: 'Open a terminal inside of the development container.',
+    shell: {
+      dev: '[Default] Open a terminal inside of the development container.',
+      production: 'Open a terminal container with the production image.'
+    },
     start: {
       debug_production: 'Simulate the production application, locally, to debug it.',
       dev: '[Default] Startup the application and it\'s dependencies in docker for the development environment.',
