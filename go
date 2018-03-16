@@ -14,7 +14,7 @@ COMMAND_HASH = {
   push: -> { DockerHub.push_to_docker_hub },
   rm: -> { Lifecycle.rm },
   rmi: -> { exec('docker rmi automationcalculator_dev:latest') },
-  shell: -> { exec('docker-compose run dev /bin/bash') },
+  shell: -> { Shell.shell(cmds) },
   start: -> { Lifecycle.start(cmds) },
   stop: -> { Lifecycle.stop },
   tag: -> { DockerHub.tag_latest_with_semver },
