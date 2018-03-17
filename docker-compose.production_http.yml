@@ -29,7 +29,7 @@ services:
 
   watchtower:
     command: --interval 30
-    image: v2tec/watchtower:latest
     container_name: watchtower
+    image: v2tec/watchtower:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
