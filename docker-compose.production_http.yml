@@ -30,6 +30,9 @@ services:
   watchtower:
     command: --interval 30
     container_name: watchtower
+    environment:
+      - REPO_USER:${DOCKER_REPO_USER}
+      - REPO_PASS:${DOCKER_REPO_PASS}
     image: v2tec/watchtower:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
