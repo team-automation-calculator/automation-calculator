@@ -23,6 +23,9 @@ services:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - USER=${USER}
     image: automationcalculator/automation-calculator-rails:latest
+    links:
+      - logspout
+      - watchtower
     ports:
       - 3000:3000
     working_dir: /usr/src/app
