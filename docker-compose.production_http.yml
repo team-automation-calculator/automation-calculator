@@ -7,6 +7,13 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=automation-calculator-production
 
+  logspout:
+    command: syslog://${LOGSPOUT_TARGET_URL}
+    container_name: logspout
+    image: gliderlabs/logspout:v3.2.4
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   production:
     command: rails s --environment=production
     depends_on:

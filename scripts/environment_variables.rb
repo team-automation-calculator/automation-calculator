@@ -2,6 +2,7 @@ class EnvironmentVariables
   EnvVar = Struct.new(:name, :value)
 
   PRODUCTION_VARS = [
+    EnvVar.new('LOGSPOUT_TARGET_URL', 'logs4.papertrailapp.com:36031'),
     EnvVar.new('POSTGRESS_PASSWORD', 'automation-calculator-production'),
     EnvVar.new(
       'SECRET_KEY_BASE', 'a588cf98f7e28d5024826d7142fe7b69582d9252218b289df7b80366f9b19efdc56af2'\
