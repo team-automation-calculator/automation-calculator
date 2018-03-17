@@ -31,11 +31,11 @@ class Lifecycle
 
     def start_debug_production
       EnvironmentVariables.set_mock_production_vars
-      system('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d')
+      system('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d production')
     end
 
     def stop
-      exec('docker-compose down')
+      exec('docker-compose down --remove-orphans')
     end
   end
 end

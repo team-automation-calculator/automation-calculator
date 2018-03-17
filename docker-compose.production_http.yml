@@ -7,6 +7,13 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=automation-calculator-production
 
+  logspout:
+    command: syslog://${LOGSPOUT_TARGET_URL}
+    container_name: logspout
+    image: gliderlabs/logspout:v3.2.4
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   production:
     command: rails s --environment=production
     depends_on:
@@ -16,13 +23,19 @@ services:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - USER=${USER}
     image: automationcalculator/automation-calculator-rails:latest
+    links:
+      - logspout
+      - watchtower
     ports:
       - 80:3000
     working_dir: /usr/src/app
 
   watchtower:
     command: --interval 30
-    image: v2tec/watchtower:latest
     container_name: watchtower
+    environment:
+      - REPO_USER:${DOCKER_REPO_USER}
+      - REPO_PASS:${DOCKER_REPO_PASS}
+    image: v2tec/watchtower:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
