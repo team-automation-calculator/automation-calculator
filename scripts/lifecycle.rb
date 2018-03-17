@@ -35,7 +35,7 @@ class Lifecycle
     end
 
     def stop
-      exec('docker-compose down')
+      exec('docker-compose down --remove-orphans')
     end
   end
 end
