@@ -30,6 +30,7 @@ gem 'config'
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
   gem 'capybara'
+  gem 'database_cleaner'
   gem 'letter_opener'
   gem 'rspec-rails'
   gem 'selenium-webdriver'

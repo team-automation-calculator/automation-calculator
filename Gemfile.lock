@@ -72,6 +72,7 @@ GEM
       deep_merge (~> 1.2.1)
       dry-validation (>= 0.10.4)
     crass (1.0.3)
+    database_cleaner (1.6.2)
     deep_merge (1.2.1)
     devise (4.4.1)
       bcrypt (~> 3.0)
@@ -315,6 +316,7 @@ DEPENDENCIES
   capybara
   coffee-rails
   config
+  database_cleaner
   devise
   factory_bot_rails
   faker
