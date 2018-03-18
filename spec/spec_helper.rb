@@ -68,4 +68,16 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 
   config.filter_run_when_matching :focus
+
+  # Database Cleaner
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:deletion)
+  end
+
+  config.around do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
+  end
 end
