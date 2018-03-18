@@ -17,6 +17,10 @@ class Lifecycle
       exec('docker ps -aq | xargs docker rm')
     end
 
+    def rmi
+      exec('docker rmi automationcalculator_dev:latest')
+    end
+
     def start(cmds)
       sub_cmd = cmds.shift || 'dev'
 

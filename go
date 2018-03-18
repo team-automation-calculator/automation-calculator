@@ -14,7 +14,7 @@ COMMAND_HASH = {
   lint: -> { Verify.lint(cmds) },
   push: -> { DockerHub.push_to_docker_hub },
   rm: -> { Lifecycle.rm },
-  rmi: -> { exec('docker rmi automationcalculator_dev:latest') },
+  rmi: -> { Lifecycle.rmi },
   shell: -> { Shell.shell(cmds) },
   start: -> { Lifecycle.start(cmds) },
   stop: -> { Lifecycle.stop },
