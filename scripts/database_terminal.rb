@@ -1,7 +1,6 @@
 class DatabaseTerminal
   COMMAND_HASH = {
-      dev: -> { connect_dev_db },
-      production: -> { connect_production_db }
+    dev: -> { connect_dev_db }
   }.freeze
 
   class << self
@@ -19,10 +18,6 @@ class DatabaseTerminal
 
     def connect_dev_db
       exec('docker-compose run db_client')
-    end
-
-    def connect_production_db
-      # exec('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml run production /bin/bash')
     end
   end
 end

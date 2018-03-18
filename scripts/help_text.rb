@@ -5,8 +5,7 @@ class HelpText
       ci: 'Build docker containers to simulate the ci environment.'
     }.freeze,
     db: {
-      dev: '[Default] Connect to the application\'s database in the development environment with psql',
-      production: 'Connect to the application\'s database in the production environment with psql'
+      dev: '[Default] Connect to the application\'s database in the development environment with psql'
     }.freeze,
     create_host: 'Create a docker-machine host for the application.',
     init: 'Setup your development environment with docker.',
