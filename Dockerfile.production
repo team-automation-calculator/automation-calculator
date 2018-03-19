@@ -5,9 +5,9 @@ RUN apt-get update
 RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev libpq-dev
 
 #Setup user
-RUN useradd -ms /bin/bash automation-caculator-production
-RUN usermod -a -G staff automation-caculator-production
-USER automation-caculator-production
+RUN useradd -ms /bin/bash automation-calculator-production
+RUN usermod -a -G staff automation-calculator-production
+USER automation-calculator-production
 
 #Install rails dependencies as non root user
 RUN gem install nokogiri
