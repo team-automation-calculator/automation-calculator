@@ -9,7 +9,7 @@ class SolutionsController < ApplicationController
     if @solution.save
       redirect_to @solution, notice: 'Solution was successfully created.'
     else
-      render :nothing
+      head :unprocessable_entity
     end
   end
 
@@ -17,13 +17,13 @@ class SolutionsController < ApplicationController
     if @solution.update(solution_params)
       redirect_to @solution, notice: 'Solution was successfully updated.'
     else
-      render :nothing
+      head :unprocessable_entity
     end
   end
 
   def destroy
-    @solution.destroy
-    render :nothing
+    @solution.destroy!
+    head :ok
   end
 
   private
@@ -35,6 +35,8 @@ class SolutionsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def solution_params
-    params.require(:solution).permit(:initial_cost, :iteration_cost, :iteration_count, :automation_scenario_id)
+    params.require(:solution).permit(
+      :initial_cost, :iteration_cost, :iteration_count, :automation_scenario_id
+    )
   end
 end

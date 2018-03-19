@@ -13,7 +13,12 @@ RSpec.describe SolutionsController, type: :controller do
 
   describe 'POST #create' do
     context 'with valid params' do
-      let(:valid_attributes) { attributes_for :solution }
+      let(:automation_scenario) { create :automation_scenario }
+      let(:valid_attributes) do
+        attributes_for(:solution).merge(
+          automation_scenario_id: automation_scenario.id
+        )
+      end
 
       it 'creates a new Solution' do
         expect do
@@ -28,19 +33,19 @@ RSpec.describe SolutionsController, type: :controller do
     end
 
     context 'with invalid params' do
-      let(:invalid_attributes) { {} }
+      let(:invalid_attributes) { { invalid_attribute: 5 } }
 
       it 'returns a success response' do
         post :create, params: { solution: invalid_attributes }
-        expect(response).to be_success
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
 
   describe 'PUT #update' do
-    context 'with valid params' do
-      let(:solution) { create :solution }
+    let(:solution) { create :solution }
 
+    context 'with valid params' do
       let(:new_attributes) do
         {
           initial_cost: 2,
@@ -54,31 +59,32 @@ RSpec.describe SolutionsController, type: :controller do
           another_attribute: 5
         }
       end
+      let(:attributes) { new_attributes.merge wrong_attributes }
 
       it 'updates the requested solution' do
-        attributes = new_attributes.merge wrong_attributes
         put :update, params: { id: solution.id, solution: attributes }
         solution.reload
-        expect(solution.attributes).to include(new_attributes)
+        expect(solution.attributes).to include(new_attributes.stringify_keys)
       end
 
       it 'renders nothing on success' do
-        put :update, params: { id: solution.id, solution: valid_attributes }
-        expect(response).to be_success
+        put :update, params: { id: solution.id, solution: attributes }
+        expect(response).to redirect_to(solution)
       end
     end
 
     context 'with invalid params' do
+      let(:invalid_attributes) { { initial_cost: :string_value } }
+
       it "returns a success response (i.e. to display the 'edit' template)" do
-        solution = Solution.create! valid_attributes
-        put :update, params: { id: solution.to_param, solution: invalid_attributes }
-        expect(response).to be_success
+        put :update, params: { id: solution.id, solution: invalid_attributes }
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
 
   describe 'DELETE #destroy' do
-    let(:solution) { create :solution }
+    let!(:solution) { create :solution }
 
     it 'destroys the requested solution' do
       expect do
@@ -87,7 +93,7 @@ RSpec.describe SolutionsController, type: :controller do
     end
 
     it 'redirects to the solutions list' do
-      delete :destroy, params: { id: solution.to_param }
+      delete :destroy, params: { id: solution.id }
       expect(response).to be_success
     end
   end
