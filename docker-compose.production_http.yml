@@ -20,6 +20,8 @@ services:
       - db
     environment:
       - DB_URL="postgresql://${USER}:${POSTGRES_PASSWORD}@db:5432/automation-calculator-production"
+      - RAILS_ENV=production
+      - RAILS_LOG_TO_STDOUT=true
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - USER=${USER}
     image: automationcalculator/automation-calculator-rails:latest
