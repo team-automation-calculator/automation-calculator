@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   }
 
   resources :automation_scenarios
+  resources :solutions
 
   get '/visitor', to: 'visitor#index'
   get '/visitor/create', to: 'visitor#create'
