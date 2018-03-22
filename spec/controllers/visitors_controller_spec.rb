@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe VisitorController, type: :controller do
+RSpec.describe VisitorsController, type: :controller do
   describe 'GET #create' do
     describe 'new visitor creation' do
       let(:create_get) { get :create }
@@ -26,7 +26,7 @@ RSpec.describe VisitorController, type: :controller do
     let(:visitor) { create(:visitor) }
 
     it 'routes correctly' do
-      assert_generates '/visitor/1', controller: 'visitor', action: 'show', id: '1'
+      assert_generates '/visitors/1', controller: 'visitors', action: 'show', id: '1'
     end
 
     it 'returns http success' do
