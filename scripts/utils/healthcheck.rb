@@ -8,7 +8,7 @@ MAX_REQUEST_RESPONSE_DELTA_IN_SECONDS = 5
 TIMEOUT_ERROR_CODE = 1
 REQUEST_FAILURE_ERROR_CODE = 2
 
-DEVELOPMENT_HEALTH_CHECK_URI = URI::HTTP.build(host: 'localhost', path: '/health', port: 3001)
+DEVELOPMENT_HEALTH_CHECK_URI = URI::HTTP.build(host: 'localhost', path: '/health', port: 3000)
 PRODUCTION_HEALTH_CHECK_URI = URI::HTTP.build(host: 'localhost', path: '/health', port: 3001)
 
 def evaluate_successful_response(response_body, request_time)
