@@ -8,8 +8,9 @@ MAX_REQUEST_RESPONSE_DELTA_IN_SECONDS = 5
 TIMEOUT_ERROR_CODE = 1
 REQUEST_FAILURE_ERROR_CODE = 2
 
-DEVELOPMENT_HEALTH_CHECK_URI = URI::HTTP.build(host: 'localhost', path: '/health', port: 3000)
-PRODUCTION_HEALTH_CHECK_URI = URI::HTTP.build(host: 'localhost', path: '/health', port: 3001)
+health_check_uri = URI::HTTP.build(host: ARGV[0], port: ARGV[1], path: ARGV[2])
+
+puts health_check_uri
 
 def evaluate_successful_response(response_body, request_time)
   response_json = JSON.parse(response_body)
@@ -26,7 +27,7 @@ request_time = Time.now.to_i
 response_content = nil
 
 begin
-  response_content = Net::HTTP.get_response(DEVELOPMENT_HEALTH_CHECK_URI)
+  response_content = Net::HTTP.get_response(health_check_uri)
 rescue (StandardError)
   exit(REQUEST_FAILURE_ERROR_CODE)
 end

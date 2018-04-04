@@ -27,7 +27,7 @@ services:
     depends_on:
       - db
     healthcheck:
-      test: ["CMD", "/usr/src/app/scripts/utils/healthcheck.rb"]
+      test: ["CMD", "/usr/src/app/scripts/utils/healthcheck.rb", "localhost", "3000", "/health"]
       interval: 5s
       timeout: 5s
       retries: 2
