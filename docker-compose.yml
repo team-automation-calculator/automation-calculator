@@ -26,6 +26,12 @@ services:
     command: "rails s"
     depends_on:
       - db
+    healthcheck:
+      test: ["CMD", "/usr/src/app/scripts/utils/healthcheck.rb"]
+      interval: 5s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
     ports:
       - "3001:3000"
     environment:
