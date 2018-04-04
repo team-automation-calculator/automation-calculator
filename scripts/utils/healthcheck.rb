@@ -15,7 +15,7 @@ puts health_check_uri
 def evaluate_successful_response(response_body, request_time)
   response_json = JSON.parse(response_body)
   request_response_delta = response_json['current_time_in_unix'] - request_time
-  if(request_response_delta < MAX_REQUEST_RESPONSE_DELTA_IN_SECONDS)
+  if request_response_delta < MAX_REQUEST_RESPONSE_DELTA_IN_SECONDS
     exit(0)
   else
     exit(TIMEOUT_ERROR_CODE)
@@ -37,5 +37,3 @@ if response_content.is_a? Net::HTTPSuccess
 else
   exit(REQUEST_FAILURE_ERROR_CODE)
 end
-
-
