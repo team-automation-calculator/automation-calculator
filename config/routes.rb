@@ -8,10 +8,10 @@ Rails.application.routes.draw do
   resources :automation_scenarios
   resources :solutions
 
-  get '/visitor', to: 'visitor#index'
-  get '/visitor/create', to: 'visitor#create'
-  get '/visitor/:id', to: 'visitor#show'
-  delete 'visitor/:id', to: 'visitor#destroy'
+  get '/visitors', to: 'visitors#index'
+  get '/visitors/create', to: 'visitors#create'
+  get '/visitors/:id', to: 'visitors#show'
+  delete 'visitors/:id', to: 'visitors#destroy'
   get '/health', to: 'health_check#health', defaults: { format: 'json' }
 
   root to: 'home#index'
