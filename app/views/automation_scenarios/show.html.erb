@@ -29,3 +29,7 @@
   <p>Created At: <%= @automation_scenario.created_at %></p>
   <p>Updated At: <%= @automation_scenario.updated_at %></p>
 </div>
+
+<div>
+  <p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.as_json %></p>
+</div>
