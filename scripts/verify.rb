@@ -16,7 +16,7 @@ class Verify
       env = cmds.shift.to_s
 
       if env == 'ci'
-        exec('docker-compose -f docker-compose.yml -f docker-compose.ci.yml run ci rubocop')
+        exec('docker-compose -f docker-compose.yml -f docker-compose.ci.yml run --no-deps --rm ci rubocop')
       else
         exec('docker-compose run --no-deps --rm dev rubocop')
       end
