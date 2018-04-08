@@ -18,7 +18,7 @@ class Verify
       if env == 'ci'
         exec('docker-compose -f docker-compose.yml -f docker-compose.ci.yml run ci rubocop')
       else
-        exec('docker-compose run dev rubocop')
+        exec('docker-compose run --no-deps --rm dev rubocop')
       end
     end
   end
