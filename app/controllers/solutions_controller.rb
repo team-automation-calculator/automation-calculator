@@ -4,7 +4,7 @@ class SolutionsController < ApplicationController
   def show; end
 
   def create
-    @solution = Solution.new(solution_params)
+    @solution = Solution.new(create_solution_params)
 
     if @solution.save
       redirect_to @solution, notice: 'Solution was successfully created.'
@@ -35,6 +35,12 @@ class SolutionsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def solution_params
+    params.require(:solution).permit(
+      :initial_cost, :iteration_cost, :iteration_count
+    )
+  end
+
+  def create_solution_params
     params.require(:solution).permit(
       :initial_cost, :iteration_cost, :iteration_count, :automation_scenario_id
     )
