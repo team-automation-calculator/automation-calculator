@@ -7,7 +7,7 @@ class SolutionsController < ApplicationController
     @solution = Solution.new(create_solution_params)
 
     if @solution.save
-      redirect_to @solution, notice: 'Solution was successfully created.'
+      redirect_to @solution.automation_scenario, notice: 'Solution was successfully created.'
     else
       head :unprocessable_entity
     end
