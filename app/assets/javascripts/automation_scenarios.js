@@ -1,11 +1,29 @@
 document.addEventListener("turbolinks:load", function() {
+    //Variables
+    var exampleSolutionJson = {
+        initial_cost: 5,
+        iteration_cost: 10,
+        iteration_count: 10
+    };
+
     //Functions
     function buildSolutionGraphLinesFromSolutionsArray(savedSolutionsJSONArray){
         var solutionAxis = [];
 
-        savedSolutionsJSONArray.forEach(function(solutionJson){
-            solutionAxis.push(buildGraphLineFromSolution(solutionJson.initial_cost, solutionJson.iteration_cost, solutionJson.iteration_count));
-        });
+        if(savedSolutionsJSONArray.length > 0) {
+            savedSolutionsJSONArray.forEach(function(solutionJson){
+                solutionAxis.push(buildGraphLineFromSolution(
+                    solutionJson.initial_cost,
+                    solutionJson.iteration_cost,
+                    solutionJson.iteration_count));
+            });
+        } else {
+            //Example graph line here
+            solutionAxis.push(buildGraphLineFromSolution(
+                exampleSolutionJson.initial_cost,
+                exampleSolutionJson.iteration_cost,
+                exampleSolutionJson.iteration_count));
+        }
 
         return solutionAxis;
     }
