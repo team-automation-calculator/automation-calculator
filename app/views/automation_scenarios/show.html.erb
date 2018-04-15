@@ -1,10 +1,6 @@
 <h1>AutomationScenarios#show</h1>
 
-<div id="renderChart">
-  <%= form_tag '', id: 'chart-form' do %>
-    <%= button_tag 'Render Chart', type: :button, class: 'render-chart' %>
-  <% end %>
-</div>
+<div id="renderChart"></div>
 
 <div>
 <%= form_for :solution, url: url_for(action: :create, controller: :solutions) do |f| %>
@@ -25,3 +21,4 @@
 </div>
 
 <p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.to_json %></p>
+

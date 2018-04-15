@@ -24,13 +24,6 @@ document.addEventListener("turbolinks:load", function() {
         return JSON.parse($('#scenarioSolutions').text());
     }
 
-    //Event Handlers
-    $('.render-chart').click(function(){
-        Plotly.newPlot('renderChart', buildSolutionGraphLinesFromSolutionsArray(buildSavedSolutionsJSONArray()));
-    });
-
     //Execution
-    buildSolutionGraphLinesFromSolutionsArray(buildSavedSolutionsJSONArray()).forEach(function(graphLine){
-        console.log(graphLine);
-    });
+    Plotly.newPlot('renderChart', buildSolutionGraphLinesFromSolutionsArray(buildSavedSolutionsJSONArray()));
 });
