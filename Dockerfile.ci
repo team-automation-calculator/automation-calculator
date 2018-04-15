@@ -4,3 +4,5 @@ COPY --chown=circleci . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN bundle install
+
+RUN rake assets:precompile
