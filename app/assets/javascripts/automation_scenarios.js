@@ -1,4 +1,4 @@
-document.addEventListener("turbolinks:load", function() {
+document.addEventListener('turbolinks:load', function() {
     //Variables
     var exampleSolutionJson = {
         initial_cost: 5,
@@ -43,5 +43,7 @@ document.addEventListener("turbolinks:load", function() {
     }
 
     //Execution
-    Plotly.newPlot('solutionsChart', buildSolutionGraphLinesFromSolutionsArray(buildSavedSolutionsJSONArray()));
+    if (document.getElementById('scenarioSolutions')) {
+        Plotly.newPlot('solutionsChart', buildSolutionGraphLinesFromSolutionsArray(buildSavedSolutionsJSONArray()));
+    }
 });
