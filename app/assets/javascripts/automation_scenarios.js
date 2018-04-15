@@ -10,12 +10,12 @@ document.addEventListener("turbolinks:load", function() {
         return solutionAxis;
     }
 
-    function buildGraphLineFromSolution(initial_cost, cost_per_iteration, iterations){
+    function buildGraphLineFromSolution(initialCost, costPerIteration, iterationCount){
         var xAxisPoints = [];
         var yAxisPoints = [];
-        for (i = 1; i <= Number(iterations); i++) {
+        for (i = 1; i <= Number(iterationCount); i++) {
             xAxisPoints.push(i);
-            yAxisPoints.push(Number(initial_cost)+(Number(i)*Number(cost_per_iteration)));
+            yAxisPoints.push(Number(initialCost)+(Number(i)*Number(costPerIteration)));
         }
         return {x:xAxisPoints, y:yAxisPoints, type: 'scatter'};
     }
@@ -25,5 +25,5 @@ document.addEventListener("turbolinks:load", function() {
     }
 
     //Execution
-    Plotly.newPlot('renderChart', buildSolutionGraphLinesFromSolutionsArray(buildSavedSolutionsJSONArray()));
+    Plotly.newPlot('solutionsChart', buildSolutionGraphLinesFromSolutionsArray(buildSavedSolutionsJSONArray()));
 });
