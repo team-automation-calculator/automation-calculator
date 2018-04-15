@@ -10,6 +10,7 @@
 <% end %>
 </div>
 
+<div id="renderChart">
 <%= form_tag '', id: 'chart-form' do %>
   <%= label_tag 'initial_cost', 'Initial Cost' %>
   <%= text_field_tag 'initial_cost', nil, id: 'initial_cost', placeholder: '5' %>
@@ -19,8 +20,7 @@
   <%= text_field_tag 'iterations', nil, id: 'iterations', placeholder: '10' %>
   <%= button_tag 'Render Chart', type: :button, class: 'render-chart' %>
 <% end %>
-
-<div id="renderChart"></div>
+</div>
 
 <div>
   <p>Id: <%= @automation_scenario.id %></p>
@@ -30,6 +30,6 @@
   <p>Updated At: <%= @automation_scenario.updated_at %></p>
 </div>
 
-<div>
-  <p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.as_json %></p>
-</div>
+<p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.as_json %></p>
+
+<button id="test-button" type="button" class="test-button">Test Button</button>
