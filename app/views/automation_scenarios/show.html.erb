@@ -1,5 +1,11 @@
 <h1>AutomationScenarios#show</h1>
 
+<div id="renderChart">
+  <%= form_tag '', id: 'chart-form' do %>
+    <%= button_tag 'Render Chart', type: :button, class: 'render-chart' %>
+  <% end %>
+</div>
+
 <div>
 <%= form_for :solution, url: url_for(action: :create, controller: :solutions) do |f| %>
   Initial Cost: <%= f.number_field :initial_cost %>
@@ -7,18 +13,6 @@
   Number of Iterations : <%= f.number_field :iteration_count %>
   <%= f.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
   <%= f.submit %>
-<% end %>
-</div>
-
-<div id="renderChart">
-<%= form_tag '', id: 'chart-form' do %>
-  <%= label_tag 'initial_cost', 'Initial Cost' %>
-  <%= text_field_tag 'initial_cost', nil, id: 'initial_cost', placeholder: '5' %>
-  <%= label_tag 'cost_per_iteration', 'Cost per Iteration' %>
-  <%= text_field_tag 'cost_per_iteration', nil, id: 'cost_per_iteration', placeholder: '3' %>
-  <%= label_tag 'iterations', 'Number of Iterations' %>
-  <%= text_field_tag 'iterations', nil, id: 'iterations', placeholder: '10' %>
-  <%= button_tag 'Render Chart', type: :button, class: 'render-chart' %>
 <% end %>
 </div>
 
@@ -30,6 +24,4 @@
   <p>Updated At: <%= @automation_scenario.updated_at %></p>
 </div>
 
-<p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.as_json %></p>
-
-<button id="test-button" type="button" class="test-button">Test Button</button>
+<p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.to_json %></p>
