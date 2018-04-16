@@ -4,9 +4,9 @@ class Verify
       env = cmds.shift || 'dev'
       case env
       when 'dev'
-        exec('RAILS_ENV=test docker-compose run dev rspec')
+        exec('RAILS_ENV=test docker-compose run --rm dev rspec')
       when 'ci'
-        exec('RAILS_ENV=test docker-compose -f docker-compose.yml -f docker-compose.ci.yml run ci')
+        exec('RAILS_ENV=test docker-compose -f docker-compose.yml -f docker-compose.ci.yml run --rm ci')
       else
         warn "Unrecognized command: #{env}"
       end
