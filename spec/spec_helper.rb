@@ -16,6 +16,7 @@
 
 require 'pry'
 require 'factory_bot_rails'
+require 'database_cleaner'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -72,7 +73,7 @@ RSpec.configure do |config|
   # Database Cleaner
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:deletion)
+    DatabaseCleaner.clean
   end
 
   config.around do |example|

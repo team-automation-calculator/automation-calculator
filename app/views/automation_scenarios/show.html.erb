@@ -1,6 +1,24 @@
 <h1>AutomationScenarios#show</h1>
-<p>Id: <%= @automation_scenario.id %></p>
-<p>Owner Type: <%= @automation_scenario.owner_type %></p>
-<p>Owner Id: <%= @automation_scenario.owner_id %></p>
-<p>Created At: <%= @automation_scenario.created_at %></p>
-<p>Updated At: <%= @automation_scenario.updated_at %></p>
+
+<div id="solutionsChart"></div>
+
+<div>
+<%= form_for :solution, url: url_for(action: :create, controller: :solutions) do |f| %>
+  Initial Cost: <%= f.number_field :initial_cost %>
+  Cost per Iteration : <%= f.number_field :iteration_cost %>
+  Number of Iterations : <%= f.number_field :iteration_count %>
+  <%= f.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
+  <%= f.submit %>
+<% end %>
+</div>
+
+<div>
+  <p>Id: <%= @automation_scenario.id %></p>
+  <p>Owner Type: <%= @automation_scenario.owner_type %></p>
+  <p>Owner Id: <%= @automation_scenario.owner_id %></p>
+  <p>Created At: <%= @automation_scenario.created_at %></p>
+  <p>Updated At: <%= @automation_scenario.updated_at %></p>
+</div>
+
+<p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.to_json %></p>
+

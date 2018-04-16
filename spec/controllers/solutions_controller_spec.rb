@@ -28,7 +28,7 @@ RSpec.describe SolutionsController, type: :controller do
 
       it 'redirects to the created solution' do
         post :create, params: { solution: valid_attributes }
-        expect(response).to redirect_to(Solution.last)
+        expect(response).to redirect_to(automation_scenario)
       end
     end
 

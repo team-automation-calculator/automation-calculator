@@ -8,9 +8,14 @@ RSpec.describe VisitorsController, type: :controller do
       it 'creates a new visitor model' do
         expect { create_get }.to change(Visitor, :count).by 1
       end
+
+      it 'creates a new automation_scenario model' do
+        expect { create_get }.to change(AutomationScenario, :count).by 1
+      end
+
       it 'redirects to visitor page' do
         create_get
-        expect(response).to redirect_to(action: :show, id: Visitor.last.id)
+        expect(response).to redirect_to("/automation_scenarios/#{AutomationScenario.last.id}")
       end
     end
   end
