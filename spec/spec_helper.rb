@@ -73,7 +73,7 @@ RSpec.configure do |config|
   # Database Cleaner
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:deletion)
+    DatabaseCleaner.clean
   end
 
   config.around do |example|
