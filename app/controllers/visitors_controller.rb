@@ -1,8 +1,8 @@
 class VisitorsController < ApplicationController
   def create
     @visitor = Visitor.create_with_random_uuid(request.remote_ip)
-    @automation_scenario = AutomationScenario.create(owner_type: 'Visitor', owner_id: @visitor.id)
-    redirect_to("/automation_scenarios/#{@automation_scenario.id}")
+    @automation_scenario = AutomationScenario.create owner: @visitor
+    redirect_to @automation_scenario
   end
 
   def index
