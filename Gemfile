@@ -29,11 +29,8 @@ gem 'config'
 
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
-  gem 'capybara'
   gem 'database_cleaner'
   gem 'letter_opener'
-  gem 'rspec-rails'
-  gem 'selenium-webdriver'
   # A library for setting up Ruby objects as test data
   gem 'factory_bot_rails'
   #  A library for generating fake data
@@ -41,9 +38,6 @@ group :development, :test do
   gem 'pry'
   # A Ruby static code analyzer
   gem 'rubocop', require: false
-  # Rspec cops for rubocop
-  gem 'rubocop-rspec'
-  gem 'shoulda-matchers', '~> 3.1'
 end
 
 group :development do
@@ -54,4 +48,15 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen'
   gem 'web-console'
+end
+
+group :test do
+  gem 'rspec-rails'
+  gem 'capybara'
+  gem 'selenium-webdriver'
+  # Rspec cops for rubocop
+  gem 'rubocop-rspec'
+  gem 'shoulda-matchers', '~> 3.1'
+  # Code coverage for Ruby
+  gem 'simplecov', require: false
 end

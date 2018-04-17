@@ -4,7 +4,7 @@ class Verify
       env = cmds.shift || 'dev'
       case env
       when 'dev'
-        exec('docker-compose run --rm dev rspec')
+        exec('docker-compose run -e RAILS_ENV=test --rm dev rspec')
       when 'ci'
         exec('RAILS_ENV=test docker-compose -f docker-compose.yml -f docker-compose.ci.yml run --rm ci')
       else
