@@ -28,7 +28,7 @@ RSpec.describe 'User password recovery', type: :feature do
     before { update_password }
 
     it 'updates the password and sign the user' do
-      expect(page).to have_content('Protected content')
+      expect(page).to have_content('AutomationScenario')
     end
   end
 end

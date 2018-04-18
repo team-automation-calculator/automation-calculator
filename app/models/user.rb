@@ -2,7 +2,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   # :recoverable, :rememberable, :trackable, :validatable
-  devise :database_authenticatable, :registerable, :recoverable,
+  devise :database_authenticatable, :registerable, :recoverable, :trackable,
          :omniauthable, omniauth_providers: %i[github google_oauth2]
 
   has_many :automation_scenarios, as: :owner, dependent: :destroy
@@ -36,4 +36,9 @@ end
 #  reset_password_sent_at :datetime
 #  provider               :string
 #  uid                    :string
+#  sign_in_count          :integer          default(0), not null
+#  current_sign_in_at     :datetime
+#  last_sign_in_at        :datetime
+#  current_sign_in_ip     :inet
+#  last_sign_in_ip        :inet
 #
