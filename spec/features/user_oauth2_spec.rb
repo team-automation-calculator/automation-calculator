@@ -40,15 +40,22 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
           expect { oauth2_sign_in }.to change(User, :count).by(1)
         end
 
+        it 'creates a new scenario' do
+          expect { oauth2_sign_in }.to change(AutomationScenario, :count).by(1)
+        end
+
         context 'when a user is signed in' do
           before { oauth2_sign_in }
+          let(:registered_user) { User.find_by email: user.email }
 
-          it 'displays the user email' do
-            expect(page).to have_content(user.email)
+          it 'signs in the user and displays a scenario' do
+            expect(page).to have_content('AutomationScenario')
           end
 
-          it 'signs in the user and displays a Logout link' do
-            expect(page).to have_link('Sign out')
+          it 'redirects the user to the scenario page' do
+            expect(page).to have_current_path(
+              url_for(registered_user.automation_scenarios.last)
+            )
           end
         end
       end
@@ -63,12 +70,14 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
         context 'when a user is signed in' do
           before { oauth2_sign_in }
 
-          it 'displays the user email' do
-            expect(page).to have_content(user.email)
+          it 'signs in the user and displays a scenario' do
+            expect(page).to have_content('AutomationScenario')
           end
 
-          it 'signs in the user and displays a Logout link' do
-            expect(page).to have_link('Sign out')
+          it 'redirects the user to the scenario page' do
+            expect(page).to have_current_path(
+              url_for(user.automation_scenarios.last)
+            )
           end
         end
       end

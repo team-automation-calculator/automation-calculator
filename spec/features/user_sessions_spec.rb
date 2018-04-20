@@ -17,11 +17,25 @@ RSpec.describe 'User sessions', type: :feature do
     end
 
     it 'sends a user to the root page' do
-      expect(page).to have_current_path(root_url)
+      expect(page).to have_current_path(
+        url_for(user.automation_scenarios.last)
+      )
     end
 
-    it 'displays the protected content' do
-      expect(page).to have_content('Protected content')
+    it 'displays the scenario' do
+      expect(page).to have_content('AutomationScenario')
+    end
+
+    context 'when a user signs in for the second time' do
+      let(:user) { create :user, sign_in_count: 2 }
+
+      it 'sends a user to the root page' do
+        expect(page).to have_current_path(root_url)
+      end
+
+      it 'displays the protected content' do
+        expect(page).to have_content('Protected content')
+      end
     end
   end
 

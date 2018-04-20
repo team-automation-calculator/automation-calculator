@@ -14,15 +14,22 @@ RSpec.describe 'User registrations', type: :feature do
     expect { sign_up }.to change(User, :count).by(1)
   end
 
+  it 'creates a scenario' do
+    expect { sign_up }.to change(AutomationScenario, :count).by(1)
+  end
+
   context 'when a user signs up successfully' do
     before { sign_up }
+    let(:registered_user) { User.find_by email: user.email }
 
-    it 'sends a user to the root page' do
-      expect(page).to have_current_path(root_url)
+    it 'sends a user to the first scenario' do
+      expect(page).to have_current_path(
+        url_for(registered_user.automation_scenarios.last)
+      )
     end
 
     it 'displays the protected content' do
-      expect(page).to have_content('Protected content')
+      expect(page).to have_content('AutomationScenario')
     end
 
     context 'when the user signs in' do
@@ -32,7 +39,7 @@ RSpec.describe 'User registrations', type: :feature do
       end
 
       it 'sets the current user to the registered user' do
-        expect(page).to have_content('Protected content')
+        expect(page).to have_content('AutomationScenario')
       end
     end
   end

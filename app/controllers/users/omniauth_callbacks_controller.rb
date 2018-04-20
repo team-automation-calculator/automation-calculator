@@ -1,6 +1,7 @@
 module Users
   class OmniauthCallbacksController < ::Devise::OmniauthCallbacksController
     before_action :set_user, only: %i[github google_oauth2]
+
     def github
       sign_in_and_redirect @user
     end
