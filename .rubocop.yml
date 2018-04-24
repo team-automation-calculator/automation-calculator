@@ -21,6 +21,9 @@ AllCops:
 Layout/DotPosition:
   EnforcedStyle: trailing
 
+Layout/EmptyLinesAroundAccessModifier:
+  Enabled: false
+
 Layout/FirstArrayElementLineBreak:
   Enabled: true
 
