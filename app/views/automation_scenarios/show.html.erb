@@ -1,5 +1,3 @@
-<h1>AutomationScenarios#show</h1>
-
 <div id="solutionsChart"></div>
 
 <div>
@@ -10,14 +8,6 @@
   <%= f.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
   <%= f.submit %>
 <% end %>
-</div>
-
-<div>
-  <p>Id: <%= @automation_scenario.id %></p>
-  <p>Owner Type: <%= @automation_scenario.owner_type %></p>
-  <p>Owner Id: <%= @automation_scenario.owner_id %></p>
-  <p>Created At: <%= @automation_scenario.created_at %></p>
-  <p>Updated At: <%= @automation_scenario.updated_at %></p>
 </div>
 
 <p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.to_json %></p>
