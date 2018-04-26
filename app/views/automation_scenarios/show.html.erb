@@ -1,16 +1,39 @@
-<h1>AutomationScenarios#show</h1>
-
 <div id="solutionsChart"></div>
 
 <div>
+<br>
+<br>
 <%= form_for :solution, url: url_for(action: :create, controller: :solutions) do |f| %>
-  Initial Cost: <%= f.number_field :initial_cost %>
-  Cost per Iteration : <%= f.number_field :iteration_cost %>
-  Number of Iterations : <%= f.number_field :iteration_count %>
-  <%= f.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
-  <%= f.submit %>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="form-group">
+        <%= f.number_field :initial_cost, :class => 'form-control', :placeholder=> 'Intial Cost' %>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="form-group">
+        <%= f.number_field :iteration_cost, :class => 'form-control', :placeholder=> 'Iteration Cost'%>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="form-group">
+        <%= f.number_field :iteration_count, :class => 'form-control', :placeholder=> 'Iteration Count' %>
+      </div>
+    </div>
+
+     <div class="col-md-2">
+      <div class="form-group">
+        <%= f.submit "submit", class: 'btn btn-fill btn-primary'%>
+      </div>
+    </div>
+
+      <%= f.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
+    </div>
+
+  </div>
 <% end %>
-</div>
 
 <p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.to_json %></p>
 
