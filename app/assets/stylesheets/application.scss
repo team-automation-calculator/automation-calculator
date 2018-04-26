@@ -20,4 +20,97 @@
 	width: 100% !important;
 }
 
+.full-width-login{
+  min-height: 100%;
+}
+.left-col{
+  width: 30%;
+  float: left;
+  padding-left: 15px;
+  padding-right: 15px;
 
+}
+@media ( max-width: 991px ) {
+  .right-col{
+    width: 50%;
+
+  }
+  .left-col{
+    width: 100%;
+  }
+}
+@media ( max-width: 640px ) {
+  .right-col{
+    display: none;
+
+  }
+  .left-col{
+    width: 100%;
+  }
+}
+.right-col{
+  width: 70%;
+  float: left;
+  background-color: $blue;
+}
+.right-col-image{
+  height: 100%;
+  background: url(../images/health2.jpg) no-repeat;
+  background-size: cover; 
+}
+
+.logo{
+  text-align: center;
+  padding-top: 80px;
+}
+.login-logo{
+  width: 210px;
+}
+
+.mini-container{
+  width: 100%;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.flex-row{
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:-webkit-flex;
+  display:flex;
+}
+.flex-col{
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:-webkit-flex;
+  display:flex;
+  -webkit-flex-direction:column;
+  -ms-flex-direction:column;
+  flex-direction:column
+}
+
+
+.login-col {
+  background: none repeat scroll 0 0 #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: none;
+  margin-bottom: 20px;
+  padding: 20px;
+  position: relative;
+  margin: 7% auto;
+  max-width: 450px;
+}
+.login-col h2{
+  font-size: 24px;
+  margin-bottom: 25px;
+  margin-top: 5px;
+}
+
+.main-site-wrapper{
+  height: 100%;
+  overflow: auto;
+  max-height: 100%;
+  padding-top: 0 ! important;
+}
