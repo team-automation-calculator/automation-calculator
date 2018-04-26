@@ -16,6 +16,10 @@ gem 'sass-rails'
 gem 'therubyracer', platforms: :ruby
 gem 'turbolinks'
 gem 'uglifier'
+#The most popular HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web.
+gem 'bootstrap', '~> 4.1'
+#font-awesome-rails provides the Font-Awesome web fonts and stylesheets as a Rails engine for use with the asset pipeline.
+gem 'font-awesome-rails', '~> 4.7', '>= 4.7.0.4'
 
 # Flexible authentication solution for Rails with Warden
 gem 'devise'
