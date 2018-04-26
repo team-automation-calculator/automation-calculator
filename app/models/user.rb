@@ -5,10 +5,12 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :recoverable, :trackable,
          :omniauthable, omniauth_providers: %i[github google_oauth2]
 
+  validates :email,presence: true
+  validates_uniqueness_of :email       
+
   has_many :automation_scenarios, as: :owner, dependent: :destroy
 
   after_create :create_automation_scenario
-
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.email = auth.info.email
