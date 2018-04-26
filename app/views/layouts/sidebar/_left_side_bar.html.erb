@@ -1,0 +1,28 @@
+<div class="sidebar" data-image="<%= image_path('sidebar-5.jpg') %>" data-color="black">
+  <!--
+  Tip 1: You can change the color of the sidebar using: data-color="purple | blue | green | orange | red"
+
+  Tip 2: you can also add an image using data-image tag
+  -->
+  <div class="sidebar-wrapper">
+    <div class="logo">
+      <a href="/" class="simple-text">
+          Automation-Calculater
+      </a>
+    </div>
+    <ul class="nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="<%= root_path %>">
+          <i class="fa fa-tachometer" aria-hidden="true"></i>
+          <p>Dashboard</p>
+        </a>
+      </li>
+      <li>
+        <a class="nav-link" href="/automation_scenarios/<%=current_user.automation_scenarios.last.id%>">
+          <i class="fa fa-line-chart" aria-hidden="true"></i>
+          <p>Scenario</p>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
