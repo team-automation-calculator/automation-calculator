@@ -4,6 +4,8 @@ RSpec.describe 'New user workflow', type: :feature do
     visit '/visitors'
   end
   context 'when visit the /visitors path' do
+    before { visitors_path }
+
     it 'creates new visitor' do
       expect { visitors_path }.to change(Visitor, :count).by(1)
     end
@@ -13,8 +15,11 @@ RSpec.describe 'New user workflow', type: :feature do
     end
 
     it "redirects visitor to automation scenario's show page" do
-      visitors_path
       expect(page).to have_content('AutomationScenario')
+    end
+
+    it 'sets blank array of scenario solution' do
+      expect(page).to have_css('#scenarioSolutions', text: [], visible: false)
     end
   end
 
