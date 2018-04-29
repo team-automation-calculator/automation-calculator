@@ -13,7 +13,7 @@
             Create an account
           </a>
         </p>
-        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name),html: {:id => "new_session"}) do |f| %>
           <div class="form-group">
             <%= f.label :email %>
             <%= f.email_field :email, autofocus: true, class: 'form-control' %>
@@ -24,7 +24,7 @@
           </div>
           <div class="row form-group">
             <div class="col-md-12">
-              <%= f.submit "Log in", class: 'btn btn-fill btn-primary btn-block btn-lg' %>
+              <%= f.submit "Log in", class: 'btn btn-fill btn-primary btn-block btn-sm' %>
             </div>
           </div>
           <div class="row form-group">
@@ -40,7 +40,7 @@
             <% end %>
           </div>
         <% end %>
-        <%= render "devise/shared/links" %>
+        <%= render "users/shared/links" %>
       </div>
     </div>
     <div class="right-col">
@@ -48,3 +48,34 @@
     </div>
   </div>
 </div>
+<script>
+  $( document ).ready(function() {
+    $("#new_session").validate({
+      errorElement: 'span',
+      errorClass: 'desc',
+      rules: {
+        "user[password]": {
+          required: true
+        },
+        "user[email]": {
+          required: true,
+          email: true
+        }
+      },
+      messages: {
+        "user[email]": {
+          required: "We need your email address to login.",
+          email: "Your email address must be in the format of name@domain.com."
+        },
+        "user[password]": {
+          required: "We need your password address to login.",
+        }
+      },
+    });
+  }); 
+</script>
+<style>
+.desc{
+  color:red;
+}
+</style>

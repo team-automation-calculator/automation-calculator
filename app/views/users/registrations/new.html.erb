@@ -12,7 +12,7 @@
             Log in here
           </a>
         </p>
-        <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name),html: {:id => "new_user"}) do |f| %>
           <%= devise_error_messages! %>
           <%= f.hidden_field :trail, :value => (params[:trail] || false) %>
           <div class="form-group">
@@ -21,19 +21,59 @@
           </div>
           <div class="form-group">
             <%= f.label :password %>
-            <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'At least 8 characters' %>
+            <%= f.password_field :password, autocomplete: "off", class: 'form-control', id:"password",placeholder: 'At least 8 characters' %>
           </div>
           <div class="form-group">
             <%= f.label :password_confirmation %>
             <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'At least 8 characters' %>
           </div>
-          <%= f.submit "Sign up", class: 'btn btn-fill btn-primary btn-block btn-lg' %>
+          <%= f.submit "Sign up", class: 'btn btn-fill btn-primary btn-block btn-sm' %>
         <% end %>
-        <%= render "devise/shared/links" %>
       </div>
+      <br>
+     <%= render "users/shared/links" %>
     </div>
     <div class="right-col">
       <div class="right-col-image"></div>
     </div>
   </div>
 </div>  
+
+<script>
+  $( document ).ready(function() {
+    $("#new_user").validate({
+      errorElement: 'span',
+      errorClass: 'desc',
+      rules: {
+        "user[password]": {
+          required: true
+        },
+        "user[password_confirmation]": {
+          required: true,
+          equalTo : "#password"
+        },
+        "user[email]": {
+          required: true,
+          email: true
+        }
+      },
+      messages: {
+        "user[email]": {
+          required: "We need your email address for sign up process.",
+          email: "Your email address must be in the format of name@domain.com"
+        },
+        "user[password]": {
+          required: "We need your password for sign up process."
+        },
+         "user[password_confirmation]": {
+          required: "We need your password confirmation as you set password field for sign up process."
+        }
+      },
+    });
+  }); 
+</script>
+<style>
+.desc{
+  color:red;
+}
+</style>

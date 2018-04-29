@@ -55,7 +55,7 @@
 }
 .right-col-image{
   height: 100%;
-  background: image-url('health2.jpg') no-repeat;
+  background: image-url('BG2.jpg') no-repeat;
   background-size: cover; 
 }
 
@@ -112,5 +112,14 @@
   height: 100%;
   overflow: auto;
   max-height: 100%;
-  padding-top: 0 ! important;
+  padding-bottom: 10px ! important;
+}
+
+.notifications-alerts{
+  position: fixed;
+  top: 15px;
+  right: 25px;
+  width: 350px;
+  z-index: 99;
+  max-width: 86%;
 }

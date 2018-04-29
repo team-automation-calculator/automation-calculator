@@ -25,6 +25,9 @@
     <div class="main-panel <%= user_signed_in? ? '' : 'width-100'%>">
       <!-- Navbar -->
       <%= render partial: "layouts/header/header"%>
+      <div class="notifications-alerts">
+        <%= render partial: "layouts/flash_messages" %>
+      </div>
       <!-- End Navbar -->
       <div class="<%= user_signed_in? ? 'content' : ''%>">
         <%= yield %>

@@ -1,0 +1,9 @@
+<% flash.delete(:timedout).each do |k, message| %>
+  <div class="<%= bootstrap_class_for(k) %> alert alert-dismissable">
+    <button class="close" data-dismiss="alert" type="button">
+      <span>&times;</span>
+      <span class="sr-only">Close</span>
+    </button>
+    <%= raw(message) %>
+  </div>
+<% end %>
