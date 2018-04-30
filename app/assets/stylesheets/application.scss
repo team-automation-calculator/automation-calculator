@@ -28,7 +28,7 @@
   float: left;
   padding-left: 15px;
   padding-right: 15px;
-
+  padding-bottom: 15px;
 }
 @media ( max-width: 991px ) {
   .right-col{
@@ -37,6 +37,7 @@
   }
   .left-col{
     width: 100%;
+    padding-bottom: 15px;
   }
 }
 @media ( max-width: 640px ) {
@@ -46,6 +47,7 @@
   }
   .left-col{
     width: 100%;
+    padding-bottom: 15px;
   }
 }
 .right-col{
@@ -112,7 +114,6 @@
   height: 100%;
   overflow: auto;
   max-height: 100%;
-  padding-bottom: 10px ! important;
 }
 
 .notifications-alerts{
@@ -125,4 +126,7 @@
 }
 .desc{
   color:red;
+}
+.margin-top-1rem{
+  margin-top: 1rem !important;
 }

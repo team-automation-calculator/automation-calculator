@@ -1,15 +1,14 @@
 <%- if devise_mapping.omniauthable? %>
   <%- resource_class.omniauth_providers.each do |provider| %>
 	  	<%if (OmniAuth::Utils.camelize(provider) == "GitHub")%>
-	      <%= link_to omniauth_authorize_path(resource_name, provider), class: "btn btn-fill btn-block btn-block btn-sm btn-social btn-github" do %>
+	      <%= link_to omniauth_authorize_path(resource_name, provider), class: "btn btn-fill btn-block  btn-social btn-github margin-top-1rem" do %>
 				    <span class="fa fa-github"></span> Sign in with Github
 				<% end %>
 		    <%else%>
-		  		<%= link_to omniauth_authorize_path(resource_name, provider), class: "btn btn-fill btn-social btn-danger btn-block btn-sm btn-google" do %>
+		  		<%= link_to omniauth_authorize_path(resource_name, provider), class: "btn btn-fill btn-social btn-danger btn-block btn-google margin-top-1rem" do %>
 		  		<span class="fa fa-google"></span> Sign in with Google
 				<% end %>
 	  	<%end%>
-	  	<br>
   <% end -%>
 <% end -%>
 
