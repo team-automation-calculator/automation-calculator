@@ -29,9 +29,8 @@ class AutomationScenariosController < ApplicationController
 
   def update_params
     params.require(:automation_scenario).permit(
-      :iteration_count, solutions_attributes: [
-        :id, :initial_cost, :iteration_cost
-      ]
+      :iteration_count,
+      solutions_attributes: %i[id initial_cost iteration_cost]
     )
   end
 
