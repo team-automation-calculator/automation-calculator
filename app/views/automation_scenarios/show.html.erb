@@ -22,5 +22,9 @@
 </div>
 
 <p hidden id="scenarioSolutions">
-  <%= @automation_scenario.solutions.reject(&:new_record?).to_json %>
+  <%=
+    ActiveModel::Serializer::CollectionSerializer.new(
+      @automation_scenario.solutions.reject(&:new_record?)
+    ).to_json
+  %>
 </p>
