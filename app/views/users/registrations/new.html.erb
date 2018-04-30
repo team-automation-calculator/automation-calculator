@@ -1,0 +1,39 @@
+<div class="main-site-wrapper">
+  <div class="full-width-login flex-row">
+    <div class="left-col flex-col">
+      <div class="mini-container">
+        <div class="logo">
+          <%= image_tag "log.jpeg", :class => "login-logo" %>
+        </div>
+        <h2 class="yp-h2">Sign up</h2>
+        <p class="bottom-20">
+          Already have an account?
+          <a href="<%= new_user_session_path %>">
+            Log in here
+          </a>
+        </p>
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name),html: {:id => "new_user_registration"}) do |f| %>
+          <%= devise_error_messages! %>
+          <%= f.hidden_field :trail, :value => (params[:trail] || false) %>
+          <div class="form-group">
+            <%= f.label :email %>
+            <%= f.email_field :email, autofocus: true, class: 'form-control', placeholder: 'Your email' %>
+          </div>
+          <div class="form-group">
+            <%= f.label :password %>
+            <%= f.password_field :password, autocomplete: "off", class: 'form-control', id:"password",placeholder: 'At least 8 characters' %>
+          </div>
+          <div class="form-group">
+            <%= f.label :password_confirmation %>
+            <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'At least 8 characters' %>
+          </div>
+          <%= f.submit "Sign up", class: 'btn btn-fill btn-primary btn-block' %>
+        <% end %>
+      </div>
+     <%= render "users/shared/links" %>
+    </div>
+    <div class="right-col">
+      <div class="right-col-image"></div>
+    </div>
+  </div>
+</div> 

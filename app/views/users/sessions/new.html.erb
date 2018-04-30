@@ -1,0 +1,45 @@
+
+<div class="main-site-wrapper">
+  <div class="full-width-login flex-row">
+    <div class="left-col flex-col">
+      <div class="mini-container">
+        <div class="logo">
+          <%= image_tag "log.jpeg", :class => "login-logo" %>
+        </div>
+        <h2 class="yp-h2">Log in</h2>
+        <p class="bottom-20">
+          Need an account? 
+          <a href="<%= new_user_registration_path %>">
+            Create an account
+          </a>
+        </p>
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name),html: {:id => "new_session"}) do |f| %>
+          <div class="form-group">
+            <%= f.label :email %>
+            <%= f.email_field :email, autofocus: true, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= f.label :password %>
+            <%= f.password_field :password, autocomplete: "off", class: 'form-control' %>
+          </div>
+          <%= f.submit "Log in", class: 'btn btn-fill btn-primary btn-block' %>
+          <!-- <div class="row form-group">
+            <%# if devise_mapping.rememberable? %>
+              <div class="col-md-12">
+                <label class="stay-loggin label-block label-lg">
+                  <%#= f.check_box :remember_me %>
+                  Keep me logged in
+                  <%#= f.label :remember_me %>
+                </label>
+              </div>
+            <%# end %>
+          </div> -->
+        <% end %>
+        <%= render "users/shared/links" %>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="right-col-image"></div>
+    </div>
+  </div>
+</div>

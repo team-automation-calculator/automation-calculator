@@ -1,16 +1,72 @@
-<h1>AutomationScenarios#show</h1>
-
 <div id="solutionsChart"></div>
 
 <div>
-<%= form_for :solution, url: url_for(action: :create, controller: :solutions) do |f| %>
-  Initial Cost: <%= f.number_field :initial_cost %>
-  Cost per Iteration : <%= f.number_field :iteration_cost %>
-  Number of Iterations : <%= f.number_field :iteration_count %>
-  <%= f.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
-  <%= f.submit %>
+<br>
+<br>
+<%= form_for :solution, url: url_for(action: :create, controller: :solutions),:html => {:id => "automations_senario"} do |f| %>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="form-group">
+        <%= f.number_field :initial_cost, :class => 'form-control', :placeholder=> 'Intial Cost' %>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="form-group">
+        <%= f.number_field :iteration_cost, :class => 'form-control', :placeholder=> 'Iteration Cost'%>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="form-group">
+        <%= f.number_field :iteration_count, :class => 'form-control', :placeholder=> 'Iteration Count' %>
+      </div>
+    </div>
+
+     <div class="col-md-2">
+      <div class="form-group">
+        <%= f.submit "submit", class: 'btn btn-fill btn-primary'%>
+      </div>
+    </div>
+
+      <%= f.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
+    </div>
+
+  </div>
 <% end %>
-</div>
 
 <p hidden id="scenarioSolutions"><%= @automation_scenario.solutions.to_json %></p>
+
+
+<script>
+  $( document ).ready(function() {
+    $("#automations_senario").validate({
+      errorElement: 'span',
+      errorClass: 'desc',
+      rules: {
+    "solution[initial_cost]": {
+      required: true
+    },
+    "solution[iteration_cost]": {
+      required: true
+    },
+
+    "solution[iteration_count]": {
+      required: true
+    }
+  },
+  // messages: {
+  //   'solution[initial_cost]' {
+  //     required: "We need your email address to contact you",
+  //     email: "Your email address must be in the format of name@domain.com"
+  //   }
+  // }
+    });
+  }); 
+  </script>
+<style>
+.desc{
+  color:red;
+}
+</style>
 

@@ -1,0 +1,132 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *= require_self
+ */
+// Custom bootstrap variables must be set or imported *before* bootstrap.
+@import "bootstrap";
+@import "light-bootstrap-dashboard";
+@import "font-awesome";
+
+.width-100 {
+	width: 100% !important;
+}
+
+.full-width-login{
+  min-height: 100%;
+}
+.left-col{
+  width: 30%;
+  float: left;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 15px;
+}
+@media ( max-width: 991px ) {
+  .right-col{
+    width: 50%;
+
+  }
+  .left-col{
+    width: 100%;
+    padding-bottom: 15px;
+  }
+}
+@media ( max-width: 640px ) {
+  .right-col{
+    display: none;
+
+  }
+  .left-col{
+    width: 100%;
+    padding-bottom: 15px;
+  }
+}
+.right-col{
+  width: 70%;
+  float: left;
+  background-color: $blue;
+}
+.right-col-image{
+  height: 100%;
+  background: image-url('BG2.jpg') no-repeat;
+  background-size: cover; 
+}
+
+.logo{
+  text-align: center;
+  padding-top: 80px;
+}
+.login-logo{
+  width: 210px;
+}
+
+.mini-container{
+  width: 100%;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.flex-row{
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:-webkit-flex;
+  display:flex;
+}
+.flex-col{
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:-webkit-flex;
+  display:flex;
+  -webkit-flex-direction:column;
+  -ms-flex-direction:column;
+  flex-direction:column
+}
+
+
+.login-col {
+  background: none repeat scroll 0 0 #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: none;
+  margin-bottom: 20px;
+  padding: 20px;
+  position: relative;
+  margin: 7% auto;
+  max-width: 450px;
+}
+.login-col h2{
+  font-size: 24px;
+  margin-bottom: 25px;
+  margin-top: 5px;
+}
+
+.main-site-wrapper{
+  height: 100%;
+  overflow: auto;
+  max-height: 100%;
+}
+
+.notifications-alerts{
+  position: fixed;
+  top: 15px;
+  right: 25px;
+  width: 350px;
+  z-index: 99;
+  max-width: 86%;
+}
+.desc{
+  color:red;
+}
+.margin-top-1rem{
+  margin-top: 1rem !important;
+}
