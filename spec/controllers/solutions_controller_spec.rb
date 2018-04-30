@@ -49,14 +49,14 @@ RSpec.describe SolutionsController, type: :controller do
       let(:new_attributes) do
         {
           initial_cost: 2,
-          iteration_cost: 2,
-          iteration_count: 2
+          iteration_cost: 2
         }
       end
       let(:wrong_attributes) do
         {
           wrong_attribute: 3,
-          another_attribute: 5
+          another_attribute: 5,
+          iteration_count: 2
         }
       end
       let(:attributes) { new_attributes.merge wrong_attributes }

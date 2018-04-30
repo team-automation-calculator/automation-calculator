@@ -63,7 +63,12 @@ RSpec.describe AutomationScenariosController, type: :controller do
   end
 
   describe 'PUT #update' do
-    let(:update_put) { put :update, params: { id: automation_scenario.id } }
+    def update_put
+      put :update, params: {
+        id: automation_scenario.id,
+        automation_scenario: { iteration_count: 10 }
+      }
+    end
 
     it 'routes correctly' do
       assert_generates '/automation_scenarios/1', controller: 'automation_scenarios', action: 'update', id: '1'
@@ -72,7 +77,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
     context 'with correct id' do
       it 'returns http success' do
         update_put
-        expect(response).to have_http_status(:success)
+        expect(response).to redirect_to(automation_scenario)
       end
     end
 
