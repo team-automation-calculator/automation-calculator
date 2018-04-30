@@ -6,6 +6,8 @@
 
 To help people make and communicate automation decisions quickly and effectively. 
 
+[Examples of automation decisions.](https://github.com/team-automation-calculator/automation-calculator/blob/master/About.md)
+
 ## Setup
 ### Dependencies
 * Ruby 2.0.0+
