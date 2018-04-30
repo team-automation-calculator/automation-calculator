@@ -4,6 +4,10 @@ class AutomationScenario < ApplicationRecord
 
   validates :iteration_count,
             numericality: { only_integer: true, greater_than: 0 }
+
+  accepts_nested_attributes_for :solutions, reject_if: -> (attributes) {
+    attributes[:initial_cost].blank? || attributes[:iteration_cost].blank?
+  }
 end
 
 # == Schema Information
