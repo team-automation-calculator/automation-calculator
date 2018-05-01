@@ -11,5 +11,7 @@ RSpec.describe AutomationScenario, type: :model do
     end
 
     it { is_expected.to belong_to(:owner) }
+    it { is_expected.to validate_numericality_of(:iteration_count).only_integer }
+    it { is_expected.to validate_numericality_of(:iteration_count).is_greater_than(0) }
   end
 end

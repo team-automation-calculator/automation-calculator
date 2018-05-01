@@ -1,17 +1,18 @@
 require 'rails_helper'
 RSpec.describe 'New user workflow', type: :feature do
-  def visitors_path
+  def visit_visitors_path
     visit '/visitors'
   end
+
   context 'when visit the /visitors path' do
-    before { visitors_path }
+    before { visit_visitors_path }
 
     it 'creates new visitor' do
-      expect { visitors_path }.to change(Visitor, :count).by(1)
+      expect { visit_visitors_path }.to change(Visitor, :count).by(1)
     end
 
     it 'creates new automation scenario' do
-      expect { visitors_path }.to change(AutomationScenario, :count).by(1)
+      expect { visit_visitors_path }.to change(AutomationScenario, :count).by(1)
     end
 
     it "redirects visitor to automation scenario's show page" do
@@ -24,15 +25,21 @@ RSpec.describe 'New user workflow', type: :feature do
   end
 
   context 'when create the solution for the scenario' do
-    before { visitors_path }
-    let(:solutions) { AutomationScenario.last.solutions }
+    before do
+      visit_visitors_path
 
-    it 'sets soulution in hidden field' do
-      fill_in 'solution_initial_cost', with: 1
-      fill_in 'solution_iteration_cost', with: 10
-      fill_in 'solution_iteration_count', with: 10
-      click_button 'Save Solution'
-      expect(page).to have_css('#scenarioSolutions', text: solutions.to_json, visible: false)
+      fill_in 'automation_scenario_solutions_attributes_0_initial_cost', with: 1
+      fill_in 'automation_scenario_solutions_attributes_0_iteration_cost', with: 10
+      fill_in 'automation_scenario_iteration_count', with: 10
+      click_button 'Update Automation scenario'
+    end
+
+    it 'sets soulutions in hidden field' do
+      expect(page).to have_css(
+        '#scenarioSolutions',
+        text: { initial_cost: 1, iteration_cost: 10, iteration_count: 10 }.to_json,
+        visible: false
+      )
     end
   end
 end

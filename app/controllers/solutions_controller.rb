@@ -36,13 +36,13 @@ class SolutionsController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
   def solution_params
     params.require(:solution).permit(
-      :initial_cost, :iteration_cost, :iteration_count
+      :initial_cost, :iteration_cost
     )
   end
 
   def create_solution_params
     params.require(:solution).permit(
-      :initial_cost, :iteration_cost, :iteration_count, :automation_scenario_id
+      :initial_cost, :iteration_cost, :automation_scenario_id
     )
   end
 end

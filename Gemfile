@@ -26,6 +26,8 @@ gem 'omniauth-google-oauth2'
 gem 'omniauth-github'
 # Easiest way to add multi-environment yaml settings
 gem 'config'
+# brings convention over configuration to your JSON generation
+gem 'active_model_serializers'
 
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
