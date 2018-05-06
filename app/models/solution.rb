@@ -3,6 +3,8 @@ class Solution < ApplicationRecord
 
   validates :initial_cost, numericality: { only_integer: true, greater_than: 0 }
   validates :iteration_cost, numericality: { only_integer: true, greater_than: 0 }
+
+  delegate :iteration_count, to: :automation_scenario
 end
 
 # == Schema Information
