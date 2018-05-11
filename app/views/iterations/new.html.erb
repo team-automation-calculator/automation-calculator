@@ -1,0 +1,7 @@
+<div>
+  <%= form_for @iteration, url: automation_scenario_iterations_url(automation_scenario_id: params[:automation_scenario_id]), method: :post, html: { class: "new_iteration", id: "new_iteration" } do |f| %>
+      Iteration Time : <%= f.text_field :iteration_time %><br />
+      Cost per Iteration : <%= f.number_field :iteration_cost %><br />
+      <%= f.submit %>
+  <% end %>
+</div>

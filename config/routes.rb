@@ -6,7 +6,9 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
-  resources :automation_scenarios
+  resources :automation_scenarios do
+    resources :iterations
+  end
   resources :solutions
 
   get '/visitors', to: 'visitors#index'

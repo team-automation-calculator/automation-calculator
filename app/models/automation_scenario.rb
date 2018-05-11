@@ -1,6 +1,7 @@
 class AutomationScenario < ApplicationRecord
   belongs_to :owner, polymorphic: true
   has_many :solutions, dependent: :destroy
+  has_many :iterations, dependent: :destroy
 
   validates :iteration_count,
             numericality: { only_integer: true, greater_than: 0 }
