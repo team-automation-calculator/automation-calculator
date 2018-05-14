@@ -1,7 +1,9 @@
 FactoryBot.define do
   factory :iteration do
-    iteration_time ""
-    iteration_cost 1.5
+    time "2018-05-13 08:53:12"
+    cost 1
+
+    automation_scenario
   end
 end
 
@@ -10,8 +12,8 @@ end
 # Table name: iterations
 #
 #  id                     :integer          not null, primary key
-#  iteration_time         :datetime
-#  iteration_cost         :integer
+#  time                   :datetime
+#  cost                   :integer
 #  automation_scenario_id :integer
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null

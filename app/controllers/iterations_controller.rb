@@ -1,9 +1,9 @@
 class IterationsController < ApplicationController
-  before_action :set_automation_scenario
+  # before_action :set_automation_scenario, only: %i[index new create]
   before_action :set_iteration, only: %i[show edit update destroy]
 
   def index
-    @iterations = @automation_scenario.iterations
+    @iterations = Iteration.where(automation_scenario_id: params[:automation_scenario_id])
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @iterations }
@@ -18,7 +18,7 @@ class IterationsController < ApplicationController
   end
 
   def new
-    @iteration = @automation_scenario.iterations.new
+    @iteration = Iteration.new
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @iteration }
@@ -26,14 +26,14 @@ class IterationsController < ApplicationController
   end
 
   def create
-    @iteration = @automation_scenario.iterations.new(create_iteration_params)
+    @iteration = Iteration.new(create_iteration_params)
 
     respond_to do |format|
       if @iteration.save
-        format.html { redirect_to automation_scenario_iterations_url(automation_scenario_id: params[:automation_scenario_id]), notice: 'Iteration was successfully created.' }
+        format.html { redirect_to iterations_url(automation_scenario_id: params[:automation_scenario_id]), notice: 'Iteration was successfully created.' }
         format.json { render json: @iteration, status: :created }
       else
-        format.html { render action: "new" }
+        format.html { head :unprocessable_entity }
         format.json { render json: @iteration.errors, status: :unprocessable_entity }
        end
     end
@@ -49,10 +49,10 @@ class IterationsController < ApplicationController
   def update
     respond_to do |format|
       if @iteration.update(iteration_params)
-        format.html { redirect_to automation_scenario_iterations_url(automation_scenario_id: params[:automation_scenario_id]), notice: 'Iteration was successfully Updated.' }
+        format.html { redirect_to iterations_url(automation_scenario_id: params[:automation_scenario_id]), notice: 'Iteration was successfully Updated.' }
         format.json { render json: @iteration, status: :updated }
       else
-        format.html { render action: "edit" }
+        format.html { head :unprocessable_entity }
         format.json { render json: @iteration.errors, status: :unprocessable_entity }
        end
     end
@@ -61,7 +61,7 @@ class IterationsController < ApplicationController
   def destroy
     respond_to do |format|
       if @iteration.destroy!
-        format.html { redirect_to automation_scenario_iterations_url(automation_scenario_id: params[:automation_scenario_id]), notice: 'Iteration was successfully deleted.' }
+        format.html { redirect_to iterations_url(automation_scenario_id: params[:automation_scenario_id]), notice: 'Iteration was successfully deleted.' }
         format.json { render json: @iteration, status: :deleted }
       else
         format.html { render action: "index" }
@@ -74,7 +74,7 @@ class IterationsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_iteration
-    @iteration = @automation_scenario.iterations.find(params[:id])
+    @iteration = Iteration.find(params[:id])
   end
   def set_automation_scenario
     @automation_scenario = AutomationScenario.find(params[:automation_scenario_id])
@@ -83,13 +83,13 @@ class IterationsController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
   def iteration_params
     params.require(:iteration).permit(
-      :iteration_time, :iteration_cost
+      :time, :cost
     )
   end
 
   def create_iteration_params
     params.require(:iteration).permit(
-      :iteration_time, :iteration_cost, :automation_scenario_id
+      :time, :cost, :automation_scenario_id
     )
   end
 end

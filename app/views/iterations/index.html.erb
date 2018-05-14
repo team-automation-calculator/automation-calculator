@@ -1,4 +1,4 @@
-<h2><%= link_to "New Iteration", new_automation_scenario_iteration_url(automation_scenario_id: params[:automation_scenario_id])%></h2>
+<h2><%= link_to "New Iteration", new_iteration_url(automation_scenario_id: params[:automation_scenario_id])%></h2>
 <table>
 	<thead>
 		<tr>
@@ -12,15 +12,15 @@
 			<%- @iterations.each do |iteration| %>
 				<tr>
 					<td>
-						<%= iteration.iteration_time.strftime('%Y-%m-%d') rescue nil %>
+						<%= iteration.time.strftime('%Y-%m-%d') rescue nil %>
 					</td>
 					<td>
-						<%= iteration.iteration_cost %>
+						<%= iteration.cost %>
 					</td>
 					<td>
-						<%= link_to "Show", automation_scenario_iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id) %>
-						<%= link_to "Edit", edit_automation_scenario_iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id) %>
-						<%= link_to "Delete", automation_scenario_iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id), method: :delete, data: {confirm: "Are you sure!"} %>
+						<%= link_to "Show", iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id) %>
+						<%= link_to "Edit", edit_iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id) %>
+						<%= link_to "Delete", iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id), method: :delete, data: {confirm: "Are you sure!"} %>
 					</td>
 				</tr>
 			<% end %>
