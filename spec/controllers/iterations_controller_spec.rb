@@ -2,15 +2,15 @@ require 'rails_helper'
 
 RSpec.describe IterationsController, type: :controller do
 
-  describe "GET to index" do
+  describe 'GET to index' do
     let(:iteration) { create :iteration }
-    
-    it "should be successful" do
+
+    it 'returns a success response' do
       get :index
       expect(response).to be_success
     end
   end
-    
+
   describe 'GET #show' do
     let(:iteration) { create :iteration }
 
@@ -86,7 +86,7 @@ RSpec.describe IterationsController, type: :controller do
     context 'with invalid params' do
       let(:invalid_attributes) { { cost: :string_value } }
 
-      it "returns a success response (i.e. to display the 'edit' template)" do
+      it 'returns a success response (i.e. to display the \'edit\' template)' do
         put :update, params: { id: iteration.id, iteration: invalid_attributes }
         expect(response).to have_http_status(:unprocessable_entity)
       end
