@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe IterationsController, type: :controller do
-
   describe 'GET to index' do
     let(:iteration) { create :iteration }
 
@@ -59,7 +58,7 @@ RSpec.describe IterationsController, type: :controller do
       let(:new_attributes) do
         {
           cost: 2,
-          time: Date.today
+          time: Time.zone.today
         }
       end
       let(:wrong_attributes) do
