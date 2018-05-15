@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   }
 
   resources :automation_scenarios
+  resources :iterations
   resources :solutions
 
   get '/visitors', to: 'visitors#index'
