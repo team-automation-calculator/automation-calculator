@@ -53,7 +53,7 @@ class IterationsController < ApplicationController
       else
         format.html { head :unprocessable_entity }
         format.json { render json: @iteration.errors, status: :unprocessable_entity }
-       end
+      end
     end
   end
 
@@ -65,7 +65,7 @@ class IterationsController < ApplicationController
       else
         format.html { render action: 'index' }
         format.json { render json: @iteration.errors, status: :unprocessable_entity }
-       end
+      end
     end
   end
 
