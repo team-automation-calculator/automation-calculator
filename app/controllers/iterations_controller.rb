@@ -1,5 +1,4 @@
 class IterationsController < ApplicationController
-  # before_action :set_automation_scenario, only: %i[index new create]
   before_action :set_iteration, only: %i[show edit update destroy]
 
   def index
@@ -10,7 +9,7 @@ class IterationsController < ApplicationController
     end
   end
 
-  def show 
+  def show
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @iteration }
@@ -35,7 +34,7 @@ class IterationsController < ApplicationController
       else
         format.html { head :unprocessable_entity }
         format.json { render json: @iteration.errors, status: :unprocessable_entity }
-       end
+      end
     end
   end
 
@@ -43,7 +42,7 @@ class IterationsController < ApplicationController
     respond_to do |format|
       format.html # edit.html.erb
       format.json { render json: @iteration }
-    end  
+    end
   end
 
   def update
@@ -64,7 +63,7 @@ class IterationsController < ApplicationController
         format.html { redirect_to iterations_url(automation_scenario_id: params[:automation_scenario_id]), notice: 'Iteration was successfully deleted.' }
         format.json { render json: @iteration, status: :deleted }
       else
-        format.html { render action: "index" }
+        format.html { render action: 'index' }
         format.json { render json: @iteration.errors, status: :unprocessable_entity }
        end
     end
@@ -76,6 +75,7 @@ class IterationsController < ApplicationController
   def set_iteration
     @iteration = Iteration.find(params[:id])
   end
+
   def set_automation_scenario
     @automation_scenario = AutomationScenario.find(params[:automation_scenario_id])
   end
