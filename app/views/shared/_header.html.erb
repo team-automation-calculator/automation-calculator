@@ -1,0 +1,21 @@
+<div class="top_navigation">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-4">
+        <h3>Automation Calculator</h3>
+      </div>
+
+      <div class="col-sm-4 col-sm-offset-4">
+        <% if user_signed_in? %>
+          <span class="logout">
+            <%= link_to('Logout', destroy_user_session_path, method: :delete) %>
+          </span>
+        <% else %>
+          <li>
+            <%= link_to('Login', new_user_session_path)  %>
+          </li>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
