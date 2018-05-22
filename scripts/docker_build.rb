@@ -33,7 +33,7 @@ class DockerBuild
       build_image('automationcalculator_dev:latest', 'Dockerfile.development')
     end
 
-    def build_image(tag, file, username = ENV['USER'], additional_build_arg='')
+    def build_image(tag, file, username = ENV['USER'], additional_build_arg = '')
       sys_call = "docker build -t #{tag} -f #{file} --build-arg username=#{username} #{additional_build_arg} ."
       puts sys_call
       system(sys_call)
