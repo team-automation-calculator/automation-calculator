@@ -40,3 +40,5 @@ To help people make and communicate automation decisions quickly and effectively
 * Solution: Run `./go build` to update your development docker image to include the new dependency.
 * Problem: `./go start` starts the development container, but it stops with exit code 1 after a few seconds. You check the logs and see a message like: `A server is already running. Check /usr/src/app/tmp/pids/server.pid`. 
 * Solution: Run `./go shell`, `cd /usr/src/app/tmp/pids`, `rm server.pid`. Then exit the shell container and run `./go start` again.
+* Problem: You see an error message like `ERROR: Service 'dev' failed to build: The command '/bin/sh -c useradd -ms /bin/bash $username' returned a non-zero code: 2` when running a command like `./go test` or `./go start`. 
+* Solution: Run `./go init` before running any other `./go` commands. 
