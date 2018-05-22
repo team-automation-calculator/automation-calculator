@@ -34,9 +34,7 @@ class DockerBuild
     end
 
     def build_image(tag, file, username = ENV['USER'], additional_build_arg = '')
-      sys_call = "docker build -t #{tag} -f #{file} --build-arg username=#{username} #{additional_build_arg} ."
-      puts sys_call
-      system(sys_call)
+      system("docker build -t #{tag} -f #{file} --build-arg username=#{username} #{additional_build_arg} .")
     end
   end
 end
