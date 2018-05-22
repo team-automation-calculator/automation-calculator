@@ -1,22 +1,41 @@
 require 'rails_helper'
 
-RSpec.describe IterationsController, type: :controller do
+RSpec.describe API::IterationsController, type: :request do
   describe 'GET to index' do
     let(:iteration) { create :iteration }
 
     it 'returns a success response' do
-      get :index
+      get '/api/iterations'
       expect(response).to be_success
     end
   end
 
   describe 'GET #show' do
     let(:iteration) { create :iteration }
+    let(:expected_response_path) { '/expected_responses/iterations/getShow.json' }
+    let(:expected_response_string) { File.read(File.dirname(__FILE__) + expected_response_path) }
+    let(:expected_response) { JSON.parse(expected_response_string) }
 
-    before { get :show, params: { id: iteration.id } }
+    before { get "/api/iterations/#{iteration.id}" }
 
     it 'returns a success response' do
       expect(response).to be_success
+    end
+
+    it 'returns the correct time' do
+      expect(json['time']).to eq expected_response['time']
+    end
+
+    it 'returns the correct cost' do
+      expect(json['cost']).to eq expected_response['cost']
+    end
+
+    it 'has an id key/value' do
+      expect(json['id']).to be_truthy
+    end
+
+    it 'has an automation scenario key/value' do
+      expect(json['automation_scenario_id']).to be_truthy
     end
   end
 
@@ -31,21 +50,21 @@ RSpec.describe IterationsController, type: :controller do
 
       it 'creates a new Iteration' do
         expect do
-          post :create, params: { iteration: valid_attributes }
+          post '/api/iterations', params: { iteration: valid_attributes }
         end.to change(Iteration, :count).by(1)
       end
 
-      it 'redirects to the created iteration' do
-        post :create, params: { iteration: valid_attributes }
-        expect(response).to redirect_to(iterations_path)
+      it 'returns a correct status code' do
+        post '/api/iterations', params: { iteration: valid_attributes }
+        expect(response.status).to eq 201
       end
     end
 
     context 'with invalid params' do
       let(:invalid_attributes) { { invalid_attribute: 5 } }
 
-      it 'returns a success response' do
-        post :create, params: { iteration: invalid_attributes }
+      it 'returns a failure response' do
+        post '/api/iterations', params: { iteration: invalid_attributes }
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -70,40 +89,48 @@ RSpec.describe IterationsController, type: :controller do
       end
       let(:attributes) { new_attributes.merge wrong_attributes }
 
+      before do
+        put "/api/iterations/#{iteration.id}", params: { id: iteration.id, iteration: attributes }
+      end
+
       it 'updates the requested iteration' do
-        put :update, params: { id: iteration.id, iteration: attributes }
         iteration.reload
         expect(iteration.attributes).to include(new_attributes.stringify_keys)
       end
 
-      it 'renders nothing on success' do
-        put :update, params: { id: iteration.id, iteration: attributes }
-        expect(response).to redirect_to(iterations_path)
+      it 'returns correct status code' do
+        expect(response.status).to eq 204
       end
     end
 
     context 'with invalid params' do
       let(:invalid_attributes) { { cost: :string_value } }
 
-      it 'returns a success response (i.e. to display the \'edit\' template)' do
-        put :update, params: { id: iteration.id, iteration: invalid_attributes }
+      it 'returns an unprocessable entity response' do
+        put "/api/iterations/#{iteration.id}", params: { id: iteration.id, iteration: invalid_attributes }
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
   end
 
   describe 'DELETE #destroy' do
-    let!(:iteration) { create :iteration }
+    let(:iteration) { create :iteration }
+    let(:another_iteration) { create :iteration }
+
+    before do
+      iteration
+      another_iteration
+    end
 
     it 'destroys the requested iteration' do
       expect do
-        delete :destroy, params: { id: iteration.id }
+        delete "/api/iterations/#{iteration.id}"
       end.to change(Iteration, :count).by(-1)
     end
 
-    it 'redirects to the iterations list' do
-      delete :destroy, params: { id: iteration.id }
-      expect(response).to redirect_to(iterations_path)
+    it 'returns the correct status code' do
+      delete "/api/iterations/#{another_iteration.id}"
+      expect(response).to have_http_status(:success)
     end
   end
 end
