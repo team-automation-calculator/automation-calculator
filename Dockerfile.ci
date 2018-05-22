@@ -8,5 +8,3 @@ WORKDIR /usr/src/app
 ENV SECRET_KEY_BASE = $secret_key_base
 
 RUN bundle install
-
-RUN rake assets:precompile
