@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :iteration do
-    time "2018-05-13 08:53:12"
+    time '2018-05-13 08:53:12'
     cost 1
 
     automation_scenario

@@ -39,6 +39,9 @@ Layout/FirstMethodParameterLineBreak:
 Layout/MultilineAssignmentLayout:
   Enabled: true
 
+Metrics/AbcSize:
+  Max: 17
+
 Metrics/BlockLength:
  ExcludedMethods:
    - describe
@@ -60,6 +63,12 @@ Rails/InverseOf:
 
 RSpec/NestedGroups:
   Max: 7
+
+Style/ConditionalAssignment:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
 
 Style/Documentation:
   Enabled: false
