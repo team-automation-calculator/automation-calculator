@@ -11,14 +11,19 @@ class DockerBuild
         image = "#{repo}:latest"
         build_image(image, 'Dockerfile.ci')
       when 'base'
-        build_image('automationcalculators/automation-calculator-base:0.0.2', 'Dockerfile.base', 'circleci')
+        build_image(
+          'automationcalculators/automation-calculator-base:0.0.2',
+          'Dockerfile.base',
+          'circleci',
+          "--build-arg secret_key_base=#{ENV['SECRET_KEY_BASE']}"
+        )
       else
         warn "Unrecognized command: #{sub_cmd}"
       end
     end
 
-    def build_image(tag, file, username = ENV['USER'])
-      system("docker build -t #{tag} -f #{file} --build-arg username=#{username}  .")
+    def build_image(tag, file, username = ENV['USER'], additional_build_arg='')
+      system("docker build -t #{tag} -f #{file} --build-arg username=#{username} #{additional_build_arg} .")
     end
   end
 end

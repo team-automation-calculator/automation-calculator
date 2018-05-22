@@ -1,7 +1,11 @@
 FROM automationcalculators/automation-calculator-base:0.0.2
 
+ARG secret_key_base
+
 COPY --chown=circleci . /usr/src/app
 WORKDIR /usr/src/app
+
+ENV SECRET_KEY_BASE = $secret_key_base
 
 RUN bundle install
 
