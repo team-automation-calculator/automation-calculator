@@ -14,8 +14,9 @@ USER $username
 RUN gem install nokogiri
 RUN gem install bundler
 
-#Installing gems here even though they will need to be installed again to save 90 seconds on build server
-# not installing every dependency every build
+#Installing gems here even though bundle install will need to be installed again to save 90 seconds on build server
+# This is because installing here installs a large number of gems that get cached.
 COPY --chown=circleci Gemfile /usr/src/app/Gemfile
 WORKDIR /usr/src/app
 RUN bundle install
+RUN rm /usr/src/app/Gemfile.lock

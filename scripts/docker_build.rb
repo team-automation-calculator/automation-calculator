@@ -17,7 +17,7 @@ class DockerBuild
 
     def build_base_image
       build_image(
-        'automationcalculators/automation-calculator-base:0.0.2',
+        'automationcalculators/automation-calculator-base:0.0.3',
         'Dockerfile.base',
         'circleci'
       )
