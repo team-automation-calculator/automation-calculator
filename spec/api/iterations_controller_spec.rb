@@ -102,15 +102,6 @@ RSpec.describe API::IterationsController, type: :request do
         expect(response.status).to eq 204
       end
     end
-
-    context 'with invalid params' do
-      let(:invalid_attributes) { { cost: :string_value } }
-
-      it 'returns an unprocessable entity response' do
-        put "/api/iterations/#{iteration.id}", params: { id: iteration.id, iteration: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-    end
   end
 
   describe 'DELETE #destroy' do

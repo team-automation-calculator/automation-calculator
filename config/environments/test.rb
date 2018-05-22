@@ -47,7 +47,7 @@ Rails.application.configure do
   config.secret_key = ENV['SECRET_KEY_BASE']
 
   # Debug logging
-  #logger           = ActiveSupport::Logger.new(STDOUT)
-  #logger.formatter = config.log_formatter
-  #config.logger    = ActiveSupport::TaggedLogging.new(logger)
+  # logger           = ActiveSupport::Logger.new(STDOUT)
+  # logger.formatter = config.log_formatter
+  # config.logger    = ActiveSupport::TaggedLogging.new(logger)
 end

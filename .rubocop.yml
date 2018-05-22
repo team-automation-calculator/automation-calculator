@@ -64,6 +64,12 @@ Rails/InverseOf:
 RSpec/NestedGroups:
   Max: 7
 
+Style/ConditionalAssignment:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 

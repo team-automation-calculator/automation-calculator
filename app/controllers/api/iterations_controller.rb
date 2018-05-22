@@ -1,9 +1,9 @@
 class API::IterationsController < ApplicationController
-  before_action :set_iteration, only: %i[show edit update destroy]
+  before_action :set_iteration, only: %i[show update destroy]
 
   def index
-    #TODO list other endpoint addresses here in proper REST format
-    render json: { methods: [:show, :new, :create, :update, :delete]}
+    # TODO: list other endpoint addresses here in proper REST format
+    render json: { methods: %i[show create update destroy] }
   end
 
   def show
@@ -21,7 +21,6 @@ class API::IterationsController < ApplicationController
 
   def update
     @iteration.update(iteration_params)
-    binding.pry
     if @iteration.valid?
       response.status = 200
     else
