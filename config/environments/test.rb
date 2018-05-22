@@ -45,4 +45,9 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   config.secret_key = ENV['SECRET_KEY_BASE']
+
+  # Debug logging
+  #logger           = ActiveSupport::Logger.new(STDOUT)
+  #logger.formatter = config.log_formatter
+  #config.logger    = ActiveSupport::TaggedLogging.new(logger)
 end

@@ -1,13 +1,16 @@
 Rails.application.routes.draw do
   root to: 'home#index'
 
+  namespace :api, defaults: { format: 'json' } do
+    resources :iterations
+  end
+
   devise_for :users, controllers: {
     omniauth_callbacks: 'users/omniauth_callbacks',
     registrations: 'users/registrations'
   }
 
   resources :automation_scenarios
-  resources :iterations
   resources :solutions
 
   get '/visitors', to: 'visitors#index'

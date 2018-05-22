@@ -39,6 +39,9 @@ Layout/FirstMethodParameterLineBreak:
 Layout/MultilineAssignmentLayout:
   Enabled: true
 
+Metrics/AbcSize:
+  Max: 17
+
 Metrics/BlockLength:
  ExcludedMethods:
    - describe
