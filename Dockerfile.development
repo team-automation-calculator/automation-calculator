@@ -6,7 +6,8 @@ RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev lib
 
 #Setup development user
 ARG username
-RUN useradd -ms /bin/bash $username
+ARG uid
+RUN useradd --uid=$uid -ms /bin/bash $username
 RUN usermod -a -G staff $username
 USER $username
 
