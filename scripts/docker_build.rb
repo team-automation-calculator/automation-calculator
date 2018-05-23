@@ -30,10 +30,11 @@ class DockerBuild
     end
 
     def build_dev_image
-      build_image('automationcalculator_dev:latest', 'Dockerfile.development')
+      uid = `id -u`.strip
+      build_image('automationcalculator_dev:latest', 'Dockerfile.development', ENV['USER'], "--build-arg uid=#{uid}")
     end
 
-    def build_image(tag, file, username = ENV['USER'], additional_build_arg = '')
+    def build_image(tag, file, username, additional_build_arg = '')
       system("docker build -t #{tag} -f #{file} --build-arg username=#{username} #{additional_build_arg} .")
     end
   end
