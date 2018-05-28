@@ -16,7 +16,7 @@ RSpec.describe 'New user workflow', type: :feature do
     end
 
     it "redirects visitor to automation scenario's show page" do
-      expect(page).to have_content('AutomationScenario')
+      expect(page).to have_content('Automation Scenario')
     end
 
     it 'sets blank array of scenario solution' do
@@ -31,7 +31,7 @@ RSpec.describe 'New user workflow', type: :feature do
       fill_in 'automation_scenario_solutions_attributes_0_initial_cost', with: 1
       fill_in 'automation_scenario_solutions_attributes_0_iteration_cost', with: 10
       fill_in 'automation_scenario_iteration_count', with: 10
-      click_button 'Update Automation scenario'
+      click_button 'Update Automation Scenario'
     end
 
     it 'sets soulutions in hidden field' do

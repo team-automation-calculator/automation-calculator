@@ -19,7 +19,7 @@ RSpec.describe 'User password recovery', type: :feature do
     it 'sends email to user and redirect to sign in page' do
       visit new_user_password_path
       fill_in 'Email', with: user.email
-      click_button 'Send me reset password instructions'
+      click_button 'Reset Password'
       expect(page).to have_current_path(new_user_session_path)
     end
   end
@@ -28,7 +28,7 @@ RSpec.describe 'User password recovery', type: :feature do
     before { update_password }
 
     it 'updates the password and sign the user' do
-      expect(page).to have_content('AutomationScenario')
+      expect(page).to have_content('Automation Scenario')
     end
   end
 end

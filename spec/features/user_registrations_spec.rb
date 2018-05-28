@@ -29,7 +29,7 @@ RSpec.describe 'User registrations', type: :feature do
     end
 
     it 'displays the protected content' do
-      expect(page).to have_content('AutomationScenario')
+      expect(page).to have_content('Automation Scenario')
     end
 
     context 'when the user signs in' do
@@ -39,7 +39,7 @@ RSpec.describe 'User registrations', type: :feature do
       end
 
       it 'sets the current user to the registered user' do
-        expect(page).to have_content('AutomationScenario')
+        expect(page).to have_content('Automation Scenario')
       end
     end
   end

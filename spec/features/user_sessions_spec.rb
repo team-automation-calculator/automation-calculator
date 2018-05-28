@@ -23,7 +23,7 @@ RSpec.describe 'User sessions', type: :feature do
     end
 
     it 'displays the scenario' do
-      expect(page).to have_content('AutomationScenario')
+      expect(page).to have_content('Automation Scenario')
     end
 
     context 'when a user signs in for the second time' do
