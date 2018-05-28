@@ -1,30 +1,29 @@
 <%= render "shared/header" %>
 
 <div class="container automation_scenario">
-  <div class="row">
-
-    <div class="col-sm-4 automation-scenario-left">
-      <%= form_for @automation_scenario do |f| %>
-        Number of Iterations : <%= f.number_field :iteration_count %>
-        <%= f.fields_for :solutions do |s| %>
-          <div>
-            <% if s.object.persisted? %>
-              Solution #<%= s.object.id %>:
-            <% else %>
-              A new solution:
-            <% end %>
-            Initial Cost: <%= s.number_field :initial_cost %>
-            Cost per Iteration : <%= s.number_field :iteration_cost %>
-            <%= s.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
-          </div>
-        <% end %>
-        <%= f.submit %>
+  <div>
+    <h1>Automation Scenario</h1>
+  </div>
+  <div class="col-sm-4 automation-scenario-left">
+    <%= form_for @automation_scenario do |f| %>
+      Number of Iterations : <%= f.number_field :iteration_count %>
+      <%= f.fields_for :solutions do |s| %>
+        <div>
+          <% if s.object.persisted? %>
+            Solution #<%= s.object.id %>:
+          <% else %>
+            Add New solution:
+          <% end %>
+          Initial Cost: <%= s.number_field :initial_cost %>
+          Cost per Iteration : <%= s.number_field :iteration_cost %>
+          <%= s.hidden_field(:automation_scenario_id, value: @automation_scenario.id) %>
+        </div>
       <% end %>
-    </div>
-    <div class="col-sm-8 automation-scenario-right">
-      <div id="solutionsChart"></div>
-
-    </div>
+      <%= f.submit 'Update Automation Scenario'%>
+    <% end %>
+  </div>
+  <div class="col-sm-8 automation-scenario-right">
+    <div id="solutionsChart"></div>
   </div>
 </div>
 
