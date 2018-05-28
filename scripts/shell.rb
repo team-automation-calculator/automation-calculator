@@ -18,7 +18,7 @@ class Shell
     end
 
     def dev_shell
-      exec('docker-compose run dev /bin/bash')
+      exec('docker-compose -f docker-compose.yml -f docker-compose.dev.yml run dev /bin/bash')
     end
 
     def production_shell

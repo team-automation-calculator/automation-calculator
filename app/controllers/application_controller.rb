@@ -1,6 +1,14 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
+  def default_url_options
+    if Rails.env.production?
+      { host: 'automation-calculations.net' }
+    else
+      {}
+    end
+  end
+
   protected
 
   def after_sign_in_path_for(resource_or_scope)
