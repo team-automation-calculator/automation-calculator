@@ -3,7 +3,7 @@ This application is about making automation decisions easier. In my life I seem 
 Examples of automation decisions:
 
 * Should I set up a build pipeline for a side project, or should I deploy it manually?
-* Should I clean my floors by manually or purchase an expensive cleaning robot?
+* Should I clean my floors manually or purchase an expensive cleaning robot?
 * How much time would I save if I bought and installed a dishwasher vs cleaning my dishes by hand?
 
 Here is how one of those automation decisions would map to the models in this application.
