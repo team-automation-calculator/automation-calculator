@@ -148,22 +148,22 @@ body{
 /*===================== end login style===================*/
 
 /*=====================top navbar style===================*/
-.top_navigation{
+.top-navigation{
     width: 100%;
     box-sizing: border-box;
     background: #37A000;
     padding: 30px 0;
 }
-.top_navigation h3{
+.top-navigation h3{
     font-size: 24px;
     color: #fff;
     margin: 0;
 }
 
-.login_toggle{
+.login-toggle{
     float: right;
 }
-.login_toggle a {
+.login-toggle a {
     font-size: 20px;
     color: #fff;
     text-align: right;
@@ -175,7 +175,7 @@ body{
     -o-transition: ease 0.4s all;
     transition: ease 0.4s all;
 }
-.login_toggle a:hover {
+.login-toggle a:hover {
     background-color: #f2f2f2;
     color: #37A000;
     box-shadow: 1px 2px 3px #333;
@@ -184,14 +184,14 @@ body{
 /*===================== end top navbar style===================*/
 
 /*=====================automation_scenario style===================*/
-.automation_scenario h1{
+.automation-scenario h1{
     text-align: center;
     padding: 50px 0px 0px;
 }
 .automation-scenario-left{
     margin-top: 50px;
 }
-.automation_scenario input{
+.automation-scenario input{
     width: 100%;
     border: none;
     border-bottom: 2px solid #37A000;
@@ -199,8 +199,7 @@ body{
     margin: 5px 0px 10px;
     outline: none;
 }
-.automation_scenario input[type="submit"]{
-    
+.automation-scenario input[type="submit"]{
     border: none;
     background: #37A000;
     color: #fff;
@@ -214,7 +213,7 @@ body{
     -o-transition: ease 0.4s all; 
     transition: ease 0.4s all;
 }
-.automation_scenario input[type="submit"]:hover{
+.automation-scenario input[type="submit"]:hover{
     background: #008329;
     color: #fff;
     box-shadow: 1px 2px 3px #222;
