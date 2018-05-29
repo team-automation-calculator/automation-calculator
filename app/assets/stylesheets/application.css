@@ -159,10 +159,11 @@ body{
     color: #fff;
     margin: 0;
 }
-.logout{
+
+.login_toggle{
     float: right;
 }
-.logout a{
+.login_toggle a {
     font-size: 20px;
     color: #fff;
     text-align: right;
@@ -171,14 +172,15 @@ body{
     padding: 5px 20px;
     -webkit-transition: ease 0.4s all;
     -moz-transition: ease 0.4s all;
-    -o-transition: ease 0.4s all; 
+    -o-transition: ease 0.4s all;
     transition: ease 0.4s all;
 }
-.logout a:hover{
+.login_toggle a:hover {
     background-color: #f2f2f2;
     color: #37A000;
     box-shadow: 1px 2px 3px #333;
 }
+
 /*===================== end top navbar style===================*/
 
 /*=====================automation_scenario style===================*/
