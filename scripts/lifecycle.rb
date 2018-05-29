@@ -1,11 +1,17 @@
 class Lifecycle
   COMMAND_HASH = {
     debug_production: -> { start_debug_production },
-    dev: -> { system('docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d dev') },
+    dev: -> { system(build_dev_docker_compose_call) },
     production: -> { system('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d') }
   }.freeze
 
   class << self
+    def build_dev_docker_compose_call
+      uid = `id -u`.rstrip
+      gid = `id -g`.rstrip
+      "UID=#{uid} GID=#{gid} docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d dev"
+    end
+
     def init(cmds)
       DockerBuild.build(cmds)
       exec('docker-compose -f docker-compose.yml -f docker-compose.dev.yml run dev "/usr/src/app/bin/setup"')
