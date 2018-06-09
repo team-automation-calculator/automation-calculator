@@ -28,6 +28,8 @@ gem 'omniauth-github'
 gem 'config'
 # brings convention over configuration to your JSON generation
 gem 'active_model_serializers'
+# provides Haml generators for Rails
+gem 'haml-rails'
 
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
