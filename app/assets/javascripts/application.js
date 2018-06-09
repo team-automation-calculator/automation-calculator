@@ -13,4 +13,5 @@
 //= require rails-ujs
 //= require turbolinks
 //= require jquery
+//= require plotly-latest.min
 //= require_tree .
