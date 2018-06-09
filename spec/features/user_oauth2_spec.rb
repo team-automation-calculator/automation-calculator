@@ -4,7 +4,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
     OmniAuth.config.test_mode = true
   end
 
-  shared_examples_for :an_oauth2_provider do
+  shared_examples_for 'an oauth2 provider' do
     def oauth2_sign_in
       link_title = "Sign in with #{provider_link_name}"
 
@@ -103,13 +103,13 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
     let(:provider_link_name) { 'GoogleOauth2' }
     let(:provider) { :google_oauth2 }
 
-    it_behaves_like :an_oauth2_provider
+    it_behaves_like 'an oauth2 provider'
   end
 
   context 'with github provider' do
     let(:provider_link_name) { 'GitHub' }
     let(:provider) { :github }
 
-    it_behaves_like :an_oauth2_provider
+    it_behaves_like 'an oauth2 provider'
   end
 end

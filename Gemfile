@@ -8,7 +8,7 @@ end
 gem 'coffee-rails'
 gem 'jbuilder'
 gem 'jquery-rails'
-gem 'pg', '~> 0.2'
+gem 'pg'
 gem 'puma'
 gem 'rails'
 gem 'rake'
@@ -60,7 +60,7 @@ group :test do
   gem 'selenium-webdriver'
   # Rspec cops for rubocop
   gem 'rubocop-rspec'
-  gem 'shoulda-matchers', '~> 3.1'
+  gem 'shoulda-matchers'
   # Code coverage for Ruby
   gem 'simplecov', require: false
 end
