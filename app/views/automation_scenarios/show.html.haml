@@ -5,7 +5,7 @@
   .col-sm-4.automation-scenario-left
     = form_for @automation_scenario do |f|
       Number of Iterations : #{f.number_field :iteration_count}
-      \#{f.fields_for :solutions do |s|}
+      = f.fields_for :solutions do |s|
         %div
           - if s.object.persisted?
             Solution ##{s.object.id}:
