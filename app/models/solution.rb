@@ -5,6 +5,10 @@ class Solution < ApplicationRecord
   validates :iteration_cost, numericality: { only_integer: true, greater_than: 0 }
 
   delegate :iteration_count, to: :automation_scenario
+
+  def cost
+    initial_cost + (iteration_cost * iteration_count)
+  end
 end
 
 # == Schema Information
