@@ -105,13 +105,8 @@ RSpec.describe API::IterationsController, type: :request do
   end
 
   describe 'DELETE #destroy' do
-    let(:iteration) { create :iteration }
-    let(:another_iteration) { create :iteration }
-
-    before do
-      iteration
-      another_iteration
-    end
+    let!(:iteration) { create :iteration }
+    let!(:another_iteration) { create :iteration }
 
     it 'destroys the requested iteration' do
       expect do

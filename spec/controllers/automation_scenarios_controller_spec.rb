@@ -6,22 +6,36 @@ RSpec.describe AutomationScenariosController, type: :controller do
   describe 'POST #create' do
     describe 'new automation_scenario creation' do
       let(:visitor) { create(:visitor) }
-      let(:create_params) { { owner_type: 'Visitor', owner_id: visitor.id } }
-      let(:create_post) { post :create, params: { automation_scenario: create_params } }
+      let(:create_params) do
+        {
+          automation_scenario:
+            { owner_type: 'Visitor', owner_id: visitor.id }
+        }
+      end
+
+      def create_post
+        post :create, params: create_params
+      end
 
       context 'with correct params' do
         it 'creates a new automation_scenario model' do
           expect { create_post }.to change(AutomationScenario, :count).by 1
         end
+
         it 'redirects to automation_scenario\'s page' do
           create_post
-          expect(response).to redirect_to(action: :show, id: AutomationScenario.last.id)
+          expect(response).to redirect_to(AutomationScenario.last)
         end
       end
 
       context 'with incorrect params' do
         context 'with incorrect params hash name' do
-          let(:create_post) { post :create, params: { foobar_params: create_params } }
+          let(:create_params) do
+            {
+              foobar_params:
+                { owner_type: 'Visitor', owner_id: visitor.id }
+            }
+          end
 
           it 'throws strong params error' do
             expect { create_post }.to raise_error(ActionController::ParameterMissing)
@@ -29,7 +43,12 @@ RSpec.describe AutomationScenariosController, type: :controller do
         end
 
         context 'with incorrect params key values' do
-          let(:create_params) { { foobar_type: 'Foobar', foobar_id: visitor.id } }
+          let(:create_params) do
+            {
+              automation_scenario:
+                { foobar_type: 'Foobar', foobar_id: visitor.id }
+            }
+          end
 
           it 'throws strong params error' do
             expect { create_post }.to raise_error(ActiveRecord::RecordInvalid)
@@ -40,10 +59,10 @@ RSpec.describe AutomationScenariosController, type: :controller do
   end
 
   describe 'GET #show' do
-    let(:show_get) { get :show, params: { id: automation_scenario.id } }
+    let(:params) { { id: automation_scenario.id } }
 
-    it 'routes correctly' do
-      assert_generates '/automation_scenarios/1', controller: 'automation_scenarios', action: 'show', id: '1'
+    def show_get
+      get :show, params: params
     end
 
     context 'with correct id' do
@@ -54,7 +73,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
     end
 
     context 'with incorrect id' do
-      let(:show_get) { get :show, params: { id: 0 } }
+      let(:params) { { id: 0 } }
 
       it 'raises error' do
         expect { show_get }.to raise_error(ActiveRecord::RecordNotFound)
@@ -63,15 +82,15 @@ RSpec.describe AutomationScenariosController, type: :controller do
   end
 
   describe 'PUT #update' do
-    def update_put
-      put :update, params: {
+    let(:params) do
+      {
         id: automation_scenario.id,
         automation_scenario: { iteration_count: 10 }
       }
     end
 
-    it 'routes correctly' do
-      assert_generates '/automation_scenarios/1', controller: 'automation_scenarios', action: 'update', id: '1'
+    def update_put
+      put :update, params: params
     end
 
     context 'with correct id' do
@@ -82,7 +101,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
     end
 
     context 'with incorrect id' do
-      let(:update_put) { put :update, params: { id: 0 } }
+      let(:params) { { id: 0 } }
 
       it 'raises error' do
         expect { update_put }.to raise_error(ActiveRecord::RecordNotFound)
@@ -91,7 +110,9 @@ RSpec.describe AutomationScenariosController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
-    let(:destroy_delete) { delete :destroy, params: { id: automation_scenario.id } }
+    def destroy_delete
+      delete :destroy, params: { id: automation_scenario.id }
+    end
 
     it 'returns http success' do
       destroy_delete
@@ -100,7 +121,8 @@ RSpec.describe AutomationScenariosController, type: :controller do
 
     it 'deletes model' do
       destroy_delete
-      expect { AutomationScenario.find(automation_scenario.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { AutomationScenario.find(automation_scenario.id) }
+        .to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
