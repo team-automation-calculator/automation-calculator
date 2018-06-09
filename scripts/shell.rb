@@ -1,3 +1,4 @@
+# Using a shell in docker containers
 class Shell
   COMMAND_HASH = {
     dev: -> { dev_shell },
@@ -18,11 +19,17 @@ class Shell
     end
 
     def dev_shell
-      exec('docker-compose -f docker-compose.yml -f docker-compose.dev.yml run dev /bin/bash')
+      exec(
+        'docker-compose -f docker-compose.yml -f docker-compose.dev.yml ' \
+        'run dev /bin/bash'
+      )
     end
 
     def production_shell
-      exec('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml run production /bin/bash')
+      exec(
+        'docker-compose -f docker-compose.yml ' \
+        '-f docker-compose.production_http.yml run production /bin/bash'
+      )
     end
   end
 end

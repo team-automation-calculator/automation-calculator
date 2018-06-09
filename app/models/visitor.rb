@@ -1,9 +1,12 @@
 class Visitor < ApplicationRecord
-  has_many :automation_scenarios, as: :owner, dependent: :destroy
+  has_many  :automation_scenarios,
+            as: :owner,
+            dependent: :destroy,
+            inverse_of: :owner
   validates :ip, :uuid, presence: true
 
-  def self.create_with_random_uuid(ip)
-    Visitor.create(uuid: SecureRandom.uuid, ip: ip)
+  def self.create_with_random_uuid(ip_address)
+    create uuid: SecureRandom.uuid, ip: ip_address
   end
 end
 

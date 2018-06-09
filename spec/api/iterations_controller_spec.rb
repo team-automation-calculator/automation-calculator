@@ -12,8 +12,12 @@ RSpec.describe API::IterationsController, type: :request do
 
   describe 'GET #show' do
     let(:iteration) { create :iteration }
-    let(:expected_response_path) { '/expected_responses/iterations/getShow.json' }
-    let(:expected_response_string) { File.read(File.dirname(__FILE__) + expected_response_path) }
+    let(:expected_response_path) do
+      '/expected_responses/iterations/getShow.json'
+    end
+    let(:expected_response_string) do
+      File.read(File.dirname(__FILE__) + expected_response_path)
+    end
     let(:expected_response) { JSON.parse(expected_response_string) }
 
     before { get "/api/iterations/#{iteration.id}" }
@@ -90,7 +94,8 @@ RSpec.describe API::IterationsController, type: :request do
       let(:attributes) { new_attributes.merge wrong_attributes }
 
       before do
-        put "/api/iterations/#{iteration.id}", params: { id: iteration.id, iteration: attributes }
+        put "/api/iterations/#{iteration.id}",
+            params: { id: iteration.id, iteration: attributes }
       end
 
       it 'updates the requested iteration' do

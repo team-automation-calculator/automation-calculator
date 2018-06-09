@@ -8,9 +8,8 @@ module Users
 
     def google_oauth2
       if @user.persisted?
-        flash[:notice] = I18n.t(
-          'devise.omniauth_callbacks.success', kind: 'Google'
-        )
+        flash[:notice] =
+          I18n.t('devise.omniauth_callbacks.success', kind: 'Google')
         sign_in_and_redirect @user, event: :authentication
       else
         # Removing extra as it can overflow some session stores

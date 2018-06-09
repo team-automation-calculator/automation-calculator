@@ -5,7 +5,10 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :recoverable, :trackable,
          :omniauthable, omniauth_providers: %i[github google_oauth2]
 
-  has_many :automation_scenarios, as: :owner, dependent: :destroy
+  has_many  :automation_scenarios,
+            as: :owner,
+            dependent: :destroy,
+            inverse_of: :owner
 
   after_create :create_automation_scenario
 

@@ -38,7 +38,8 @@ RSpec.describe AutomationScenariosController, type: :controller do
           end
 
           it 'throws strong params error' do
-            expect { create_post }.to raise_error(ActionController::ParameterMissing)
+            expect { create_post }
+              .to raise_error(ActionController::ParameterMissing)
           end
         end
 

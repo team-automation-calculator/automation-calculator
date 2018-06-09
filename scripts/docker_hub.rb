@@ -1,3 +1,4 @@
+# Interract with the DockerHub
 class DockerHub
   REPO = 'automationcalculator/automation-calculator-rails'.freeze
 

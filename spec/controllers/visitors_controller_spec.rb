@@ -48,7 +48,8 @@ RSpec.describe VisitorsController, type: :controller do
     end
 
     it 'removes model' do
-      expect { Visitor.find(visitor.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { Visitor.find(visitor.id) }
+        .to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
