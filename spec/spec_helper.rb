@@ -19,7 +19,6 @@ require 'database_cleaner'
 require 'factory_bot_rails'
 require 'pry'
 require 'simplecov'
-require 'support/request_helpers'
 
 SimpleCov.start 'rails'
 
@@ -55,8 +54,6 @@ RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
   config.include FactoryBot::Syntax::Methods
-
-  config.include Requests::JsonHelpers, type: :request
 
   config.disable_monkey_patching!
 

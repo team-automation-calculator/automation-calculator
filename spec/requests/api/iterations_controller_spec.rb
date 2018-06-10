@@ -6,40 +6,30 @@ RSpec.describe API::IterationsController, type: :request do
 
     it 'returns a success response' do
       get '/api/iterations'
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
   describe 'GET #show' do
-    let(:iteration) { create :iteration }
-    let(:expected_response_path) do
-      '/expected_responses/iterations/getShow.json'
+    let(:expected_time) { Time.zone.now.yesterday }
+    let(:expected_cost) { 5 }
+    let(:iteration) do
+      create :iteration, time: expected_time, cost: expected_cost
     end
-    let(:expected_response_string) do
-      File.read(File.dirname(__FILE__) + expected_response_path)
-    end
-    let(:expected_response) { JSON.parse(expected_response_string) }
 
     before { get "/api/iterations/#{iteration.id}" }
 
     it 'returns a success response' do
-      expect(response).to be_success
+      expect(response).to be_successful
     end
 
-    it 'returns the correct time' do
-      expect(json['time']).to eq expected_response['time']
-    end
+    context 'when inspecting the response' do
+      subject { OpenStruct.new JSON.parse(response.body) }
 
-    it 'returns the correct cost' do
-      expect(json['cost']).to eq expected_response['cost']
-    end
-
-    it 'has an id key/value' do
-      expect(json['id']).to be_truthy
-    end
-
-    it 'has an automation scenario key/value' do
-      expect(json['automation_scenario_id']).to be_truthy
+      its(:time)  { is_expected.to eq expected_time.strftime('%FT%T.%LZ') }
+      its(:cost)  { is_expected.to eq expected_cost }
+      its(:id)    { is_expected.to eq iteration.id }
+      its(:automation_scenario_id) { is_expected.to be_present }
     end
   end
 
@@ -95,7 +85,7 @@ RSpec.describe API::IterationsController, type: :request do
 
       before do
         put "/api/iterations/#{iteration.id}",
-            params: { id: iteration.id, iteration: attributes }
+            params: { iteration: attributes }
       end
 
       it 'updates the requested iteration' do
@@ -121,7 +111,7 @@ RSpec.describe API::IterationsController, type: :request do
 
     it 'returns the correct status code' do
       delete "/api/iterations/#{another_iteration.id}"
-      expect(response).to have_http_status(:success)
+      expect(response).to be_successful
     end
   end
 end

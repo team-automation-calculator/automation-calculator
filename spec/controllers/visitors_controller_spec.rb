@@ -32,7 +32,7 @@ RSpec.describe VisitorsController, type: :controller do
 
     it 'returns http success' do
       get :show, params: { id: visitor.id }
-      expect(response).to have_http_status(:success)
+      expect(response).to be_successful
     end
   end
 
@@ -44,7 +44,7 @@ RSpec.describe VisitorsController, type: :controller do
     end
 
     it 'returns http success' do
-      expect(response).to have_http_status(:success)
+      expect(response).to be_successful
     end
 
     it 'removes model' do

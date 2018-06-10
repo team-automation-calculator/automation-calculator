@@ -57,6 +57,9 @@ end
 group :test do
   gem 'capybara'
   gem 'rspec-rails'
+  # The RSpec testing framework with Rails integrations
+  gem 'rspec-its'
+
   gem 'selenium-webdriver'
   # Rspec cops for rubocop
   gem 'rubocop-rspec'

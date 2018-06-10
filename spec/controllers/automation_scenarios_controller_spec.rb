@@ -69,7 +69,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
     context 'with correct id' do
       it 'returns http success' do
         show_get
-        expect(response).to have_http_status(:success)
+        expect(response).to be_successful
       end
     end
 
@@ -117,7 +117,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
 
     it 'returns http success' do
       destroy_delete
-      expect(response).to have_http_status(:success)
+      expect(response).to be_successful
     end
 
     it 'deletes model' do
