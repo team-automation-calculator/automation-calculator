@@ -1,3 +1,4 @@
+# Commands to connect to a container database
 class DatabaseTerminal
   COMMAND_HASH = {
     dev: -> { connect_dev_db }
@@ -17,7 +18,10 @@ class DatabaseTerminal
     end
 
     def connect_dev_db
-      exec('docker-compose -f docker-compose.yml -f docker-compose.dev.yml run db_client')
+      exec(
+        'docker-compose -f docker-compose.yml ' \
+        '-f docker-compose.dev.yml run db_client'
+      )
     end
   end
 end

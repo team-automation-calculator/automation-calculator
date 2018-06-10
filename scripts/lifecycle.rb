@@ -1,14 +1,28 @@
+# Main commands to run a container
 class Lifecycle
   COMMAND_HASH = {
     debug_production: -> { start_debug_production },
-    dev: -> { system('docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d dev') },
-    production: -> { system('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d') }
+    dev: lambda do
+      system(
+        'docker-compose -f docker-compose.yml ' \
+        '-f docker-compose.dev.yml up -d dev'
+      )
+    end,
+    production: lambda do
+      system(
+        'docker-compose -f docker-compose.yml ' \
+        '-f docker-compose.production_http.yml up -d'
+      )
+    end
   }.freeze
 
   class << self
     def init(cmds)
       DockerBuild.build(cmds)
-      exec('docker-compose -f docker-compose.yml -f docker-compose.dev.yml run dev "/usr/src/app/bin/setup"')
+      exec(
+        'docker-compose -f docker-compose.yml ' \
+        '-f docker-compose.dev.yml run dev "/usr/src/app/bin/setup"'
+      )
     end
 
     def rm
@@ -35,7 +49,10 @@ class Lifecycle
 
     def start_debug_production
       EnvironmentVariables.set_mock_production_vars
-      system('docker-compose -f docker-compose.yml -f docker-compose.production_http.yml up -d production')
+      system(
+        'docker-compose -f docker-compose.yml ' \
+        '-f docker-compose.production_http.yml up -d production'
+      )
     end
 
     def stop

@@ -1,3 +1,4 @@
+# Create a docker host
 class DockerMachine
   class << self
     def create_host(cmds)

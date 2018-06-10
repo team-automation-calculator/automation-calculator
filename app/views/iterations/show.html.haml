@@ -1,0 +1,8 @@
+%h2= link_to "Iteration List", iterations_url(automation_scenario_id: params[:automation_scenario_id])
+%h2 Iteration Details
+%div
+  %label
+    Iteration Time: #{@iteration.time}
+  %br/
+  %label
+    Iteration Cost: #{@iteration.cost}

@@ -7,40 +7,10 @@ AllCops:
   TargetRubyVersion: 2.2
   DisplayCopNames: true
 
-  Include:
-    - Rakefile
-    - Gemfile
-    - config.ru
-    - lib/**/*
-
   Exclude:
     - 'db/schema.rb'
     - 'db/migrate/**/*'
     - 'vendor/bundle/**/*'
-
-Layout/DotPosition:
-  EnforcedStyle: trailing
-
-Layout/EmptyLinesAroundAccessModifier:
-  Enabled: false
-
-Layout/FirstArrayElementLineBreak:
-  Enabled: true
-
-Layout/FirstHashElementLineBreak:
-  Enabled: true
-
-Layout/FirstMethodArgumentLineBreak:
-  Enabled: true
-
-Layout/FirstMethodParameterLineBreak:
-  Enabled: true
-
-Layout/MultilineAssignmentLayout:
-  Enabled: true
-
-Metrics/AbcSize:
-  Max: 17
 
 Metrics/BlockLength:
  ExcludedMethods:
@@ -48,42 +18,15 @@ Metrics/BlockLength:
    - context
    - shared_examples_for
 
-Metrics/LineLength:
-  Max: 120
-
-Metrics/MethodLength:
-  Max: 15
-
 # Seems to be breaking tests when recommended fixes for this cop are applied
 Rails/HttpPositionalArguments:
-  Enabled: false
-
-Rails/InverseOf:
-  Enabled: false
-
-RSpec/NestedGroups:
-  Max: 7
-
-Style/ConditionalAssignment:
-  Enabled: false
-
-Style/ClassAndModuleChildren:
   Enabled: false
 
 Style/Documentation:
   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Style/OptionHash:
-  Enabled: true
-
-Style/Send:
-  Enabled: true
-
-Style/SymbolArray:
-  Enabled: true
+RSpec/NestedGroups:
+  Max: 7
 
 Style/MixinUsage:
   Exclude:

@@ -28,16 +28,24 @@ RSpec.describe 'New user workflow', type: :feature do
     before do
       visit_visitors_path
 
-      fill_in 'automation_scenario_solutions_attributes_0_initial_cost', with: 1
-      fill_in 'automation_scenario_solutions_attributes_0_iteration_cost', with: 10
+      fill_in 'automation_scenario_solutions_attributes_0_initial_cost',
+              with: 1
+      fill_in 'automation_scenario_solutions_attributes_0_iteration_cost',
+              with: 10
       fill_in 'automation_scenario_iteration_count', with: 10
       click_button 'Update Automation Scenario'
+    end
+
+    let(:json_solutions) do
+      {
+        initial_cost: 1, iteration_cost: 10, iteration_count: 10
+      }.to_json
     end
 
     it 'sets soulutions in hidden field' do
       expect(page).to have_css(
         '#scenarioSolutions',
-        text: { initial_cost: 1, iteration_cost: 10, iteration_count: 10 }.to_json,
+        text: json_solutions,
         visible: false
       )
     end

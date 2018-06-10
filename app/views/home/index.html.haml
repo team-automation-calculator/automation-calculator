@@ -1,0 +1,4 @@
+%p Protected content
+%p
+  Current user: #{current_user.email}
+= link_to('Sign out', destroy_user_session_path, method: :delete)

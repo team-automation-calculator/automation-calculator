@@ -24,7 +24,8 @@ class AutomationScenariosController < ApplicationController
   private
 
   def creation_params
-    params.require(:automation_scenario).permit(:owner_type, :owner_id, :iteration_count)
+    params.require(:automation_scenario)
+          .permit(:owner_type, :owner_id, :iteration_count)
   end
 
   def update_params

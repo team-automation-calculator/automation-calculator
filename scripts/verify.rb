@@ -1,25 +1,27 @@
+# Spec and lint commands for docker containers
 class Verify
   class << self
     def rspec_test(cmds)
       env = cmds.shift || 'dev'
-      case env
-      when 'dev'
-        exec('docker-compose -f docker-compose.yml -f docker-compose.dev.yml run -e RAILS_ENV=test --rm dev rspec')
-      when 'ci'
-        exec('RAILS_ENV=test docker-compose -f docker-compose.yml -f docker-compose.ci.yml run --rm ci')
-      else
+
+      unless %w[dev ci].include?(env)
         warn "Unrecognized command: #{env}"
+        return
       end
+
+      exec(
+        "docker-compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
+        "run --rm #{env} rspec"
+      )
     end
 
     def lint(cmds)
-      env = cmds.shift.to_s
+      env = cmds.shift.to_s == 'ci' ? 'ci' : 'dev'
 
-      if env == 'ci'
-        exec('docker-compose -f docker-compose.yml -f docker-compose.ci.yml run --no-deps --rm ci rubocop')
-      else
-        exec('docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --no-deps --rm dev rubocop')
-      end
+      exec(
+        "docker-compose -f docker-compose.yml -f docker-compose.#{env}.yml "\
+        "run --no-deps --rm #{env} rubocop"
+      )
     end
   end
 end

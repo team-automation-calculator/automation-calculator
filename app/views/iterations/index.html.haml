@@ -1,0 +1,22 @@
+%h2= link_to "New Iteration", new_iteration_url(automation_scenario_id: params[:automation_scenario_id])
+%table
+  %thead
+    %tr
+      %th Date
+      %th Cost
+      %th Actions
+  %tbody
+    - if @iterations.present?
+      - @iterations.each do |iteration|
+        %tr
+          %td
+            = iteration.time.strftime('%Y-%m-%d') rescue nil
+          %td
+            = iteration.cost
+          %td
+            = link_to "Show", iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id)
+            = link_to "Edit", edit_iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id)
+            = link_to "Delete", iteration_url(automation_scenario_id: params[:automation_scenario_id], id: iteration.id), method: :delete, data: {confirm: "Are you sure!"}
+    - else
+      %tr
+        %td{:colspan => "3"} There are no iterations for current automation scenarios.

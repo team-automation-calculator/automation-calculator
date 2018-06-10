@@ -7,7 +7,7 @@ RSpec.describe SolutionsController, type: :controller do
     before { get :show, params: { id: solution.id } }
 
     it 'returns a success response' do
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 
@@ -94,7 +94,7 @@ RSpec.describe SolutionsController, type: :controller do
 
     it 'redirects to the solutions list' do
       delete :destroy, params: { id: solution.id }
-      expect(response).to be_success
+      expect(response).to be_successful
     end
   end
 end

@@ -1,0 +1,12 @@
+= render "shared/header"
+.container.automation-scenario
+  .row
+    .col-sm-12
+      %h1 AutomationScenarios
+    .col-sm-4.automation-scenario-left
+      = form_for :automation_scenario do |f|
+        Owner Type: #{f.text_field :owner_type}
+        %br/
+        Owner ID : #{f.text_field :owner_id}
+        %br/
+        = f.submit

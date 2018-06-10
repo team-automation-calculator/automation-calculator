@@ -1,0 +1,8 @@
+%div
+  = form_for @iteration, url: iterations_url(automation_scenario_id: params[:automation_scenario_id]), method: :post, html: { class: "new_iteration", id: "new_iteration" } do |f|
+    = f.hidden_field  :automation_scenario_id, value: params[:automation_scenario_id]
+    Iteration Time : #{f.text_field :time}
+    %br/
+    Cost per Iteration : #{f.number_field :cost}
+    %br/
+    = f.submit

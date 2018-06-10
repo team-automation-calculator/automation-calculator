@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :visitor do
-    ip '192.168.1.1'
-    uuid { SecureRandom.uuid }
+    ip    { Faker::Internet.ip_v4_address }
+    uuid  { SecureRandom.uuid }
   end
 end
 
