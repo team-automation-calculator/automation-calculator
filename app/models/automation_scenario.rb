@@ -11,7 +11,7 @@ class AutomationScenario < ApplicationRecord
   }
 
   def display_name
-    name.present? ? name : "Automation Scenario ##{id}"
+    name.presence || "Automation Scenario ##{id}"
   end
 end
 

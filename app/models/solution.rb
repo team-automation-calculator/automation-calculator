@@ -13,7 +13,7 @@ class Solution < ApplicationRecord
   end
 
   def display_name
-    name.present? ? name : "Solution ##{id}"
+    name.presence || "Solution ##{id}"
   end
 end
 
