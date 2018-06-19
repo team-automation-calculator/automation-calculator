@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180513032312) do
+ActiveRecord::Schema.define(version: 2018_06_17_085519) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 20180513032312) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "iteration_count", default: 10
+    t.string "name"
     t.index ["owner_type", "owner_id"], name: "index_automation_scenarios_on_owner_type_and_owner_id"
   end
 
@@ -39,6 +40,7 @@ ActiveRecord::Schema.define(version: 20180513032312) do
     t.bigint "automation_scenario_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
     t.index ["automation_scenario_id"], name: "index_solutions_on_automation_scenario_id"
   end
 

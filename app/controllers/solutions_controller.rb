@@ -40,13 +40,13 @@ class SolutionsController < ApplicationController
   # only allow the white list through.
   def solution_params
     params.require(:solution).permit(
-      :initial_cost, :iteration_cost
+      :initial_cost, :iteration_cost, :name
     )
   end
 
   def create_solution_params
     params.require(:solution).permit(
-      :initial_cost, :iteration_cost, :automation_scenario_id
+      :initial_cost, :iteration_cost, :automation_scenario_id, :name
     )
   end
 end

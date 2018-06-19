@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :solution do
     initial_cost 1
     iteration_cost 1
+    name { Faker::Lorem.sentence }
 
     automation_scenario
   end

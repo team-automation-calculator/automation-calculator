@@ -4,16 +4,25 @@
     %h1 Automation Scenario
   .col-sm-4.automation-scenario-left
     = form_for @automation_scenario do |f|
-      Number of Iterations : #{f.number_field :iteration_count}
+      %div
+        Name :
+        = f.text_field :name, placeholder: 'Scenario name'
+      %div
+        Number of Iterations :
+        = f.number_field :iteration_count
+
       = f.fields_for :solutions do |s|
         %div
           - if s.object.persisted?
-            Solution ##{s.object.id}:
+            = succeed ':' do
+              = s.object.display_name
           - else
-            Add New solution:
-          Initial Cost: #{s.number_field :initial_cost}
-          Cost per Iteration : #{s.number_field :iteration_cost}
-          \#{s.hidden_field(:automation_scenario_id, value: @automation_scenario.id)}
+            Add New Solution:
+          Initial Cost:
+          = s.number_field :initial_cost
+          Cost per Iteration :
+          = s.number_field :iteration_cost
+          = s.hidden_field(:automation_scenario_id, value: @automation_scenario.id)
       = f.submit 'Update Automation Scenario'
   .col-sm-8.automation-scenario-right
     #solutionsChart

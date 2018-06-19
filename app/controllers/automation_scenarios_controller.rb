@@ -25,13 +25,13 @@ class AutomationScenariosController < ApplicationController
 
   def creation_params
     params.require(:automation_scenario)
-          .permit(:owner_type, :owner_id, :iteration_count)
+          .permit(:owner_type, :owner_id, :iteration_count, :name)
   end
 
   def update_params
     params.require(:automation_scenario).permit(
-      :iteration_count,
-      solutions_attributes: %i[id initial_cost iteration_cost]
+      :iteration_count, :name,
+      solutions_attributes: %i[id initial_cost iteration_cost name]
     )
   end
 

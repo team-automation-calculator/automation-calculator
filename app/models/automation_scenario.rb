@@ -9,6 +9,10 @@ class AutomationScenario < ApplicationRecord
   accepts_nested_attributes_for :solutions, reject_if: lambda { |attributes|
     attributes[:initial_cost].blank? || attributes[:iteration_cost].blank?
   }
+
+  def display_name
+    name.present? ? name : "Automation Scenario ##{id}"
+  end
 end
 
 # == Schema Information

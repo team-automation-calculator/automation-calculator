@@ -11,6 +11,10 @@ class Solution < ApplicationRecord
   def cost
     initial_cost + (iteration_cost * iteration_count)
   end
+
+  def display_name
+    name.present? ? name : "Solution ##{id}"
+  end
 end
 
 # == Schema Information
