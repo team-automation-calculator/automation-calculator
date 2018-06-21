@@ -1,25 +1,25 @@
-.login-container
-  .login-header
-    %h2
-      %span.banner-title Fill in the form below to gain access to
-      %span Automation Calculator
-  .login-page
-    %h1 Sign up
-    %br/
-    = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
-      = devise_error_messages!
-      .field
-        = f.label :email
-        = f.email_field :email, autofocus: true, autocomplete: "email"
-      .field
-        = f.label :password
-        - if @minimum_password_length
-          %em
-            (#{@minimum_password_length} characters minimum)
-        = f.password_field :password, autocomplete: "off"
-      .field
-        = f.label :password_confirmation
-        = f.password_field :password_confirmation, autocomplete: "off"
-      .actions
-        = f.submit "Sign up"
-    = render "devise/shared/links"
+%h3.text-center Sign up
+= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
+  = devise_error_messages!
+  .row
+    .col-3
+      = f.label :email
+    .col
+      = f.email_field :email, autofocus: true, autocomplete: "email"
+  .row
+    .col-3
+      = f.label :password
+    .col
+      - if @minimum_password_length
+        %em
+          (#{@minimum_password_length} characters minimum)
+      = f.password_field :password, autocomplete: "off"
+  .row
+    .col-3
+      = f.label :password_confirmation
+    .col
+      = f.password_field :password_confirmation, autocomplete: "off"
+  .row
+    .col-3
+    .col
+      = f.submit "Sign up", class: 'btn btn-primary'

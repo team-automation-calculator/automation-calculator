@@ -54,8 +54,14 @@ GEM
       rake (>= 10.4, < 13.0)
     arel (9.0.0)
     ast (2.4.0)
+    autoprefixer-rails (8.6.3)
+      execjs
     bcrypt (3.1.12)
     bindex (0.5.0)
+    bootstrap (4.1.1)
+      autoprefixer-rails (>= 6.0.3)
+      popper_js (>= 1.12.9, < 2)
+      sass (>= 3.5.2)
     builder (3.2.3)
     byebug (10.0.2)
     capybara (3.2.1)
@@ -214,6 +220,7 @@ GEM
     parser (2.5.1.0)
       ast (~> 2.4.0)
     pg (1.0.0)
+    popper_js (1.12.9)
     powerpack (0.1.1)
     pry (0.11.3)
       coderay (~> 1.1.0)
@@ -359,6 +366,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers
   annotate
+  bootstrap
   byebug
   capybara
   coffee-rails

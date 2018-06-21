@@ -30,6 +30,8 @@ gem 'config'
 gem 'active_model_serializers'
 # provides Haml generators for Rails
 gem 'haml-rails'
+# Bootstrap 4 Ruby Gem for Rails / Sprockets and Compass
+gem 'bootstrap'
 
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]

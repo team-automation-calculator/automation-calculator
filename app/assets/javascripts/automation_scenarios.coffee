@@ -1,6 +1,6 @@
 document.addEventListener 'turbolinks:load', ->
   #Variables
-  exampleSolutionJson = 
+  exampleSolutionJson =
     initial_cost: 5
     iteration_cost: 10
     iteration_count: 10

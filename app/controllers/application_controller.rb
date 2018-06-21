@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
+  layout :layout_selector
 
   def default_url_options
     if Rails.env.production?
@@ -17,5 +18,9 @@ class ApplicationController < ActionController::Base
     else
       super
     end
+  end
+
+  def layout_selector
+    devise_controller? ? 'auth' : 'application'
   end
 end

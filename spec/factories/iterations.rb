@@ -11,10 +11,10 @@ end
 #
 # Table name: iterations
 #
-#  id                     :integer          not null, primary key
+#  id                     :bigint(8)        not null, primary key
 #  time                   :datetime
-#  cost                   :integer
-#  automation_scenario_id :integer
+#  cost                   :bigint(8)
+#  automation_scenario_id :bigint(8)
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #

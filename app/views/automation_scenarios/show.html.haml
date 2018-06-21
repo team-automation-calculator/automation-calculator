@@ -1,7 +1,10 @@
-= render "shared/header"
 .container.automation-scenario
   %div
-    %h1 Automation Scenario
+    %h1
+      Automation Scenario
+      - if @automation_scenario.name.present?
+        = surround '"', '"' do
+          = @automation_scenario.name
   .col-sm-4.automation-scenario-left
     = form_for @automation_scenario do |f|
       %div
@@ -18,8 +21,10 @@
               = s.object.display_name
           - else
             Add New Solution:
+        %div
           Initial Cost:
           = s.number_field :initial_cost
+        %div
           Cost per Iteration :
           = s.number_field :iteration_cost
           = s.hidden_field(:automation_scenario_id, value: @automation_scenario.id)

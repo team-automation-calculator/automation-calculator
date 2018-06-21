@@ -1,15 +1,12 @@
-.login-container
-  .login-header
-    %h2
-      %span.banner-title Fill in the form below to gain access to
-      %span AutomationScenario
-  .login-page
-    %h2 Forgot your password?
-    = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
-      = devise_error_messages!
-      .field
-        = f.label :email
-        = f.email_field :email, autofocus: true, autocomplete: "email"
-      .actions
-        = f.submit "Reset Password"
-    = render "devise/shared/links"
+%h3.text-center Forgot your password?
+= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
+  = devise_error_messages!
+  .row
+    .col-3
+      = f.label :email
+    .col
+      = f.email_field :email, autofocus: true, autocomplete: "email"
+  .row
+    .col-3
+    .col
+      = f.submit "Reset Password", class: 'btn btn-primary'

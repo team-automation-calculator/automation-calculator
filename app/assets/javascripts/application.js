@@ -13,5 +13,7 @@
 //= require rails-ujs
 //= require turbolinks
 //= require jquery
+//= require popper
+//= require bootstrap-sprockets
 //= require plotly-latest.min
 //= require_tree .
