@@ -1,0 +1,19 @@
+$body-color: #222;
+$body-bg: #f2f2f2;
+
+/* Google Font Oswald */
+/* @import url('https://fonts.googleapis.com/css?family=Oswald:200,300,400,500,600,700'); */
+/* For offline development */
+@font-face {
+  font-family: 'Oswald';
+  src: font-url('Oswald-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+$font-family-base: 'Oswald';
+
+$link-color: #222;
+$link-hover-color: #37a000;
+$link-hover-decoration: none;
+
+$primary: #37A000;
