@@ -1,25 +1,17 @@
-%h3.text-center Sign up
+%h3 Sign up
 = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
   = devise_error_messages!
-  .row
-    .col-3
-      = f.label :email
-    .col
-      = f.email_field :email, autofocus: true, autocomplete: "email"
-  .row
-    .col-3
-      = f.label :password
-    .col
-      - if @minimum_password_length
-        %em
-          (#{@minimum_password_length} characters minimum)
-      = f.password_field :password, autocomplete: "off"
-  .row
-    .col-3
-      = f.label :password_confirmation
-    .col
-      = f.password_field :password_confirmation, autocomplete: "off"
-  .row
-    .col-3
-    .col
-      = f.submit "Sign up", class: 'btn btn-primary'
+  .form-group
+    = f.label :email
+    = f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control'
+  .form-group
+    = f.label :password
+    = f.password_field :password, autocomplete: "off", class: 'form-control'
+    - if @minimum_password_length
+      %small.form-text.text-muted
+        = @minimum_password_length
+        characters minimum
+  .form-group
+    = f.label :password_confirmation
+    = f.password_field :password_confirmation, autocomplete: "off", class: 'form-control'
+  = f.submit "Sign up", class: 'btn btn-primary'

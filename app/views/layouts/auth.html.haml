@@ -7,16 +7,11 @@
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
   %body
-    .container
-      .row
-        .col
-          %h3.text-center
-            Fill in the form below to gain access to
-            %br/
-            Automation Calculator
-      .row
-        .col
-        .col
-          = yield
-          = render "devise/shared/links"
-        .col
+    .auth-container
+      .auth-header
+        %h2
+          %span.banner-title Fill in the form below to gain access to
+          %span Automation Calculator
+      .auth-page
+        = yield
+        = render "devise/shared/links"
