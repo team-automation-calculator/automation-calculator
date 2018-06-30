@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   }
 
   resources :automation_scenarios
-  resource :visitor, only: %i[show create]
+  resource :visitor, only: :create
 
   get '/health', to: 'health_check#health', defaults: { format: 'json' }
 

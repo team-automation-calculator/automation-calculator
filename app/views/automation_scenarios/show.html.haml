@@ -1,11 +1,11 @@
-.container.automation-scenario
+.container
   %div
     %h1
       Automation Scenario
       - if @automation_scenario.name.present?
         = surround '"', '"' do
           = @automation_scenario.name
-  .col-sm-4.automation-scenario-left
+  .col-sm-4
     = form_for @automation_scenario do |f|
       %div
         Name :
@@ -15,6 +15,7 @@
         = f.number_field :iteration_count
 
       = f.fields_for :solutions do |s|
+        = s.hidden_field(:automation_scenario_id, value: @automation_scenario.id)
         %div
           - if s.object.persisted?
             = succeed ':' do
@@ -27,11 +28,10 @@
         %div
           Cost per Iteration :
           = s.number_field :iteration_cost
-          = s.hidden_field(:automation_scenario_id, value: @automation_scenario.id)
       = f.submit 'Update Automation Scenario'
-  .col-sm-8.automation-scenario-right
+  .col-sm-8
     #solutionsChart
-%p#scenarioSolutions{:hidden => ""}
+%p#scenarioSolutions{hidden: true}
   = ActiveModel::Serializer::CollectionSerializer.new(     |
       @automation_scenario.solutions.reject(&:new_record?) |
     ).to_json                                              |

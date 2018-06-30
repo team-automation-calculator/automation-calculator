@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include Visitable
   protect_from_forgery with: :exception
   layout :layout_selector
 
@@ -8,6 +9,10 @@ class ApplicationController < ActionController::Base
     else
       {}
     end
+  end
+
+  def authenticate_user_or_visitor!
+    authenticate_user! if current_visitor.blank?
   end
 
   protected

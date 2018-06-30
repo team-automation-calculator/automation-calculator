@@ -2,7 +2,7 @@
   = link_to "Log in", new_session_path(resource_name)
   %br/
 
-= link_to 'Visit as a guest', visitor_path
+= link_to 'Visit as a guest', visitor_path, method: :post
 %br/
 
 - if devise_mapping.registerable? && controller_name != 'registrations'

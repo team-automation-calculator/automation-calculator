@@ -2,10 +2,7 @@ class VisitorsController < ApplicationController
   def create
     @visitor = Visitor.create_with_random_uuid(request.remote_ip)
     @automation_scenario = @visitor.automation_scenarios.create!
+    store_current_visitor @visitor
     redirect_to @automation_scenario
-  end
-
-  def show
-    create
   end
 end
