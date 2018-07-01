@@ -1,5 +1,4 @@
 .actions {
-  @extend .col-4;
   @extend .mx-auto;
 
   .btn {
@@ -7,3 +6,7 @@
   }
 }
 
+.form-header {
+  @extend .text-center;
+  @extend .my-4;
+}

@@ -1,7 +1,6 @@
+%h3.form-header
+  All Automation Scenarios
 .container
-  .row
-    .col
-      %h2 All Automation Scenarios
   .row
     - @automation_scenarios.each do |automation_scenario|
       .col-4
@@ -12,16 +11,17 @@
         .row
           .col Solutions Count:
           .col= automation_scenario.solutions.count
+
+.container
+  %h4.my-4 A New Automation Scenario
   .row
-    .col
-      %h2 A New Automation Scenario
-  .row
-    .col
+    .col-4
       = form_for :automation_scenario do |f|
-        Name:
-        = f.text_field :name
-        %br/
-        Iteration Count *:
-        = f.text_field :iteration_count
-        %br/
-        = f.submit
+        .form-group
+          = f.label :name
+          = f.text_field :name, class: 'form-control'
+        .form-group
+          = f.label :iteration_count
+          = f.number_field :iteration_count, class: 'form-control'
+        .actions
+          = f.submit 'Add a new Automation Scenario', class: 'btn btn-primary'
