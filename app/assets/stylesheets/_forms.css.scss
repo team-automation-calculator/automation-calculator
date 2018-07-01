@@ -1,0 +1,9 @@
+.actions {
+  @extend .col-4;
+  @extend .mx-auto;
+
+  .btn {
+    @extend .btn-block;
+  }
+}
+

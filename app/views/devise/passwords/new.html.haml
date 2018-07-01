@@ -4,4 +4,5 @@
   .form-group
     = f.label :email
     = f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control'
-  = f.submit "Reset Password", class: 'btn btn-primary'
+  .actions
+    = f.submit "Reset Password", class: 'btn btn-primary'
