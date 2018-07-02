@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe AutomationScenariosController, type: :controller do
-  let(:automation_scenario) { create(:automation_scenario) }
+  let(:visitor) { create(:visitor) }
+  let(:automation_scenario) { create(:automation_scenario, owner: visitor) }
 
   describe 'POST #create' do
     describe 'new automation_scenario creation' do
-      let(:visitor) { create(:visitor) }
       let(:create_params) do
         {
           automation_scenario:
@@ -31,10 +31,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
       context 'with incorrect params' do
         context 'with incorrect params hash name' do
           let(:create_params) do
-            {
-              foobar_params:
-                { owner_type: 'Visitor', owner_id: visitor.id }
-            }
+            { foobar_params: {} }
           end
 
           it 'throws strong params error' do

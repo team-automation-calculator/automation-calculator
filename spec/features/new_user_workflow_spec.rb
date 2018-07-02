@@ -1,18 +1,19 @@
 require 'rails_helper'
 RSpec.describe 'New user workflow', type: :feature do
-  def visit_visitors_path
-    visit '/visitors'
+  def visit_visitor_path
+    visit '/'
+    click_on 'Visit as a guest'
   end
 
   context 'when visit the /visitors path' do
-    before { visit_visitors_path }
+    before { visit_visitor_path }
 
     it 'creates new visitor' do
-      expect { visit_visitors_path }.to change(Visitor, :count).by(1)
+      expect { visit_visitor_path }.to change(Visitor, :count).by(1)
     end
 
     it 'creates new automation scenario' do
-      expect { visit_visitors_path }.to change(AutomationScenario, :count).by(1)
+      expect { visit_visitor_path }.to change(AutomationScenario, :count).by(1)
     end
 
     it "redirects visitor to automation scenario's show page" do
@@ -26,7 +27,7 @@ RSpec.describe 'New user workflow', type: :feature do
 
   context 'when create the solution for the scenario' do
     before do
-      visit_visitors_path
+      visit_visitor_path
 
       fill_in 'automation_scenario_solutions_attributes_0_initial_cost',
               with: 1
