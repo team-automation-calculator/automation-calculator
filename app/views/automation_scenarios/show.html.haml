@@ -28,7 +28,7 @@
                 .col-4
                   = s.label :name, class: 'control-label'
                 .col-8
-                  = s.number_field :name, class: 'form-control'
+                  = s.text_field :name, class: 'form-control'
             .form-group
               .row
                 .col-4
@@ -45,7 +45,6 @@
           = f.submit 'Update Automation Scenario', class: 'btn btn-primary'
     .col-8
       #solutionsChart
-%p#scenarioSolutions{hidden: true}
-  = ActiveModel::Serializer::CollectionSerializer.new(     |
-      @automation_scenario.solutions.reject(&:new_record?) |
-    ).to_json                                              |
+
+#scenarioData{hidden: true}
+  = AutomationScenarioSerializer.new(@automation_scenario).to_json
