@@ -54,6 +54,11 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen'
   gem 'web-console'
+
+  # guard
+  gem 'guard'
+  gem 'guard-rspec', require: false
+  gem 'guard-rubocop', require: false
 end
 
 group :test do
