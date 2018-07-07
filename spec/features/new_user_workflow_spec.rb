@@ -1,6 +1,7 @@
 require 'rails_helper'
 RSpec.describe 'New user workflow', type: :feature do
   def visit_visitor_path
+    Capybara.reset_session!
     visit '/'
     click_on 'Visit as a guest'
   end
@@ -21,7 +22,13 @@ RSpec.describe 'New user workflow', type: :feature do
     end
 
     it 'sets blank array of scenario solution' do
-      expect(page).to have_css('#scenarioSolutions', text: [], visible: false)
+      text = {
+        iteration_count: 10,
+        display_name: "Automation Scenario ##{AutomationScenario.last.id}",
+        solutions: []
+      }.to_json
+
+      expect(page).to have_css('#scenarioData', text: text, visible: false)
     end
   end
 
@@ -39,13 +46,22 @@ RSpec.describe 'New user workflow', type: :feature do
 
     let(:json_solutions) do
       {
-        initial_cost: 1, iteration_cost: 10, iteration_count: 10
+        iteration_count: 10,
+        display_name: "Automation Scenario ##{AutomationScenario.last.id}",
+        solutions: [
+          {
+            initial_cost: 1,
+            iteration_cost: 10,
+            iteration_count: 10,
+            display_name: "Solution #3#{Solution.last.id}"
+          }
+        ]
       }.to_json
     end
 
-    it 'sets soulutions in hidden field' do
+    it 'sets soulutions in hidden field', focus: true do
       expect(page).to have_css(
-        '#scenarioSolutions',
+        '#scenarioData',
         text: json_solutions,
         visible: false
       )
