@@ -16,8 +16,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
     describe 'new automation_scenario creation' do
       let(:create_params) do
         {
-          automation_scenario:
-            { iteration_count: 7, name: 'Test name' }
+          automation_scenario: { iteration_count: 7, name: 'Test name' }
         }
       end
 
@@ -38,19 +37,31 @@ RSpec.describe AutomationScenariosController, type: :controller do
         context 'when inspecting the scenario attributes' do
           before { create_post }
 
-          subject { AutomationScenario.last }
+          subject(:last_scenario) { AutomationScenario.last }
 
           its(:iteration_count) { is_expected.to eq 7 }
           its(:name) { is_expected.to eq 'Test name' }
           its(:display_name) { is_expected.to eq 'Test name' }
+
+          context 'with empty name' do
+            let(:create_params) do
+              {
+                automation_scenario: { iteration_count: 8 }
+              }
+            end
+
+            its(:iteration_count) { is_expected.to eq 8 }
+            its(:name) { is_expected.to be_blank }
+            its(:display_name) do
+              is_expected.to eq "Automation Scenario ##{last_scenario.id}"
+            end
+          end
         end
       end
 
       context 'with incorrect params' do
         context 'with incorrect params hash name' do
-          let(:create_params) do
-            { foobar_params: {} }
-          end
+          let(:create_params) { { foobar_params: {} } }
 
           it 'throws strong params error' do
             expect { create_post }
@@ -61,8 +72,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
         context 'with incorrect values' do
           let(:create_params) do
             {
-              automation_scenario:
-                { iteration_count: 'Foobar' }
+              automation_scenario: { iteration_count: 'Foobar' }
             }
           end
 
@@ -139,6 +149,17 @@ RSpec.describe AutomationScenariosController, type: :controller do
       destroy_delete
       expect { AutomationScenario.find(automation_scenario.id) }
         .to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe 'GET #index' do
+    def index_get
+      get :index
+    end
+
+    it 'returns http success' do
+      index_get
+      expect(response).to be_successful
     end
   end
 end
