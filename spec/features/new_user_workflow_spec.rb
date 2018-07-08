@@ -21,14 +21,22 @@ RSpec.describe 'New user workflow', type: :feature do
       expect(page).to have_content('Automation Scenario')
     end
 
-    it 'sets blank array of scenario solution' do
-      text = {
-        iteration_count: 10,
-        display_name: "Automation Scenario ##{AutomationScenario.last.id}",
-        solutions: []
-      }.to_json
+    context 'when inspecting the automation json data' do
+      let(:json_scenario_data) do
+        {
+          iteration_count: 10,
+          display_name: "Automation Scenario ##{AutomationScenario.last.id}",
+          solutions: []
+        }.to_json
+      end
 
-      expect(page).to have_css('#scenarioData', text: text, visible: false)
+      it 'sets blank array of scenario solution' do
+        expect(page).to have_css(
+          '#scenarioData',
+          text: json_scenario_data,
+          visible: false
+        )
+      end
     end
   end
 
