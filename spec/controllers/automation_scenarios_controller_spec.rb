@@ -4,12 +4,20 @@ RSpec.describe AutomationScenariosController, type: :controller do
   let(:visitor) { create(:visitor) }
   let(:automation_scenario) { create(:automation_scenario, owner: visitor) }
 
+  # sign in the visitor
+  # rubocop:disable RSpec/AnyInstance
+  before do
+    allow_any_instance_of(ApplicationController)
+      .to receive(:current_visitor).and_return(visitor)
+  end
+  # rubocop:enable RSpec/AnyInstance
+
   describe 'POST #create' do
     describe 'new automation_scenario creation' do
       let(:create_params) do
         {
           automation_scenario:
-            { owner_type: 'Visitor', owner_id: visitor.id }
+            { iteration_count: 7, name: 'Test name' }
         }
       end
 
@@ -26,6 +34,16 @@ RSpec.describe AutomationScenariosController, type: :controller do
           create_post
           expect(response).to redirect_to(AutomationScenario.last)
         end
+
+        context 'when inspecting the scenario attributes' do
+          before { create_post }
+
+          subject { AutomationScenario.last }
+
+          its(:iteration_count) { is_expected.to eq 7 }
+          its(:name) { is_expected.to eq 'Test name' }
+          its(:display_name) { is_expected.to eq 'Test name' }
+        end
       end
 
       context 'with incorrect params' do
@@ -40,11 +58,11 @@ RSpec.describe AutomationScenariosController, type: :controller do
           end
         end
 
-        context 'with incorrect params key values' do
+        context 'with incorrect values' do
           let(:create_params) do
             {
               automation_scenario:
-                { foobar_type: 'Foobar', foobar_id: visitor.id }
+                { iteration_count: 'Foobar' }
             }
           end
 
