@@ -21,7 +21,7 @@ class AutomationScenariosController < ApplicationController
   end
 
   def update
-    @automation_scenario.update update_params
+    @automation_scenario.update! update_params
     # regardless of the result we redirect to the same page
     redirect_to @automation_scenario
   end

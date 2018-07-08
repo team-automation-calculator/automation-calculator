@@ -111,7 +111,10 @@ RSpec.describe AutomationScenariosController, type: :controller do
     let(:params) do
       {
         id: automation_scenario.id,
-        automation_scenario: { iteration_count: 10 }
+        automation_scenario: {
+          iteration_count: 11,
+          name: 'Another name'
+        }
       }
     end
 
@@ -126,11 +129,57 @@ RSpec.describe AutomationScenariosController, type: :controller do
       end
     end
 
+    context 'when inspecting the scenario attributes' do
+      before { update_put }
+
+      subject { automation_scenario.reload }
+
+      its(:iteration_count) { is_expected.to eq 11 }
+      its(:name) { is_expected.to eq 'Another name' }
+      its(:display_name) { is_expected.to eq 'Another name' }
+    end
+
     context 'with incorrect id' do
       let(:params) { { id: 0 } }
 
       it 'raises error' do
         expect { update_put }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'with a solution' do
+      let(:params) do
+        {
+          id: automation_scenario.id,
+          automation_scenario: {
+            iteration_count: 11,
+            name: 'Another name',
+            solutions_attributes: [{
+              initial_cost: 5,
+              iteration_cost: 6,
+              name: 'New solution'
+            }]
+          }
+        }
+      end
+
+      it 'creates a solution' do
+        expect { update_put }.to change(Solution, :count).by(1)
+      end
+
+      context 'when inspecting the solution attributes' do
+        before { update_put }
+
+        subject { Solution.last }
+
+        its(:initial_cost) { is_expected.to eq 5 }
+        its(:iteration_cost) { is_expected.to eq 6 }
+        its(:name) { is_expected.to eq 'New solution' }
+        its(:display_name) { is_expected.to eq 'New solution' }
+        its(:automation_scenario_id) do
+          is_expected.to eq automation_scenario.id
+        end
+        its(:cost) { is_expected.to eq 5 + 6 * 11 }
       end
     end
   end
