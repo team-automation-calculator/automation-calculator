@@ -44,22 +44,23 @@ RSpec.describe 'New user workflow', type: :feature do
       click_button 'Update Automation Scenario'
     end
 
+    let(:last_scenario) { AutomationScenario.last }
     let(:json_solutions) do
       {
         iteration_count: 10,
-        display_name: "Automation Scenario ##{AutomationScenario.last.id}",
+        display_name: "Automation Scenario ##{last_scenario.id}",
         solutions: [
           {
             initial_cost: 1,
             iteration_cost: 10,
             iteration_count: 10,
-            display_name: "Solution #3#{Solution.last.id}"
+            display_name: "Solution ##{last_scenario.solutions.last.id}"
           }
         ]
       }.to_json
     end
 
-    it 'sets soulutions in hidden field', focus: true do
+    it 'sets soulutions in hidden field' do
       expect(page).to have_css(
         '#scenarioData',
         text: json_solutions,
