@@ -20,6 +20,7 @@ services:
     user: ${USER}
     volumes:
       - ./:/usr/src/app
+      - ./config/database.yml.docker:/usr/src/app/config/database.yml
     working_dir: /usr/src/app
 
   db_client:
