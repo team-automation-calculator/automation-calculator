@@ -1,0 +1,52 @@
+.auth-container {
+  .auth-header {
+    background: url("login-animation-bg.jpg");
+    background-size: cover;
+    height: 370px;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  .banner-title {
+    margin: 0;
+    color: #222;
+    font-size: 26px;
+    line-height: 60px;
+    font-weight: 400;
+    padding: 0 20px;
+    display: block;
+    text-align: center;
+  }
+
+  h2 span {
+    color: #37a000;
+    font-size: 50px;
+    display: block;
+    font-weight: 600;
+    padding: 0 20px;
+  }
+
+  .auth-page {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    width: calc(100% - 700px);
+    margin: -50px auto 20px;
+    overflow: hidden;
+    padding: 30px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    -webkit-box-shadow: 0 1px 6px rgba(57, 73, 76, 0.35);
+    box-shadow: 0 1px 6px rgba(57, 73, 76, 0.35);
+
+    h3 {
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+  }
+
+  .authentication-links {
+    margin-top: 20px;
+  }
+}

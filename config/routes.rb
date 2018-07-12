@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  namespace :api, defaults: { format: 'json' } do
+  namespace :api, defaults: { format: :json } do
     resources :iterations
   end
 
@@ -9,13 +9,9 @@ Rails.application.routes.draw do
   }
 
   resources :automation_scenarios
-  resources :solutions
+  resource :visitor, only: %i[show create]
 
-  get '/visitors', to: 'visitors#index'
-  get '/visitors/create', to: 'visitors#create'
-  get '/visitors/:id', to: 'visitors#show'
-  delete 'visitors/:id', to: 'visitors#destroy'
   get '/health', to: 'health_check#health', defaults: { format: 'json' }
 
-  root to: 'home#index'
+  root to: 'automation_scenarios#index'
 end

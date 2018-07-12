@@ -2,11 +2,22 @@
 %html
   %head
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
-    %title App
+    %title Automation Calculator
     = csrf_meta_tags
-    / Latest compiled and minified CSS
-    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", :integrity => "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", :rel => "stylesheet"}/
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
   %body
+    %nav.navbar.navbar-expand.navbar-dark.bg-primary
+      = link_to 'Automation Calculator', root_url, class: 'navbar-brand'
+      %button.navbar-toggler{type: :button, "0data-toggle" => :collapse, "data-target" => "#navbarNavDropdown", "aria-controls" => "navbarNavDropdown", "aria-expanded" => "false", "aria-label" => "Toggle navigation" }
+        %span.navbar-toggler-icon
+      .collapse.navbar-collapse#navbarNavDropdown
+        %ul.navbar-nav.ml-auto
+          %li.nav-item
+            = link_to 'Dashboard', automation_scenarios_path, class: 'nav-link'
+          %li.nav-item
+            - if user_signed_in?
+              = link_to('Log out', destroy_user_session_path, method: :delete, class: 'nav-link')
+            - else
+              = link_to('Log in', new_user_session_path, class: 'nav-link')
     = yield

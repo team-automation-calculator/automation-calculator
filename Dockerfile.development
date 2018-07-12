@@ -15,7 +15,7 @@ USER $username
 RUN gem install nokogiri
 RUN gem install bundler
 
-COPY . /usr/src/app
+COPY Gemfile* /usr/src/app/
 WORKDIR /usr/src/app
 
 #Calling bundle install in image creation to install dependencies,

@@ -1,9 +1,18 @@
 class AutomationScenariosController < ApplicationController
+  before_action :authenticate_user_or_visitor!
   before_action :set_scenario, only: %i[show update destroy]
 
+  def index
+    @automation_scenarios =
+      AutomationScenario.where(owner: current_user_or_visitor)
+  end
+
   def create
-    @automation_scenario = AutomationScenario.create!(creation_params)
-    redirect_to(action: :show, id: @automation_scenario.id)
+    @automation_scenario = AutomationScenario.new creation_params
+    @automation_scenario.owner = current_user_or_visitor
+    @automation_scenario.save!
+
+    redirect_to @automation_scenario
   end
 
   def show
@@ -12,7 +21,7 @@ class AutomationScenariosController < ApplicationController
   end
 
   def update
-    @automation_scenario.update update_params
+    @automation_scenario.update! update_params
     # regardless of the result we redirect to the same page
     redirect_to @automation_scenario
   end
@@ -25,13 +34,13 @@ class AutomationScenariosController < ApplicationController
 
   def creation_params
     params.require(:automation_scenario)
-          .permit(:owner_type, :owner_id, :iteration_count)
+          .permit(:iteration_count, :name)
   end
 
   def update_params
     params.require(:automation_scenario).permit(
-      :iteration_count,
-      solutions_attributes: %i[id initial_cost iteration_cost]
+      :iteration_count, :name,
+      solutions_attributes: %i[id initial_cost iteration_cost name]
     )
   end
 

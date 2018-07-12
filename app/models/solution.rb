@@ -11,16 +11,21 @@ class Solution < ApplicationRecord
   def cost
     initial_cost + (iteration_cost * iteration_count)
   end
+
+  def display_name
+    name.presence || "Solution ##{id}"
+  end
 end
 
 # == Schema Information
 #
 # Table name: solutions
 #
-#  id                     :integer          not null, primary key
+#  id                     :bigint(8)        not null, primary key
 #  initial_cost           :integer
 #  iteration_cost         :integer
-#  automation_scenario_id :integer
+#  automation_scenario_id :bigint(8)
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  name                   :string
 #

@@ -1,0 +1,12 @@
+.actions {
+  @extend .mx-auto;
+
+  .btn {
+    @extend .btn-block;
+  }
+}
+
+.form-header {
+  @extend .text-center;
+  @extend .my-4;
+}

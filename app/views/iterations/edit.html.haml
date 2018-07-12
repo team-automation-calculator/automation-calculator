@@ -1,7 +1,0 @@
-%div
-  = form_for @iteration, url: iteration_url(automation_scenario_id: params[:automation_scenario_id], id: @iteration.id), method: :patch, html: { class: "edit_iteration", id: "edit_iteration" } do |f|
-    Iteration Time : #{f.text_field :time}
-    %br/
-    Cost per Iteration : #{f.number_field :cost}
-    %br/
-    = f.submit

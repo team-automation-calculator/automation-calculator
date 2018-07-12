@@ -8,12 +8,6 @@ services:
     command: "rails s"
     depends_on:
       - db
-    healthcheck:
-      test: ["CMD", "/usr/src/app/scripts/utils/healthcheck.rb", "localhost", "3000", "/health"]
-      interval: 5s
-      timeout: 5s
-      retries: 2
-      start_period: 10s
     ports:
       - "3001:3000"
     environment:
@@ -26,6 +20,7 @@ services:
     user: ${USER}
     volumes:
       - ./:/usr/src/app
+      - ./config/database.yml.docker:/usr/src/app/config/database.yml
     working_dir: /usr/src/app
 
   db_client:

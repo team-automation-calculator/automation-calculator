@@ -30,6 +30,8 @@ gem 'config'
 gem 'active_model_serializers'
 # provides Haml generators for Rails
 gem 'haml-rails'
+# Bootstrap 4 Ruby Gem for Rails / Sprockets and Compass
+gem 'bootstrap'
 
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
@@ -52,6 +54,11 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen'
   gem 'web-console'
+
+  # guard
+  gem 'guard'
+  gem 'guard-rspec', require: false
+  gem 'guard-rubocop', require: false
 end
 
 group :test do

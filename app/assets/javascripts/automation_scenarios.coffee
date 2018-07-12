@@ -1,24 +1,38 @@
 document.addEventListener 'turbolinks:load', ->
   #Variables
-  exampleSolutionJson = 
+  exampleSolution =
     initial_cost: 5
     iteration_cost: 10
     iteration_count: 10
-  #Execution
-  #Functions
+    display_name: 'Sample Line'
 
-  buildSolutionGraphLinesFromSolutionsArray = (savedSolutionsJSONArray) ->
-    solutionAxis = []
-    if savedSolutionsJSONArray.length > 0
-      savedSolutionsJSONArray.forEach (solutionJson) ->
-        solutionAxis.push buildGraphLineFromSolution(solutionJson.initial_cost, solutionJson.iteration_cost, solutionJson.iteration_count)
+  #Functions
+  buildSolutionGraphLinesFromSolutionsArray = (savedSolutions) ->
+    solutionPoints = []
+    if savedSolutions.length > 0
+      savedSolutions.forEach (solution) ->
+        solutionPoints.push(
+          buildGraphLineFromSolution(
+            solution.initial_cost,
+            solution.iteration_cost,
+            solution.iteration_count,
+            solution.display_name
+          )
+        )
         return
     else
       #Example graph line here
-      solutionAxis.push buildGraphLineFromSolution(exampleSolutionJson.initial_cost, exampleSolutionJson.iteration_cost, exampleSolutionJson.iteration_count)
-    solutionAxis
+      solutionPoints.push(
+        buildGraphLineFromSolution(
+          exampleSolution.initial_cost,
+          exampleSolution.iteration_cost,
+          exampleSolution.iteration_count,
+          exampleSolution.display_name
+        )
+      )
+    solutionPoints
 
-  buildGraphLineFromSolution = (initialCost, costPerIteration, iterationCount) ->
+  buildGraphLineFromSolution = (initialCost, costPerIteration, iterationCount, name) ->
     xAxisPoints = []
     yAxisPoints = []
     i = 1
@@ -26,15 +40,30 @@ document.addEventListener 'turbolinks:load', ->
       xAxisPoints.push i
       yAxisPoints.push Number(initialCost) + Number(i) * Number(costPerIteration)
       i++
+
     {
       x: xAxisPoints
       y: yAxisPoints
       type: 'scatter'
+      name: name
     }
 
-  buildSavedSolutionsJSONArray = ->
-    JSON.parse $('#scenarioSolutions').text()
+  savedScenarioData = ->
+    if document.getElementById('scenarioData')
+      JSON.parse $('#scenarioData').text()
+    else
+      {}
 
-  if document.getElementById('scenarioSolutions')
-    Plotly.newPlot 'solutionsChart', buildSolutionGraphLinesFromSolutionsArray(buildSavedSolutionsJSONArray())
+  #Execution
+  if savedScenarioData()
+    layout =
+      title: savedScenarioData().display_name
+
+    Plotly.newPlot(
+      'solutionsChart',
+      buildSolutionGraphLinesFromSolutionsArray(
+        savedScenarioData().solutions
+      ),
+      layout
+    )
   return

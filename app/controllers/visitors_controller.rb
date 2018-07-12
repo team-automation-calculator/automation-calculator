@@ -1,24 +1,13 @@
 class VisitorsController < ApplicationController
+  def show
+    # to support the GET method
+    create
+  end
+
   def create
     @visitor = Visitor.create_with_random_uuid(request.remote_ip)
-    @automation_scenario = @visitor.automation_scenarios.create
+    @automation_scenario = @visitor.automation_scenarios.create!
+    store_current_visitor @visitor
     redirect_to @automation_scenario
-  end
-
-  def index
-    redirect_to(action: :create)
-  end
-
-  def update
-    # fill in read
-  end
-
-  def destroy
-    @visitor = Visitor.find(params[:id])
-    @visitor.destroy
-  end
-
-  def show
-    @visitor = Visitor.find(params[:id])
   end
 end

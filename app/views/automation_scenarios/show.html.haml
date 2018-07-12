@@ -1,23 +1,50 @@
-= render "shared/header"
-.container.automation-scenario
-  %div
-    %h1 Automation Scenario
-  .col-sm-4.automation-scenario-left
-    = form_for @automation_scenario do |f|
-      Number of Iterations : #{f.number_field :iteration_count}
-      = f.fields_for :solutions do |s|
-        %div
-          - if s.object.persisted?
-            Solution ##{s.object.id}:
-          - else
-            Add New solution:
-          Initial Cost: #{s.number_field :initial_cost}
-          Cost per Iteration : #{s.number_field :iteration_cost}
-          \#{s.hidden_field(:automation_scenario_id, value: @automation_scenario.id)}
-      = f.submit 'Update Automation Scenario'
-  .col-sm-8.automation-scenario-right
-    #solutionsChart
-%p#scenarioSolutions{:hidden => ""}
-  = ActiveModel::Serializer::CollectionSerializer.new(     |
-      @automation_scenario.solutions.reject(&:new_record?) |
-    ).to_json                                              |
+%h3.form-header
+  Automation Scenario
+  - if @automation_scenario.name.present?
+    = surround '"', '"' do
+      = @automation_scenario.name
+.container
+  .row
+    .col-4
+      = form_for @automation_scenario do |f|
+        .form-group
+          = f.label :name
+          = f.text_field :name, placeholder: 'Scenario name', class: 'form-control'
+        .form-group
+          = f.label :iteration_count
+          = f.number_field :iteration_count, class: 'form-control'
+
+        = f.fields_for :solutions do |s|
+          = s.hidden_field(:automation_scenario_id, value: @automation_scenario.id)
+          %h5
+            - if s.object.persisted?
+              = succeed ':' do
+                = s.object.display_name
+            - else
+              Add New Solution:
+          .form-horizontal
+            .form-group
+              .row
+                .col-4
+                  = s.label :name, class: 'control-label'
+                .col-8
+                  = s.text_field :name, class: 'form-control'
+            .form-group
+              .row
+                .col-4
+                  = s.label :initial_cost, class: 'control-label'
+                .col-8
+                  = s.number_field :initial_cost, class: 'form-control'
+            .form-group
+              .row
+                .col-4
+                  = s.label :iteration_cost, class: 'control-label'
+                .col-8
+                  = s.number_field :iteration_cost, class: 'form-control'
+        .actions
+          = f.submit 'Update Automation Scenario', class: 'btn btn-primary'
+    .col-8
+      #solutionsChart
+
+#scenarioData{hidden: true}
+  = AutomationScenarioSerializer.new(@automation_scenario).to_json

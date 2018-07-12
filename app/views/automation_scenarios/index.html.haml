@@ -1,12 +1,27 @@
-= render "shared/header"
-.container.automation-scenario
+%h3.form-header
+  All Automation Scenarios
+.container
   .row
-    .col-sm-12
-      %h1 AutomationScenarios
-    .col-sm-4.automation-scenario-left
+    - @automation_scenarios.each do |automation_scenario|
+      .col-4
+        %h4= link_to automation_scenario.display_name, automation_scenario
+        .row
+          .col Iteration Count:
+          .col= automation_scenario.iteration_count
+        .row
+          .col Solutions Count:
+          .col= automation_scenario.solutions.count
+
+.container
+  %h4.my-4 A New Automation Scenario
+  .row
+    .col-4
       = form_for :automation_scenario do |f|
-        Owner Type: #{f.text_field :owner_type}
-        %br/
-        Owner ID : #{f.text_field :owner_id}
-        %br/
-        = f.submit
+        .form-group
+          = f.label :name
+          = f.text_field :name, class: 'form-control'
+        .form-group
+          = f.label :iteration_count
+          = f.number_field :iteration_count, class: 'form-control'
+        .actions
+          = f.submit 'Add a new Automation Scenario', class: 'btn btn-primary'
