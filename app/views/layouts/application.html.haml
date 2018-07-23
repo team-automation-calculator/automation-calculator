@@ -8,7 +8,9 @@
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
   %body
     %nav.navbar.navbar-expand.navbar-dark.bg-primary
-      = link_to 'Automation Calculator', root_url, class: 'navbar-brand'
+      = link_to  root_url, class: 'navbar-brand' do
+        = image_tag 'logo.png', height: 60, alt: 'Automation Calculator'
+        Automation Calculator
       %button.navbar-toggler{type: :button, "0data-toggle" => :collapse, "data-target" => "#navbarNavDropdown", "aria-controls" => "navbarNavDropdown", "aria-expanded" => "false", "aria-label" => "Toggle navigation" }
         %span.navbar-toggler-icon
       .collapse.navbar-collapse#navbarNavDropdown
