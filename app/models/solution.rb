@@ -15,6 +15,17 @@ class Solution < ApplicationRecord
   def display_name
     name.presence || "Solution ##{id}"
   end
+
+  def intersection(another_solution)
+    return if another_solution.iteration_cost.eql? iteration_cost
+
+    iteration =
+      (initial_cost - another_solution.initial_cost) /
+      (another_solution.iteration_cost - iteration_cost)
+    cost = initial_cost + iteration * iteration_cost
+
+    [iteration, cost]
+  end
 end
 
 # == Schema Information

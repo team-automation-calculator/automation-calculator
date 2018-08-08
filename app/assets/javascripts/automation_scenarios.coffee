@@ -48,6 +48,22 @@ document.addEventListener 'turbolinks:load', ->
       name: name
     }
 
+  buildIntersectionPoints = (intersectionsData) ->
+    xPoints = []
+    yPoints = []
+    intersectionsData.forEach (intersection) ->
+      xPoints.push intersection[0]
+      yPoints.push intersection[1]
+
+    {
+      x: xPoints
+      y: yPoints
+      type: 'scatter'
+      mode: 'markers'
+      marker: { size: 16 }
+      name: 'Intersections'
+    }
+
   savedScenarioData = ->
     if document.getElementById('scenarioData')
       JSON.parse $('#scenarioData').text()
@@ -57,13 +73,19 @@ document.addEventListener 'turbolinks:load', ->
   #Execution
   if savedScenarioData()
     layout =
+      hovermode:'closest'
       title: savedScenarioData().display_name
 
-    Plotly.newPlot(
-      'solutionsChart',
+    lines =
       buildSolutionGraphLinesFromSolutionsArray(
         savedScenarioData().solutions
-      ),
-      layout
+      )
+    lines.push(
+       buildIntersectionPoints(savedScenarioData().intersections)
     )
+
+    Plotly.newPlot(
+      'solutionsChart', lines, layout
+    )
+
   return

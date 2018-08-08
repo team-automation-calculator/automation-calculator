@@ -13,6 +13,18 @@ class AutomationScenario < ApplicationRecord
   def display_name
     name.presence || "Automation Scenario ##{id}"
   end
+
+  def intersections
+    solutions.select(&:persisted?).combination(2).map do |solution1, solution2|
+      intersection = solution1.intersection(solution2)
+
+      # check the boundaries
+      iteration = intersection.first
+      intersection = nil if iteration.negative? || iteration > iteration_count
+
+      [solution1.id, solution2.id, intersection]
+    end
+  end
 end
 
 # == Schema Information
