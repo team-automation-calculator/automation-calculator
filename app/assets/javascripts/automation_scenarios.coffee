@@ -60,7 +60,7 @@ document.addEventListener 'turbolinks:load', ->
       y: yPoints
       type: 'scatter'
       mode: 'markers'
-      marker: { size: 16 }
+      marker: { size: 8 }
       name: 'Intersections'
     }
 

@@ -19,8 +19,10 @@ class AutomationScenario < ApplicationRecord
       intersection = solution1.intersection(solution2)
 
       # check the boundaries
-      iteration = intersection.first
-      intersection = nil if iteration.negative? || iteration > iteration_count
+      if intersection.present?
+        iteration = intersection.first
+        intersection = nil if iteration.negative? || iteration > iteration_count
+      end
 
       [solution1.id, solution2.id, intersection]
     end

@@ -26,6 +26,7 @@ RSpec.describe 'New user workflow', type: :feature do
         {
           iteration_count: 10,
           display_name: "Automation Scenario ##{AutomationScenario.last.id}",
+          intersections: [],
           solutions: []
         }.to_json
       end
@@ -57,6 +58,7 @@ RSpec.describe 'New user workflow', type: :feature do
       {
         iteration_count: 10,
         display_name: "Automation Scenario ##{last_scenario.id}",
+        intersections: [],
         solutions: [
           {
             initial_cost: 1,

@@ -17,11 +17,11 @@ class Solution < ApplicationRecord
   end
 
   def intersection(another_solution)
-    return if another_solution.iteration_cost.eql? iteration_cost
+    iteration_cost_diff = another_solution.iteration_cost - iteration_cost
+    return if iteration_cost_diff.zero?
 
     iteration =
-      (initial_cost - another_solution.initial_cost) /
-      (another_solution.iteration_cost - iteration_cost)
+      (initial_cost - another_solution.initial_cost).to_f / iteration_cost_diff
     cost = initial_cost + iteration * iteration_cost
 
     [iteration, cost]
