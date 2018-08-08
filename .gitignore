@@ -68,3 +68,4 @@ config/environments/*.local.yml
 
 config/database.yml
 .sass-cache
+*~
