@@ -1,8 +1,11 @@
 # Main commands to run a container
+require './scripts/utils/clear_rails_pid.rb'
+
 class Lifecycle
   COMMAND_HASH = {
     debug_production: -> { start_debug_production },
     dev: lambda do
+      ClearRailsPid.clear_pid_file_if_it_exists
       system(
         'docker-compose -f docker-compose.yml ' \
         '-f docker-compose.dev.yml up -d dev'
