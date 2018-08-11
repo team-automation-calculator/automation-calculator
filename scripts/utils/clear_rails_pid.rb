@@ -1,11 +1,9 @@
 class ClearRailsPid
-  PID_PATH='./tmp/pids/server.pid'
+  PID_PATH = './tmp/pids/server.pid'.freeze
 
   class << self
     def clear_pid_file_if_it_exists
-      if FileTest.exist? PID_PATH
-        File.delete(PID_PATH)
-      end
+      File.delete(PID_PATH) if FileTest.exist? PID_PATH
     end
   end
 end
