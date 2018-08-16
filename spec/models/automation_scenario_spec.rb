@@ -17,28 +17,30 @@ RSpec.describe AutomationScenario, type: :model do
     end
   end
 
-  describe '.intersections' do
-    subject(:intersections) { automation_scenario.intersections }
+  describe '.intersections_and_differences' do
+    subject(:intersections) do
+      automation_scenario.intersections_and_differences
+    end
 
     context 'when lines are parallel' do
       let(:iteration_cost) { rand 1..100 }
       let!(:solution1) do
         create  :solution,
                 automation_scenario: automation_scenario,
-                initial_cost: rand(1..100),
+                initial_cost: 20,
                 iteration_cost: iteration_cost
       end
       let!(:solution2) do
         create  :solution,
                 automation_scenario: automation_scenario,
-                initial_cost: rand(1..100),
+                initial_cost: 45,
                 iteration_cost: iteration_cost
       end
 
       its(:size) { is_expected.to eq 1 }
       its(:first) do
         is_expected.to contain_exactly(
-          solution1.id, solution2.id, nil
+          solution1.id, solution2.id, nil, -25
         )
       end
     end
@@ -60,7 +62,7 @@ RSpec.describe AutomationScenario, type: :model do
       its(:size) { is_expected.to eq 1 }
       its(:first) do
         is_expected.to contain_exactly(
-          solution1.id, solution2.id, [2, 40]
+          solution1.id, solution2.id, [2, 40], 40
         )
       end
     end
@@ -82,7 +84,7 @@ RSpec.describe AutomationScenario, type: :model do
       its(:size) { is_expected.to eq 1 }
       its(:first) do
         is_expected.to contain_exactly(
-          solution1.id, solution2.id, [2.5, 45]
+          solution1.id, solution2.id, [2.5, 45], 30
         )
       end
     end
@@ -104,7 +106,7 @@ RSpec.describe AutomationScenario, type: :model do
       its(:size) { is_expected.to eq 1 }
       its(:first) do
         is_expected.to contain_exactly(
-          solution1.id, solution2.id, nil
+          solution1.id, solution2.id, nil, -270
         )
       end
     end
