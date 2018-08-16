@@ -1,6 +1,19 @@
 Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     resources :iterations
+
+    scope module: 'v1', as: 'v1', constraints: Constraint.new(1) do
+      resource :visitor, only: :create
+      resource :user, only: :create do
+        resource :session, only: :create
+      end
+
+      resources :automation_scenarios do
+        resources :solutions, shallow: true
+      end
+
+      root to: 'roots#show'
+    end
   end
 
   devise_for :users, controllers: {
