@@ -9,22 +9,27 @@ class Solution < ApplicationRecord
   delegate :iteration_count, to: :automation_scenario
 
   def cost
-    initial_cost + (iteration_cost * iteration_count)
+    cost_at iteration_count
+  end
+
+  def cost_at(iteration)
+    initial_cost + (iteration_cost * iteration)
   end
 
   def display_name
     name.presence || "Solution ##{id}"
   end
 
-  def intersection(another_solution)
+  def intersection(another_solution, check_boundaries: false)
     iteration_cost_diff = another_solution.iteration_cost - iteration_cost
     return if iteration_cost_diff.zero?
 
     iteration =
       (initial_cost - another_solution.initial_cost).to_f / iteration_cost_diff
-    cost = initial_cost + iteration * iteration_cost
+    return if check_boundaries &&
+              (iteration.negative? || iteration > iteration_count)
 
-    [iteration, cost]
+    [iteration, cost_at(iteration)]
   end
 end
 

@@ -16,14 +16,7 @@ class AutomationScenario < ApplicationRecord
 
   def intersections_and_differences
     solutions.select(&:persisted?).combination(2).map do |solution1, solution2|
-      intersection = solution1.intersection(solution2)
-
-      # check the boundaries
-      if intersection.present?
-        iteration = intersection.first
-        intersection = nil if iteration.negative? || iteration > iteration_count
-      end
-
+      intersection = solution1.intersection solution2, check_boundaries: true
       difference = solution1.cost - solution2.cost
 
       [solution1.id, solution2.id, intersection, difference]
