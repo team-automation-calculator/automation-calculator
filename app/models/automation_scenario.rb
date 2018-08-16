@@ -14,7 +14,7 @@ class AutomationScenario < ApplicationRecord
     name.presence || "Automation Scenario ##{id}"
   end
 
-  def intersections
+  def intersections_and_differences
     solutions.select(&:persisted?).combination(2).map do |solution1, solution2|
       intersection = solution1.intersection(solution2)
 
@@ -24,7 +24,9 @@ class AutomationScenario < ApplicationRecord
         intersection = nil if iteration.negative? || iteration > iteration_count
       end
 
-      [solution1.id, solution2.id, intersection]
+      difference = solution1.cost - solution2.cost
+
+      [solution1.id, solution2.id, intersection, difference]
     end
   end
 end

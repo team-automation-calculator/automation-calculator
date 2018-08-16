@@ -5,6 +5,6 @@ class AutomationScenarioSerializer < ActiveModel::Serializer
   end
 
   def intersections
-    object.intersections.map(&:last).compact
+    object.intersections_and_differences.map(&:third).compact
   end
 end
