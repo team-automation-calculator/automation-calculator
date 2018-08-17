@@ -20,7 +20,7 @@ class JwtTokenService
     end
 
     def private_key
-      Rails.application.secrets.secret_key_base
+      Rails.application.secrets.secret_key_base.to_s
     end
   end
 end
