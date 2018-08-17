@@ -3,10 +3,9 @@ Rails.application.routes.draw do
     resources :iterations
 
     scope module: 'v1', as: 'v1', constraints: Constraint.new(1) do
-      resource :visitor, only: :create
-      resource :user, only: :create do
-        resource :session, only: :create
-      end
+      resources :visitor, only: :create
+      resources :user, only: :create
+      resource :user_session, only: :create
 
       resources :automation_scenarios do
         resources :solutions, shallow: true

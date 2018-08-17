@@ -1,6 +1,6 @@
-module Api
+module API
   module V1
-    class RootsController < Api::V1::ApplicationController
+    class RootsController < API::V1::ApplicationController
       def show
         head :ok
       end

@@ -1,6 +1,6 @@
-module Api
+module API
   module V1
-    class UsersController < Api::V1::ApplicationController
+    class UsersController < API::V1::ApplicationController
       def create
         user = User.create! registration_params
 

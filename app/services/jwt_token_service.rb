@@ -6,7 +6,7 @@ class JwtTokenService
     def encode_token(payload)
       exp_time = Time.current + Settings.api_session_duration.to_i.minutes
       exp_payload = { data: payload, exp: exp_time.to_i }
-      JWT.encode(payload, private_key)
+      JWT.encode(exp_payload, private_key)
     end
 
     def decode_token(token)
