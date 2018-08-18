@@ -8,7 +8,7 @@ RSpec.describe API::V1::RootsController, type: :request do
       expect(response).to be_successful
     end
 
-    it 'returns anempty body' do
+    it 'returns an empty body' do
       expect(response.body).to be_blank
     end
   end

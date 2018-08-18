@@ -5,4 +5,4 @@ oauth2:
   github:
     app_id: ''
     app_secret: ''
-api_session_duration: 60
+api_session_duration: 60 # minutes
