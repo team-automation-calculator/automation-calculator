@@ -5,6 +5,9 @@ class AutomationScenarioSerializer < ActiveModel::Serializer
   end
 
   def intersections
-    object.intersections_and_differences.map(&:third).compact
+    object.
+      solutions_combinations.
+      map(&:intersection_point_within_boundaries).
+      compact
   end
 end

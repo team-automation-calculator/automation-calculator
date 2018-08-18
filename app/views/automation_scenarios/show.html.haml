@@ -54,14 +54,12 @@
               %th{scope: :col} Intersection
               %th{scope: :col} Difference
           %tbody
-            - @automation_scenario.intersections_and_differences.each do |tuple|
+            - @automation_scenario.solutions_combinations.each do |combination|
               %tr
-                %td{scope: :row}= Solution.find(tuple.first).display_name
-                %td{scope: :row}= Solution.find(tuple.second).display_name
-                %td{scope: :col}
-                  = surround '[', ']' do
-                    = tuple.third.map { |coordinate| '%.2f' % coordinate }.join(', ')
-                %td{scope: :col}= '%.2f' % tuple.last
+                %td{scope: :row}= combination.solution1.display_name
+                %td{scope: :row}= combination.solution2.display_name
+                %td{scope: :col}= combination.intersection_formatted
+                %td{scope: :col}= combination.difference_formatted
 
 #scenarioData{hidden: true}
   = AutomationScenarioSerializer.new(@automation_scenario).to_json

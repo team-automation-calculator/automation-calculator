@@ -19,18 +19,6 @@ class Solution < ApplicationRecord
   def display_name
     name.presence || "Solution ##{id}"
   end
-
-  def intersection(another_solution, check_boundaries: false)
-    iteration_cost_diff = another_solution.iteration_cost - iteration_cost
-    return if iteration_cost_diff.zero?
-
-    iteration =
-      (initial_cost - another_solution.initial_cost).to_f / iteration_cost_diff
-    return if check_boundaries &&
-              (iteration.negative? || iteration > iteration_count)
-
-    [iteration, cost_at(iteration)]
-  end
 end
 
 # == Schema Information
