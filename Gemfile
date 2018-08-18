@@ -32,6 +32,9 @@ gem 'active_model_serializers'
 gem 'haml-rails'
 # Bootstrap 4 Ruby Gem for Rails / Sprockets and Compass
 gem 'bootstrap'
+# A pure ruby implementation of
+# the RFC 7519 OAuth JSON Web Token (JWT) standard
+gem 'jwt'
 
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]

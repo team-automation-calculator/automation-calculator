@@ -409,6 +409,7 @@ DEPENDENCIES
   haml-rails
   jbuilder
   jquery-rails
+  jwt
   letter_opener
   listen
   omniauth-github
