@@ -7,7 +7,7 @@ class SolutionPair
     @solution1 = solution1
     @solution2 = solution2
 
-    # we cancompare solutions from the same scenario only
+    # we can compare solutions from the same scenario only
     raise UnpairedSolutionsError if
       solution1.automation_scenario_id != solution2.automation_scenario_id
   end
