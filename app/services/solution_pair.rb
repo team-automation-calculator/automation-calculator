@@ -8,32 +8,29 @@ class SolutionPair
     @solution2 = solution2
 
     # we cancompare solutions from the same scenario only
-    if solution1.automation_scenario_id != solution2.automation_scenario_id
-      raise UnpairedSolutionsError
-    end
+    raise UnpairedSolutionsError if
+      solution1.automation_scenario_id != solution2.automation_scenario_id
   end
 
   def intersection_point
-    iteration_cost_diff = solution2.iteration_cost - solution1.iteration_cost
-    return if iteration_cost_diff.zero?
-
-    iteration =
-      (solution1.initial_cost - solution2.initial_cost).to_f / iteration_cost_diff
+    iteration = intersection_iteration
+    return if iteration.nil?
 
     [iteration, solution1.cost_at(iteration)]
   end
 
   def intersection_within_boundaries?
-    iteration = intersection_point&.first
-    return false if iteration.nil?
+    iteration = intersection_iteration
 
-    iteration.negative? || iteration > solution1.count
+    iteration.present? &&
+      iteration.positive? &&
+      iteration <= solution1.iteration_count
   end
 
   def intersection_point_within_boundaries
     return unless intersection_within_boundaries?
 
-    intersection_coordinates
+    intersection_point
   end
 
   def difference
@@ -41,7 +38,7 @@ class SolutionPair
   end
 
   def difference_formatted
-    '%.2f' % difference
+    format '%.2f', difference
   end
 
   def intersection_formatted
@@ -49,6 +46,15 @@ class SolutionPair
 
     return 'No intersection' if point.blank?
 
-    '[%.2f, %.2f]' % point
+    format '[%.2f, %.2f]', point.first, point.second
+  end
+
+  protected
+
+  def intersection_iteration
+    cost_diff = solution2.iteration_cost - solution1.iteration_cost
+    return if cost_diff.zero?
+
+    (solution1.initial_cost - solution2.initial_cost).to_f / cost_diff
   end
 end
