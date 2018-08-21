@@ -4,7 +4,7 @@ Rails:
   Enabled: true
 
 AllCops:
-  TargetRubyVersion: 2.2
+  TargetRubyVersion: 2.4
   DisplayCopNames: true
 
   Exclude:
@@ -33,3 +33,6 @@ RSpec/NestedGroups:
 Style/MixinUsage:
   Exclude:
     - bin/*
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

@@ -13,6 +13,12 @@ class AutomationScenario < ApplicationRecord
   def display_name
     name.presence || "Automation Scenario ##{id}"
   end
+
+  def solutions_combinations
+    solutions.select(&:persisted?).combination(2).map do |solution1, solution2|
+      SolutionPair.new solution1, solution2
+    end
+  end
 end
 
 # == Schema Information

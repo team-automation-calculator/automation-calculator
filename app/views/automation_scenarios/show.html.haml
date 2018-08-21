@@ -45,6 +45,21 @@
           = f.submit 'Update Automation Scenario', class: 'btn btn-primary'
     .col-8
       #solutionsChart
+      .solution-combinations
+        %table.table
+          %thead
+            %tr
+              %th{scope: :col} Solution
+              %th{scope: :col} Solution
+              %th{scope: :col} Intersection
+              %th{scope: :col} Difference
+          %tbody
+            - @automation_scenario.solutions_combinations.each do |combination|
+              %tr
+                %td{scope: :row}= combination.solution1.display_name
+                %td{scope: :row}= combination.solution2.display_name
+                %td{scope: :col}= combination.intersection_formatted
+                %td{scope: :col}= combination.difference_formatted
 
 #scenarioData{hidden: true}
   = AutomationScenarioSerializer.new(@automation_scenario).to_json

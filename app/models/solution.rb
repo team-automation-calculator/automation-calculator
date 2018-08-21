@@ -9,7 +9,11 @@ class Solution < ApplicationRecord
   delegate :iteration_count, to: :automation_scenario
 
   def cost
-    initial_cost + (iteration_cost * iteration_count)
+    cost_at iteration_count
+  end
+
+  def cost_at(iteration)
+    initial_cost + (iteration_cost * iteration)
   end
 
   def display_name
