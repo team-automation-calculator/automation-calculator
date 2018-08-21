@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe SolutionPair, type: :class do
   subject(:solution_pair) { described_class.new solution1, solution2 }
 
-  context 'when solutioons are from different scenarios' do
+  context 'when solutions are from different scenarios' do
     let(:solution1) { create :solution }
     let(:solution2) { create :solution }
 
