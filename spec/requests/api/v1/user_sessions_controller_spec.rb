@@ -12,7 +12,7 @@ RSpec.describe API::V1::UserSessionsController, type: :request do
       }
     end
 
-    it 'returns token' do
+    it 'returns user data' do
       expect(json_response).to include(
         id: user.id,
         email: user.email

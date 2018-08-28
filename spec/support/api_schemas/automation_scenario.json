@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["id", "iteration_count", "display_name"],
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "Automation Scenario ID."
+    },
+    "iteration_count": {
+      "type": "number",
+      "description": "Iteration's count"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Automation Scenario Name"
+    }
+  }
+}
