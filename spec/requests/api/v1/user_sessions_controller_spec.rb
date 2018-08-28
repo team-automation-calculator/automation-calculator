@@ -21,6 +21,7 @@ RSpec.describe API::V1::UserSessionsController, type: :request do
 
     it { expect(response.headers['Access-Token']).to be_present }
     it { expect(response).to be_successful }
+    it { expect(response).to match_json_schema('user') }
   end
 
   context 'with invalid email' do

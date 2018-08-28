@@ -76,4 +76,6 @@ group :test do
   gem 'shoulda-matchers'
   # Code coverage for Ruby
   gem 'simplecov', require: false
+  # Validate the JSON returned by your Rails JSON APIs
+  gem 'json_matchers'
 end
