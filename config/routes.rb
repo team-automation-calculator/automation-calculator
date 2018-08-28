@@ -3,7 +3,7 @@ Rails.application.routes.draw do
     resources :iterations
 
     scope module: 'v1', as: 'v1', constraints: Constraint.new(1) do
-      resources :visitor, only: :create
+      resource :visitor, only: :create
       post 'sign_in', to: 'user_sessions#create'
       post 'sign_up', to: 'users#create'
 

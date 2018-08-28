@@ -1,23 +1,19 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
+  "required": ["id", "ip", "uuid"],
   "properties": {
-    "visitor": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "number",
-          "description": "Visitor ID."
-        },
-        "ip": {
-          "type": "string",
-          "description": "Visitor IP."
-        },
-        "uuid": {
-          "type": "string",
-          "description": "Visitor UUID."
-        }
-      }
+    "id": {
+      "type": "number",
+      "description": "Visitor ID."
+    },
+    "ip": {
+      "type": "string",
+      "description": "Visitor IP."
+    },
+    "uuid": {
+      "type": "string",
+      "description": "Visitor UUID."
     }
   }
 }

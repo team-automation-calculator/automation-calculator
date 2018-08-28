@@ -15,10 +15,7 @@ RSpec.describe API::V1::UsersController, type: :request do
         )
     end
 
-    it 'is successful' do
-      expect(response).to have_http_status(:success)
-    end
-
+    it { expect(response).to be_successful }
     it { expect(response).to match_json_schema('user') }
   end
 
