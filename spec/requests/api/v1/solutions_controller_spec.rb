@@ -71,27 +71,32 @@ RSpec.describe API::V1::SolutionsController, type: :request do
         v1_get "/api/automation_scenarios/#{automation_scenario.id}/solutions"
       end
 
-      it { expect(json_response.size).to eq 1 }
-      it 'returns scenario data' do
-        expect(json_response.first.symbolize_keys).to include(
+      let(:solution_attributes) do
+        {
           id: solution.id,
           display_name: solution.display_name,
           iteration_count: automation_scenario.iteration_count,
           initial_cost: solution.initial_cost,
           iteration_cost: solution.iteration_cost
-        )
+        }
+      end
+
+      it { expect(json_response.size).to eq 1 }
+      it 'returns scenario data' do
+        expect(json_response.first.symbolize_keys)
+          .to include(solution_attributes)
       end
       it { expect(response.headers['Access-Token']).to be_blank }
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to match_json_schema('solutions') }
     end
 
-    describe '.create', focus: true do
+    describe '.create' do
       before do
         v1_post "/api/automation_scenarios/#{automation_scenario.id}/solutions",
-          params: {
-            name: 'test', initial_cost: 20, iteration_cost: 30
-          }
+                params: {
+                  name: 'test', initial_cost: 20, iteration_cost: 30
+                }
       end
 
       it_behaves_like 'a correct solution response' do
@@ -104,46 +109,55 @@ RSpec.describe API::V1::SolutionsController, type: :request do
           }
         end
       end
-
-      context 'when inspecting the automation scenario attributes' do
-        subject(:created_automation_scenario) do
-          AutomationScenario.find json_response['id']
-        end
-
-        its(:owner_id) { is_expected.to eq current_member.id }
-        its(:owner_type) { is_expected.to eq current_member.class.name }
-      end
     end
 
     context 'when working with a scenario' do
-      let!(:automation_scenario) { current_member.automation_scenarios.first }
-
       describe '.show' do
-        before { v1_get "/api/automation_scenarios/#{automation_scenario.id}" }
+        context 'when working with a correct solution' do
+          before { v1_get "/api/solutions/#{solution.id}" }
 
-        it_behaves_like 'a correct solution response' do
-          let(:scenario_attributes) do
-            {
-              id: automation_scenario.id,
-              display_name: automation_scenario.display_name,
-              iteration_count: automation_scenario.iteration_count
-            }
+          it_behaves_like 'a correct solution response' do
+            let(:solution_attributes) do
+              {
+                id: solution.id,
+                display_name: solution.display_name,
+                iteration_count: automation_scenario.iteration_count,
+                initial_cost: solution.initial_cost,
+                iteration_cost: solution.iteration_cost
+              }
+            end
           end
+        end
+
+        context 'when working with another solution' do
+          let(:another_solution) { create :solution }
+
+          before { v1_get "/api/solutions/#{another_solution.id}" }
+
+          it { expect(response.headers['Access-Token']).to be_blank }
+          it { expect(response).to have_http_status(:not_found) }
+          it { expect(response.body).to be_blank }
         end
       end
 
       describe '.update' do
         before do
-          v1_put  "/api/automation_scenarios/#{automation_scenario.id}",
-                  params: { name: 'updated_name', iteration_count: 35 }
+          v1_put  "/api/solutions/#{solution.id}",
+                  params: {
+                    name: 'updated_name',
+                    initial_cost: 20,
+                    iteration_cost: 30
+                  }
         end
 
         it_behaves_like 'a correct solution response' do
-          let(:scenario_attributes) do
+          let(:solution_attributes) do
             {
-              id: automation_scenario.id,
+              id: solution.id,
               display_name: 'updated_name',
-              iteration_count: 35
+              iteration_count: 10,
+              initial_cost: 20,
+              iteration_cost: 30
             }
           end
         end
@@ -151,12 +165,16 @@ RSpec.describe API::V1::SolutionsController, type: :request do
 
       describe '.destroy' do
         before do
-          v1_delete "/api/automation_scenarios/#{automation_scenario.id}"
+          v1_delete "/api/solutions/#{solution.id}"
         end
 
         it { expect(response.headers['Access-Token']).to be_blank }
         it { expect(response).to have_http_status(:ok) }
         it { expect(response.body).to be_blank }
+        specify do
+          expect { solution.reload }
+            .to raise_error(ActiveRecord::RecordNotFound)
+        end
       end
     end
   end

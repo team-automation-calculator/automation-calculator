@@ -1,5 +1,5 @@
 {
-  "id": "file:/automation_scenario.json#",
+  "id": "file:/solution.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "required": ["id", "iteration_count", "display_name", "initial_cost", "iteration_cost"],

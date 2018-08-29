@@ -2,7 +2,7 @@ module API
   module V1
     class SolutionsController < API::V1::ApplicationController
       before_action :authenticate!
-      before_action :find_scenario, only: %i[index create]
+      before_action :find_automation_scenario, only: %i[index create]
       before_action :find_solution, only: %i[show update destroy]
 
       def index
@@ -45,7 +45,7 @@ module API
         @solution = Solution.find params[:id]
 
         # a primitive permissions check
-        raise ActiveRecord::NotFound unless
+        raise ActiveRecord::RecordNotFound unless
           @solution.automation_scenario.owner == current_member
       end
 
