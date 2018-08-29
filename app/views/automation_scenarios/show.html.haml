@@ -62,4 +62,4 @@
                 %td{scope: :col}= combination.difference_formatted
 
 #scenarioData{hidden: true}
-  = AutomationScenarioSerializer.new(@automation_scenario).to_json
+  = AutomationScenarioForGraphSerializer.new(@automation_scenario).to_json

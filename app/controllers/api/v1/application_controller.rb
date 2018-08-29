@@ -7,7 +7,7 @@ module API
 
       def authenticate!
         token = request.headers['HTTP_ACCESS_TOKEN']
-        payload = JwtTokenService.decode_token(token)
+        payload = JwtTokenService.decode_token(token)[:data]
 
         find_member payload[:user_id], payload[:visitor_id]
       rescue JwtTokenService::ExpiredError
