@@ -1,0 +1,457 @@
+FORMAT: 1A
+HOST: http://test.com/
+
+
+# Automation Calculator API V1.0
+
+To help people make and communicate automation decisions quickly and effectively.
+
+# Data Structures
+
+## Visitor / Core
+
++ ip: `202.56.23.210`
++ uuid: `qwe324`
+
+
+## Visitor / Saved (Visitor / Core)
+
++ id: `9` (number) - Visitor ID.
+
+
+## User / Core
+
++ email: `john@trucklease.com` - User's email address
+
+
+## User / Saved (User / Core)
+
++ id: `9` (number) - User ID.
+
+
+## User / Passwords
+
++ password: `111111` - Current user's password.
++ new_password: `s7dhe63` - New user's password.
+
+
+## Automation Scenario / Core
+
++ name: `Home cleaning`
++ iteration_count: `3`
+
+## Automation Scenario / Saved (Automation Scenario / Core)
+
++ id: `3` (number) - Scenario ID
+
+## Solution / Core
+
++ name: `Cleaning robot`
++ initial_cost: `300`
++ iteration_cost: `20`
+
+## Solution / Saved (Solution / Core)
+
++ id: `3` (number) - Solution ID
+
+
+
+
+## Group API
+
+### Root [/]
+
+#### Retrieve Entry Point [GET]
+Returns an empty but valid response for the root url.
+Useful for preventing logs from filling with routing errors caused by search engine crawlers.
+
++ Response 200 (application/json)
+
+
+#### Erroneous Request [POST]
+Fake endpoint just to demonstrate the format of errors
+
++ Request (application/json)
+
+    + Attributes
+
+        + `wrong_field`: `wrong_value`
+
++ Response 400 (application/json)
+
+    + Attributes
+
+        + errors
+            + base (array) - Generic resource errors
+                - The resource cannot be found.
+                - You don't have access.
+
+            + wrong_field (array) - Errors about a specific field
+                - The name of the field is incorrect.
+                - The value format is wrong.
+
+
+
+
+## Group Visitor Flow
+
+
+### Sign In as a Visitor [/visitor/sign_in]
+
+#### Sign In a Visitor without an email [POST]
+Create a new Visitor and sign automatically in
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: secret_token
+            Expiry: 1442087335
+
+
+    + Attributes
+
+        + visitor (Visitor / Saved)
+
+
++ Response 401 (application/json)
+
+
+
+
+## Group User Flow
+
+### Sign Up [/sign_up]
+
+#### Create a New User by Email [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+
+    + Attributes (User / Core)
+        + password: `foobar`
+
++ Response 200 (application/json)
+
+    + Attributes
+
+        + user (User / Saved)
+
+
+### Sign In [/sign_in]
+
+#### Sign In User by Email [POST]
+Allows a registered User to authenticate using an email address and a password.
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+
+    + Attributes
+
+        + email: `john@automations.com` - User's login email address
+        + password: `foobarbaz` - User's password
+
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes
+
+        + user (User / Saved)
+
+
++ Response 401 (application/json)
+
+
+
+### User Password [/user/password]
+Change current user password
+
+#### Update User Password [PUT]
+Update the current user's password.
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes (User / Passwords)
+
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
++ Response 401 (application/json)
+
++ Response 422 (application/json)
+
+
+
+
+
+## Group Scenarios and Solutions
+
+
+### Automation Scenarios [/automation_scenarios]
+
+#### Show All Scenarios [GET]
+Retrieve information of all automation scenarios.
+
++ Response 200 (application/json)
+
+    + Headers
+
+            X-Total-Count: 6
+            X-Per-Page: 15
+            X-Page: 1
+
+
+    + Attributes
+
+        + automation_scenarios (array[Automation Scenario / Saved])
+
+
+
+#### Create a new Automation Scenario [POST]
+Create a new Automation Scenario.
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes (Automation Scenario / Core)
+
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes
+
+        + automation_scenario (Automation Scenario / Saved)
+
+
++ Response 422 (application/json)
+
+
+### Automation Scenario Details [/automation_scenarios/{automation_scenario_id}]
+
++ Parameters
+
+    + automation_scenario_id: `4` (number) - ID of the Automation Scenario to fetch details for.
+
+
+#### Show Specific Automation Scenario Details [GET]
+Retrieve information for a specific Automation Scenario.
+
+
++ Response 200 (application/json)
+
+    + Attributes
+
+        + automation_scenario (Automation Scenario / Saved)
+
+
++ Response 404 (application/json)
+
+
+#### Update Specific Automation Scenario Details [PUT]
+Update details of a specific Automation Scenario.
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes (Automation Scenario / Core)
+
+
++ Response 200 (application/json)
+
+    + Attributes
+
+        + automation_scenario (Automation Scenario / Saved)
+
+
++ Response 404 (application/json)
+
+
+#### Destroy a Specific Automation Scenario [DELETE]
+Destroy a specific Automation Scenario.
+
++ Response 200 (application/json)
+
++ Response 404 (application/json)
+
+
+
+
+### Solutions [/automation_scenarios/{automation_scenario_id}/solutions]
+
++ Parameters
+
+    + automation_scenario_id (number) - ID of the automation scenario.
+
+
+#### Show All Solutions [GET]
+Retrieve information of all solutions of a specified automation scenario.
+
++ Response 200 (application/json)
+
+    + Headers
+
+            X-Total-Count: 6
+            X-Per-Page: 15
+            X-Page: 1
+
+
+    + Attributes
+
+        + solutions (array[Solution / Saved])
+
+
+
+#### Create a new Solution [POST]
+Create a new Solution.
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes (Solution / Core)
+
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes
+
+        + solution (Solution / Saved)
+
+
++ Response 422 (application/json)
+
+
+### Solution Details [/solutions/{solution_id}]
+
++ Parameters
+
+    + solution_id: `4` (number) - ID of the Solution to work with.
+
+
+#### Show Specific Solution Details [GET]
+Retrieve information for a specific Solution.
+
+
++ Response 200 (application/json)
+
+    + Attributes
+
+        + solution (Solution / Saved)
+
+
++ Response 404 (application/json)
+
+
+#### Update Specific Solution Details [PUT]
+Update details of a specific Solution.
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes (Solution / Core)
+
+
++ Response 200 (application/json)
+
+    + Attributes
+
+        + solution (Solution / Saved)
+
+
++ Response 404 (application/json)
+
+
+#### Destroy a Specific Solution [DELETE]
+Destroy a specific Solution.
+
++ Response 200 (application/json)
+
++ Response 404 (application/json)
+
+
