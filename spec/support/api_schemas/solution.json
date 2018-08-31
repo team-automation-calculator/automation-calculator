@@ -1,0 +1,26 @@
+{
+  "id": "file:/solution.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["id", "iteration_count", "display_name", "initial_cost", "iteration_cost"],
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "Solution ID."
+    },
+    "iteration_count": {
+      "type": "number",
+      "description": "Iteration's count"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Solution Name"
+    },
+    "initial_cost": {
+      "type": "number"
+    },
+    "iteration_cost": {
+      "type": "number"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 class SolutionSerializer < ActiveModel::Serializer
-  attributes :initial_cost, :iteration_cost, :iteration_count, :display_name
+  attributes  :id, :display_name,
+              :initial_cost, :iteration_cost, :iteration_count
 
   def iteration_count
     object.automation_scenario.iteration_count

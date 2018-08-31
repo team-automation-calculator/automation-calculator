@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["id", "email"],
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "User ID."
+    },
+    "email": {
+      "type": "string",
+      "description": "User's email address"
+    }
+  }
+}

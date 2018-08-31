@@ -15,8 +15,6 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-require 'database_cleaner'
-require 'factory_bot_rails'
 require 'pry'
 require 'simplecov'
 
@@ -53,8 +51,6 @@ RSpec.configure do |config|
   # triggering implicit auto-inclusion in groups with matching metadata.
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-  config.include FactoryBot::Syntax::Methods
-
   config.disable_monkey_patching!
 
   config.default_formatter = 'doc' if config.files_to_run.one?
@@ -73,16 +69,4 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 
   config.filter_run_when_matching :focus
-
-  # Database Cleaner
-  config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean
-  end
-
-  config.around do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
-  end
 end
