@@ -32,23 +32,19 @@ module API
       end
 
       def differences
-        differences =
-          @automation_scenario
-            .solutions_combinations
-            .map(&:difference)
+        solutions_combinations =
+          @automation_scenario.solutions_combinations
 
-        render  json: differences,
+        render  json: solutions_combinations,
                 each_serializer: SolutionDifferenceSerializer
       end
 
       def intersections
-        intersection_points =
-          @automation_scenario
-            .solutions_combinations
-            .map(&:intersection_point_within_boundaries)
+        solutions_combinations =
+          @automation_scenario.solutions_combinations
 
-        render  json: intersection_points,
-                each_serializer: IntersectionPointSerializer
+        render  json: solutions_combinations,
+                each_serializer: SolutionIntersectionSerializer
       end
 
       protected

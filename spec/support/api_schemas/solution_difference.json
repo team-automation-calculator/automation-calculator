@@ -1,0 +1,17 @@
+{
+  "id": "file:/solution_difference.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["solution1_id", "solution2_id", "difference"],
+  "properties": {
+    "solution1_id": {
+      "type": "number"
+    },
+    "solution2_id": {
+      "type": "number"
+    },
+    "difference": {
+      "type": "number"
+    }
+  }
+}
