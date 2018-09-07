@@ -29,12 +29,6 @@ To help people make and communicate automation decisions quickly and effectively
 + id: `9` (number) - User ID.
 
 
-## User / Passwords
-
-+ password: `111111` - Current user's password.
-+ new_password: `s7dhe63` - New user's password.
-
-
 ## Automation Scenario / Core
 
 + name: `Home cleaning`
@@ -185,7 +179,75 @@ Allows a registered User to authenticate using an email address and a password.
 
 
 
-### User Password [/user/password]
+
+### User Profile [/users/profile]
+Manage current user profile
+
+#### View Profile [GET]
+Update the current user's password.
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+    + Attributes(User / Saved)
+
+
++ Response 401 (application/json)
+
++ Response 422 (application/json)
+
+#### Update Profile [PUT]
+Update the current user's profile
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+
+    + Attributes(User / Core)
+
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Access-Token: hpkKcrLSoSowqZdh9wWL1Q
+            Client: cffhaHgNXWPpCAk3svRCbg
+            Uid: john@automations.com
+            Expiry: 1442087335
+
+    + Attributes(User / Saved)
+
+
++ Response 401 (application/json)
+
++ Response 422 (application/json)
+
+
+### User Password [/users/profile/password]
 Change current user password
 
 #### Update User Password [PUT]
@@ -202,7 +264,8 @@ Update the current user's password.
             Expiry: 1442087335
 
 
-    + Attributes (User / Passwords)
+    + Attributes
+      + password: `s7dhe63` - New user's password.
 
 
 + Response 200 (application/json)
@@ -213,6 +276,10 @@ Update the current user's password.
             Client: cffhaHgNXWPpCAk3svRCbg
             Uid: john@automations.com
             Expiry: 1442087335
+
+    + Attributes
+
+        + user (User / Saved)
 
 
 + Response 401 (application/json)
