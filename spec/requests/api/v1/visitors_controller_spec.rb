@@ -11,7 +11,7 @@ RSpec.describe API::V1::VisitorsController, type: :request do
         )
     end
 
-    it { expect(response).to have_http_status(:success) }
+    it { expect(response).to have_http_status(:ok) }
     it { expect(response.headers['Access-Token']).to be_present }
     it { expect(response).to match_json_schema('visitor') }
   end

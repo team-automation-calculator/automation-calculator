@@ -5,17 +5,19 @@ module API
 
       attr_reader :current_user, :current_visitor
 
+      # some actions are allowed for users only
+      def authenticate_user!
+        payload = decode_token
+        return unless payload.is_a? Hash
+
+        @current_user = User.find payload[:user_id]
+      end
+
       def authenticate!
-        token = request.headers['HTTP_ACCESS_TOKEN']
-        payload = JwtTokenService.decode_token(token)[:data]
+        payload = decode_token
+        return unless payload.is_a? Hash
 
         find_member payload[:user_id], payload[:visitor_id]
-      rescue JwtTokenService::ExpiredError
-        head :unauthorized
-      rescue JwtTokenService::DecodeError
-        head :unauthorized
-      rescue ActiveRecord::RecordNotFound
-        head :unauthorized
       end
 
       def find_member(user_id, visitor_id)
@@ -33,6 +35,17 @@ module API
 
       def current_member
         current_user || current_visitor
+      end
+
+      def decode_token
+        token = request.headers['HTTP_ACCESS_TOKEN']
+        JwtTokenService.decode_token(token)[:data]
+      rescue JwtTokenService::ExpiredError
+        head :unauthorized
+      rescue JwtTokenService::DecodeError
+        head :unauthorized
+      rescue ActiveRecord::RecordNotFound
+        head :unauthorized
       end
     end
   end
