@@ -337,6 +337,52 @@ Destroy a specific Automation Scenario.
 + Response 404 (application/json)
 
 
+### Automation Scenario Differences [/automation_scenarios/{automation_scenario_id}/differences]
+
++ Parameters
+
+    + automation_scenario_id: `4` (number) - ID of the Automation Scenario to fetch details for.
+
+
+#### Show Differences of Solutions for a Specific Automation Scenario [GET]
+Retrieve information about differences between all combinations of solutions for a specific Automation Scenario.
+
+
++ Response 200 (application/json)
+
+    + Attributes
+
+        + solution1_id: `9` (number) - ID of the first solution.
+        + solution2_id: `2` (number) - ID of the second solution.
+        + difference: `15.2` (number) - Difference at the last iteration between the solutions.
+
++ Response 404 (application/json)
+
+
+
+### Automation Scenario Intersections [/automation_scenarios/{automation_scenario_id}/intersections]
+
++ Parameters
+
+    + automation_scenario_id: `4` (number) - ID of the Automation Scenario to fetch details for.
+
+
+#### Show Intersections of Solution Lines for a Specific Automation Scenario [GET]
+Retrieve information about intersections of all solution combinations for a specific Automation Scenario.
+
+
++ Response 200 (application/json)
+
+    + Attributes
+
+        + solution1_id: `9` (number) - ID of the first solution.
+        + solution2_id: `2` (number) - ID of the second solution.
+        + intersection (array[number]) - Coordinates of the intersection point of the solutions.
+          - 4 (number)
+          - 10 (number)
+
++ Response 404 (application/json)
+
 
 
 ### Solutions [/automation_scenarios/{automation_scenario_id}/solutions]
