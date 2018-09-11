@@ -11,6 +11,12 @@ Rails.application.routes.draw do
         resources :solutions, shallow: true
       end
 
+      namespace :users do
+        resource :profile, only: %i[show update] do
+          resource :password, only: :update
+        end
+      end
+
       root to: 'roots#show'
     end
   end
