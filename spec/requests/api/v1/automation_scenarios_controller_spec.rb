@@ -142,6 +142,40 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
         it { expect(response).to have_http_status(:ok) }
         it { expect(response.body).to be_blank }
       end
+
+      describe '.differences' do
+        let!(:solution1) do
+          create  :solution,
+                  automation_scenario: automation_scenario,
+                  initial_cost: 10,
+                  iteration_cost: 20
+        end
+
+        let!(:solution2) do
+          create  :solution,
+                  automation_scenario: automation_scenario,
+                  initial_cost: 20,
+                  iteration_cost: 5
+        end
+
+        before do
+          v1_get(
+            "/api/automation_scenarios/#{automation_scenario.id}/differences"
+          )
+        end
+
+        it { expect(json_response.size).to eq 1 }
+        it 'returns scenario data' do
+          expect(json_response.first.symbolize_keys).to include(
+            difference: 140,
+            solution1_id: solution1.id,
+            solution2_id: solution2.id
+          )
+        end
+        it { expect(response.headers['Access-Token']).to be_blank }
+        it { expect(response).to have_http_status(:ok) }
+        it { expect(response).to match_json_schema('solution_differences') }
+      end
     end
   end
 

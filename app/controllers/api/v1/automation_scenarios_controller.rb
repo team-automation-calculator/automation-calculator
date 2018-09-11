@@ -2,7 +2,8 @@ module API
   module V1
     class AutomationScenariosController < API::V1::ApplicationController
       before_action :authenticate!
-      before_action :find_automation_scenario, only: %i[show update destroy]
+      before_action :find_automation_scenario,
+                    only: %i[show update destroy differences intersections]
 
       def index
         render json: current_member.automation_scenarios
@@ -28,6 +29,22 @@ module API
       def destroy
         @automation_scenario.destroy!
         head :ok
+      end
+
+      def differences
+        solutions_combinations =
+          @automation_scenario.solutions_combinations
+
+        render  json: solutions_combinations,
+                each_serializer: SolutionDifferenceSerializer
+      end
+
+      def intersections
+        solutions_combinations =
+          @automation_scenario.solutions_combinations
+
+        render  json: solutions_combinations,
+                each_serializer: SolutionIntersectionSerializer
       end
 
       protected

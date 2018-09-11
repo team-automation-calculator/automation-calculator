@@ -1,5 +1,6 @@
 class SolutionPair
   attr_reader :solution1, :solution2
+  alias read_attribute_for_serialization send
 
   class UnpairedSolutionsError < StandardError; end
 

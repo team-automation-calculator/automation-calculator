@@ -8,6 +8,10 @@ Rails.application.routes.draw do
       post 'sign_up', to: 'users#create'
 
       resources :automation_scenarios do
+        member do
+          get 'intersections'
+          get 'differences'
+        end
         resources :solutions, shallow: true
       end
 
