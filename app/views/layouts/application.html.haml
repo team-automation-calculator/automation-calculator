@@ -17,9 +17,12 @@
         %ul.navbar-nav.ml-auto
           %li.nav-item
             = link_to 'Dashboard', automation_scenarios_path, class: 'nav-link'
-          %li.nav-item
-            - if user_signed_in?
+          - if user_signed_in?
+            %li.nav-item
+              = link_to('Profile', users_profile_path, class: 'nav-link')
+            %li.nav-item
               = link_to('Log out', destroy_user_session_path, method: :delete, class: 'nav-link')
-            - else
+          - else
+            %li.nav-item
               = link_to('Log in', new_user_session_path, class: 'nav-link')
     = yield
