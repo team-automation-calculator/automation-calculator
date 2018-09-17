@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     resources :iterations
@@ -43,3 +44,4 @@ Rails.application.routes.draw do
 
   root to: 'automation_scenarios#index'
 end
+# rubocop:enable Metrics/BlockLength

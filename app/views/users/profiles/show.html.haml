@@ -4,7 +4,7 @@
       %h3.form-header
         User Profile
 
-      = form_for @user, url: users_profile_path(@user) do |f|
+      = form_for @user, url: users_profile_path do |f|
         .form-group
           = f.label :email
           = f.text_field :email, class: 'form-control'
@@ -15,7 +15,7 @@
       %h3.form-header
         Change Password
 
-      = form_for @user, url: update_password_users_profile_path(@user) do |f|
+      = form_for @user, url: update_password_users_profile_path do |f|
         .form-group
           = f.label :current_password
           = f.password_field :current_password, class: 'form-control'
