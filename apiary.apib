@@ -143,6 +143,23 @@ Create a new Visitor and sign automatically in
         + user (User / Saved)
 
 
+### Reset Password [/reset_password]
+
+#### Send reset password instructions to the provided email [PUT]
+
++ Request (application/json)
+
+    + Headers
+
+            Accept: application/json; version=1
+
+    + Attributes
+        + email: `test@email.com` - The email of a user to send instructions to
+
++ Response 200 (application/json)
++ Response 404 (application/json)
+
+
 ### Sign In [/sign_in]
 
 #### Sign In User by Email [POST]
