@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     resources :iterations
@@ -6,6 +7,7 @@ Rails.application.routes.draw do
       resource :visitor, only: :create
       post 'sign_in', to: 'user_sessions#create'
       post 'sign_up', to: 'users#create'
+      put 'reset_password', to: 'passwords#update'
 
       resources :automation_scenarios do
         member do
@@ -37,3 +39,4 @@ Rails.application.routes.draw do
 
   root to: 'automation_scenarios#index'
 end
+# rubocop:enable Metrics/BlockLength
