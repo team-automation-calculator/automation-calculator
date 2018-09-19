@@ -1,0 +1,29 @@
+.container
+  .row.justify-content-center
+    .col-4
+      %h3.form-header
+        User Profile
+
+      = form_for @user, url: users_profile_path do |f|
+        .form-group
+          = f.label :email
+          = f.text_field :email, class: 'form-control'
+        .actions
+          = f.submit 'Update Profile', class: 'btn btn-primary'
+
+
+      %h3.form-header
+        Change Password
+
+      = form_for @user, url: update_password_users_profile_path do |f|
+        .form-group
+          = f.label :current_password
+          = f.password_field :current_password, class: 'form-control'
+        .form-group
+          = f.label :password, 'New password'
+          = f.password_field :password, class: 'form-control'
+        .form-group
+          = f.label :password_confirmation
+          = f.password_field :password_confirmation, class: 'form-control'
+        .actions
+          = f.submit 'Change Password', class: 'btn btn-primary'

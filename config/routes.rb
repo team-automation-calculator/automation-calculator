@@ -32,6 +32,12 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
+  namespace :users do
+    resource :profile, only: %i[show update] do
+      patch :update_password
+    end
+  end
+
   resources :automation_scenarios
   resource :visitor, only: %i[show create]
 
