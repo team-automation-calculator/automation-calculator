@@ -22,7 +22,7 @@ class DockerBuild
     end
 
     def build_ci_image
-      repo = 'automationcalculator/automation-calculator-rails'
+      repo = 'automationcalculators/automation-calculator-production'
       image = "#{repo}:latest"
       build_image(
         image,
