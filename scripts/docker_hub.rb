@@ -23,7 +23,7 @@ class DockerHub
     end
 
     def push_to_docker_hub
-      [semver_tag, latest_tag].each { |tag| system("docker push #{tag}") }
+      [image_with_semver, latest_tag].each { |tag| system("docker push #{tag}") }
     end
   end
 end
