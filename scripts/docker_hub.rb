@@ -1,6 +1,6 @@
 # Interract with the DockerHub
 class DockerHub
-  REPO = 'automationcalculator/automation-calculator-rails'.freeze
+  REPO = 'automationcalculators/automation-calculator-production'.freeze
 
   class << self
     def semver_tag
