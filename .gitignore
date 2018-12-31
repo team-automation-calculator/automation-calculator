@@ -66,6 +66,5 @@ config/environments/*.local.yml
 
 .byebug_history
 
-config/database.yml
 .sass-cache
 *~
