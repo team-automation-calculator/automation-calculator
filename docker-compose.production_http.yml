@@ -25,7 +25,7 @@ services:
       - RAILS_SERVE_STATIC_FILES=true
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - USER=${USER}
-    image: automationcalculator/automation-calculator-production:0.2.1-427
+    image: automationcalculators/automation-calculator-production:latest
     links:
       - logspout
       - watchtower
