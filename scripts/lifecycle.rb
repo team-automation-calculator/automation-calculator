@@ -21,6 +21,7 @@ class Lifecycle
 
   class << self
     def init(cmds)
+      DockerBuild.build(['base'])
       DockerBuild.build(cmds)
       exec(
         'docker-compose -f docker-compose.yml ' \
