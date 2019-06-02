@@ -36,7 +36,9 @@ class DockerBuild
       uid = `id -u`.strip
       build_image(
         'automationcalculator_dev:latest',
-        'Dockerfile.development', ENV['USER'], "--build-arg uid=#{uid}"
+        'Dockerfile.development',
+        ENV['USERNAME'],
+        "--build-arg uid=#{uid}"
       )
     end
 
