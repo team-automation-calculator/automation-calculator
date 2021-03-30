@@ -13,12 +13,6 @@ provider "aws" {
   region = "us-west-1"
 }
 
-# Declare vars
-variable "project_tag" {
-  type = string
-  default = "automation-calculator"
-}
-
 # Create a VPC
 resource "aws_vpc" "main_vpc" {
   cidr_block = "10.213.0.0/16"
