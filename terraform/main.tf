@@ -11,34 +11,28 @@ terraform {
 # Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables to authenticate
 provider "aws" {
   region = "us-west-1"
+  default_tags {
+    tags = {
+      Project = "automation-calculator"
+    }
+  }
 }
 
 # Create a VPC
 resource "aws_vpc" "main_vpc" {
   cidr_block = "10.213.0.0/16"
-  tags = {
-    project_name = var.project_tag
-  }
 }
 
 resource "aws_subnet" "main_1a" {
   vpc_id = aws_vpc.main_vpc.id
   cidr_block = "10.213.0.0/24"
   availability_zone = "us-west-1a"
-
-  tags = {
-    project_name = var.project_tag
-  }
 }
 
 resource "aws_subnet" "main_1c" {
   vpc_id = aws_vpc.main_vpc.id
   cidr_block = "10.213.1.0/24"
   availability_zone = "us-west-1c"
-
-  tags = {
-    project_name = var.project_tag
-  }
 }
 
 # Create IAM role for EKS
@@ -59,10 +53,6 @@ resource "aws_iam_role" "eks_iam_role" {
   ]
 }
 POLICY
-
-  tags = {
-    project_name = var.project_tag
-  }
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
@@ -83,8 +73,4 @@ resource "aws_eks_cluster" "eks_cluster" {
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster_policy
   ]
-
-  tags = {
-    project_name = var.project_tag
-  }
 }
