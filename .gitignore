@@ -68,3 +68,7 @@ config/environments/*.local.yml
 
 .sass-cache
 *~
+
+# Terraform
+*.tfstate*
+.terraform*
