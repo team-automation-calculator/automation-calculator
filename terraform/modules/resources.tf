@@ -1,23 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.34.0"
-    }
-  }
-}
-
-# Configure the AWS Provider
-# Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables to authenticate
-provider "aws" {
-  region = "us-west-1"
-  default_tags {
-    tags = {
-      Project = "automation-calculator"
-    }
-  }
-}
-
 # Create a VPC
 resource "aws_vpc" "main_vpc" {
   cidr_block = "10.213.0.0/16"
@@ -37,7 +17,7 @@ resource "aws_subnet" "main_1c" {
 
 # Create IAM role for EKS
 resource "aws_iam_role" "eks_iam_role" {
-  name = "automation_calculator_eks_iam_role"
+  name = "automation_calculator_eks_iam_role_${var.environment_name}"
 
   assume_role_policy = <<POLICY
 {
@@ -61,7 +41,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 }
 
 resource "aws_eks_cluster" "eks_cluster" {
-  name = "automation_calculator_eks_cluster"
+  name = "automation_calculator_eks_cluster_${var.environment_name}"
   role_arn = aws_iam_role.eks_iam_role.arn
 
   vpc_config {
