@@ -5,6 +5,9 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.development
+      args:
+        username: ${USER}
+        uid: ${UID}
     command: "rails s"
     depends_on:
       - db
