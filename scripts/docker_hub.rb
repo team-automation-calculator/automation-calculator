@@ -10,12 +10,12 @@ class DockerHub
       "#{ENV['CIRCLE_BUILD_NUM']}"
     end
 
-    def image_with_semver
+    def image_w_semver
       "#{REPO}:#{semver_tag}"
     end
 
     def tag_latest_with_semver
-      system("docker tag #{latest_tag} #{image_with_semver}")
+      system("docker tag #{latest_tag} #{image_w_semver}")
     end
 
     def latest_tag
@@ -23,7 +23,7 @@ class DockerHub
     end
 
     def push_to_docker_hub
-      [image_with_semver, latest_tag].each { |tag| system("docker push #{tag}") }
+      [image_w_semver, latest_tag].each { |tag| system("docker push #{tag}") }
     end
   end
 end

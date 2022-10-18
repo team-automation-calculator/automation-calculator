@@ -39,7 +39,7 @@ class DockerBuild
         'automation-calculator_dev',
         'Dockerfile.development',
         ENV['USERNAME'],
-        "--build-arg uid=#{GetUID.get_uid()}"
+        "--build-arg uid=#{GetUID.read_uid}"
       )
     end
 

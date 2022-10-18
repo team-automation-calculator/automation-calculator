@@ -1,8 +1,7 @@
 class GetUID
   class << self
-    def get_uid
-      return `id -u`.strip
+    def read_uid
+      `id -u`.strip
     end
   end
 end
-

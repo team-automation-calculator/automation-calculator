@@ -25,7 +25,7 @@ class Lifecycle
       DockerBuild.build(['base'])
       DockerBuild.build(cmds)
       exec(
-        "UID=#{GetUID.get_uid()} docker-compose -f docker-compose.yml " \
+        "UID=#{GetUID.read_uid} docker-compose -f docker-compose.yml " \
         '-f docker-compose.dev.yml run dev "/usr/src/app/bin/setup"'
       )
     end

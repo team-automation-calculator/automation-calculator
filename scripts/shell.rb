@@ -22,7 +22,8 @@ class Shell
 
     def dev_shell
       exec(
-        "UID=#{GetUID.get_uid()} docker-compose -f docker-compose.yml -f docker-compose.dev.yml " \
+        "UID=#{GetUID.read_uid} docker-compose -f docker-compose.yml" \
+        ' -f docker-compose.dev.yml' \
         'run dev /bin/bash'
       )
     end
