@@ -1,4 +1,6 @@
 # Build docker images for different environments
+require './scripts/utils/get_uid.rb'
+
 class DockerBuild
   class << self
     def build(cmds)
@@ -33,12 +35,11 @@ class DockerBuild
     end
 
     def build_dev_image
-      uid = `id -u`.strip
       build_image(
         'automation-calculator_dev',
         'Dockerfile.development',
         ENV['USERNAME'],
-        "--build-arg uid=#{uid}"
+        "--build-arg uid=#{GetUID.get_uid()}"
       )
     end
 
