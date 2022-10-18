@@ -6,7 +6,7 @@ version: 2
 jobs:
   build_verify_push:
     docker:
-      - image: circleci/ruby:2.4.1-node-browsers
+      - image: cimg/ruby:2.4.1-node
 
     environment:
        - USER: "circleci"
