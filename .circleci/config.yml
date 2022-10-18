@@ -10,6 +10,7 @@ jobs:
 
     environment:
        - USER: "circleci"
+       - COMPOSE_TLS_VERSION: "TLSv1_2"
 
     working_directory: ~/repo
 
