@@ -7,16 +7,21 @@ RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev lib
 #Setup development user
 ARG username
 ARG uid
+ARG appdir=/usr/src/app
 RUN useradd --uid=$uid -ms /bin/bash $username
 RUN usermod -a -G staff $username
+RUN mkdir $appdir
+COPY Gemfile* $appdir/
+RUN chown -R $username $appdir
 USER $username
 
 #Install rails dependencies as development user
 RUN gem install nokogiri -v 1.8.2
 RUN gem install bundler
 
-COPY Gemfile* /usr/src/app/
-WORKDIR /usr/src/app
+
+
+WORKDIR $appdir
 
 #Calling bundle install in image creation to install dependencies,
 # and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
