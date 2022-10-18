@@ -19,8 +19,6 @@ USER $username
 RUN gem install nokogiri -v 1.8.2
 RUN gem install bundler
 
-
-
 WORKDIR $appdir
 
 #Calling bundle install in image creation to install dependencies,
