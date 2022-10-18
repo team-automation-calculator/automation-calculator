@@ -6,7 +6,7 @@ version: 2
 jobs:
   build_verify_push:
     docker:
-      - image: cimg/ruby:2.4.1-node
+      - image: cimg/ruby:2.4.10-node
 
     environment:
        - USER: "circleci"
