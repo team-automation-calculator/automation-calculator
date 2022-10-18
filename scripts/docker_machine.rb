@@ -5,11 +5,11 @@ class DockerMachine
       name = cmds.shift
       region = cmds.shift
       commands = [
-          'docker-machine',
-          'create',
-          '--driver amazonec2',
-          "--amazonec2-region #{region}",
-          name
+        'docker-machine',
+        'create',
+        '--driver amazonec2',
+        "--amazonec2-region #{region}",
+        name
       ].join(' ')
       exec(commands)
     end

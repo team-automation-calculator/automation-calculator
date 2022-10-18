@@ -2,7 +2,9 @@
 class EnvironmentVariables
   EnvVar = Struct.new(:name, :value)
 
-  #Note secret key base is only set as a mock for production in the development environment, and should never be the real production secret key base.
+  # Note secret key base is only set as a mock for production
+  # in the development environment,
+  # and should never be the real production secret key base.
   PRODUCTION_VARS = [
     EnvVar.new('DOCKER_REPO_PASS', 'password'),
     EnvVar.new('DOCKER_REPO_USER', 'automationcalculator'),
