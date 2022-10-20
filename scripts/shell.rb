@@ -24,7 +24,7 @@ class Shell
       exec(
         "UID=#{GetUID.read_uid} docker-compose -f docker-compose.yml" \
         ' -f docker-compose.dev.yml' \
-        'run dev /bin/bash'
+        ' run dev /bin/bash'
       )
     end
 
