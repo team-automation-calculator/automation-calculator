@@ -5,13 +5,16 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.development
+      args:
+        username: ${USER}
+        uid: ${UID}
     command: "rails s"
     depends_on:
       - db
     ports:
       - "3001:3000"
     environment:
-      - DB_URL="postgresql://${USER}:automation-calculator-password@db:5432/automation-calculator-development"
+      - DB_URL="postgresql://${USER}:${POSTGRES_PASSWORD:-automation-calculator-password}@db:5432/automation-calculator-development"
       - RAILS_ENV=${RAILS_ENV:-test}
       - RAILS_SERVER_PORT=3000
       - SECRET_KEY_BASE=9a9a13734ecf8dda1157caedcd7ee7d8f1aac8bd7b53ef40f6f065ceb0e0d89672965be4c1a36ea223925f7f9075cb56c6c9711e9b273fb64ed9e3e5801c81f3

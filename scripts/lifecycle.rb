@@ -1,5 +1,6 @@
 # Main commands to run a container
 require './scripts/utils/clear_rails_pid.rb'
+require './scripts/utils/get_uid.rb'
 
 class Lifecycle
   COMMAND_HASH = {
@@ -24,7 +25,7 @@ class Lifecycle
       DockerBuild.build(['base'])
       DockerBuild.build(cmds)
       exec(
-        'docker-compose -f docker-compose.yml ' \
+        "UID=#{GetUID.read_uid} docker-compose -f docker-compose.yml " \
         '-f docker-compose.dev.yml run dev "/usr/src/app/bin/setup"'
       )
     end
