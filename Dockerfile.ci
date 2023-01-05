@@ -1,4 +1,4 @@
-FROM automationcalculators/automation-calculator-base:0.1.0
+FROM automationcalculationsci/automation-calculator-base:0.1.0
 
 ARG secret_key_base
 
