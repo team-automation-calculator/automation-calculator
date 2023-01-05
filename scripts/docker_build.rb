@@ -17,14 +17,14 @@ class DockerBuild
 
     def build_base_image
       build_image(
-        'automationcalculators/automation-calculator-base:0.1.0',
+        'automationcalculationsci/automation-calculator-base:0.1.0',
         'Dockerfile.base',
         'circleci'
       )
     end
 
     def build_ci_image
-      repo = 'automationcalculators/automation-calculator-production'
+      repo = 'automationcalculationsci/automation-calculator'
       image = "#{repo}:latest"
       build_image(
         image,
