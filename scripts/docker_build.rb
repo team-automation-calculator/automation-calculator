@@ -29,8 +29,7 @@ class DockerBuild
       build_image(
         image,
         'Dockerfile.ci',
-        'circleci',
-        "--build-arg secret_key_base=#{ENV['SECRET_KEY_BASE']}"
+        'circleci'
       )
     end
 
