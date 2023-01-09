@@ -3,6 +3,8 @@ require './scripts/utils/get_uid.rb'
 
 class DockerBuild
   class << self
+    DOCKER_ORG = 'automationcalculationsci'.freeze
+
     def build(cmds)
       sub_cmd = cmds.shift || 'dev'
 
@@ -10,6 +12,7 @@ class DockerBuild
       when 'dev'  then build_dev_image
       when 'ci'   then build_ci_image
       when 'base' then build_base_image
+      when 'prod' then build_prod_image
       else
         warn "Unrecognized command: #{sub_cmd}"
       end
@@ -17,14 +20,14 @@ class DockerBuild
 
     def build_base_image
       build_image(
-        'automationcalculationsci/automation-calculator-base:0.1.0',
+        "#{DOCKER_ORG}/automation-calculator-base:0.1.0",
         'Dockerfile.base',
         'circleci'
       )
     end
 
     def build_ci_image
-      repo = 'automationcalculationsci/automation-calculator'
+      repo = "#{DOCKER_ORG}/automation-calculator"
       image = "#{repo}:latest"
       build_image(
         image,
@@ -41,6 +44,16 @@ class DockerBuild
         "--build-arg uid=#{GetUID.read_uid}"
       )
     end
+
+    def build_prod_image
+      repo = "#{DOCKER_ORG}/automation-calculator"
+      image = "#{repo}:latest"
+      build_image(
+        image,
+        'Dockerfile.production',
+        'circleci'
+      )
+    end        
 
     def build_image(tag, file, username, additional_build_arg = '')
       system(

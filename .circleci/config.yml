@@ -30,12 +30,7 @@ jobs:
       - run:
           name: ./go build ci
           command: ./go build ci
-
-      # tag image with semver
-      - run:
-          name: ./go tag
-          command: ./go tag
-
+ 
       # lint
       - run:
           name: ./go lint ci
@@ -45,6 +40,16 @@ jobs:
       - run:
           name: ./go test ci
           command: ./go test ci
+
+      # build prod image if tests pass
+      - run:
+          name: ./go build prod
+          command: ./go build prod
+
+      # tag image with semver
+      - run:
+          name: ./go tag
+          command: ./go tag
 
       # login to docker hub in preparation for pushing image
       - run:
