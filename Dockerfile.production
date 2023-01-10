@@ -22,6 +22,6 @@ RUN gem install bundler -v 2.3.26
 # and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
 RUN bundle install
 
-ENTRYPOINT [ "/usr/src/app/entrypoint" ]
+ENTRYPOINT [ "/usr/src/app/entrypoint.sh" ]
 
 CMD [ "rails", "s" ]
