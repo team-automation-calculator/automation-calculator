@@ -28,6 +28,9 @@ ENV SECRET_KEY_BASE="dummy"
 RUN rake assets:precompile
 ENV SECRET_KEY_BASE=""
 
+#Set this var to a reasonable default value, to be overridden per environment 
+ENV APP_HOSTNAME="automation-calculations.net"
+
 ENTRYPOINT [ "/usr/src/app/entrypoint.sh" ]
 
 CMD [ "rails", "s" ]

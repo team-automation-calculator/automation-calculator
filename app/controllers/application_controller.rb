@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   def default_url_options
     if Rails.env.production?
-      { host: 'automation-calculations.net' }
+      { host: ENV['APP_HOSTNAME'] }
     else
       {}
     end
