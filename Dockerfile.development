@@ -17,7 +17,7 @@ USER $username
 
 #Install rails dependencies as development user
 RUN gem install nokogiri -v 1.8.2
-RUN gem install bundler
+RUN gem install bundler -v 2.3.26
 
 WORKDIR $appdir
 
