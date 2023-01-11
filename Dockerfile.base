@@ -2,7 +2,12 @@ FROM ruby:2.5.5-slim-stretch
 
 #Install dependencies as root
 RUN apt-get update
-RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev libpq-dev
+RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev libpq-dev curl
+
+#Install npm/yarn
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+RUN npm install -g yarn
 
 #Setup development user
 ARG username
