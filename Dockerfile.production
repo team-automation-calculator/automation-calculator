@@ -26,7 +26,7 @@ RUN bundle install
 #note this var gets set on prod in a different way
 ENV SECRET_KEY_BASE="dummy"
 RUN rake assets:precompile
-RUN unset SECRET_KEY_BASE
+ENV SECRET_KEY_BASE=""
 
 ENTRYPOINT [ "/usr/src/app/entrypoint.sh" ]
 
