@@ -24,4 +24,4 @@ RUN bundle install
 
 ENTRYPOINT [ "/usr/src/app/entrypoint.sh" ]
 
-CMD [ "rails", "s" ]
+CMD [ "rails", "s", "-p", "80"]
