@@ -22,7 +22,7 @@ jobs:
       
       - run:
           name: aws ec2 list
-          command: aws ec2 describe-instances
+          command: awk 'BEGIN{for(v in ENVIRON) print v}'
           
 
 workflows:
