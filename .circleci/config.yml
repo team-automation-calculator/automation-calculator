@@ -11,8 +11,8 @@ jobs:
     environment:
        - USER: "circleci"
        - COMPOSE_TLS_VERSION: "TLSv1_2"
-       - AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID_STAGING}
-       - AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY_STAGING}
+       - AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID_STAGING
+       - AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY_STAGING
        - AWS_DEFAULT_REGION: "us-west-1"
 
     working_directory: ~/repo
