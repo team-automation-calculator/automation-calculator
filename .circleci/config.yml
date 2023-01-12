@@ -20,7 +20,7 @@ jobs:
       
       - run:
           name: aws ec2 list
-          command: aws ec2 describe-instances --access-key-id ${AWS_ACCESS_KEY_ID_STAGING} --secret-access-key ${AWS_SECRET_ACCESS_KEY_STAGING}
+          command: aws --access-key-id ${AWS_ACCESS_KEY_ID_STAGING} --secret-access-key ${AWS_SECRET_ACCESS_KEY_STAGING} ec2 describe-instances
           
 
 workflows:
