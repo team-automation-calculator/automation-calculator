@@ -19,6 +19,10 @@ jobs:
 
     steps:
       - checkout
+
+      - run:
+          name: sort
+          command: env | sort
       
       - run:
           name: aws ec2 list
