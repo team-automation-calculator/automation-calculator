@@ -22,7 +22,7 @@ jobs:
       
       - run:
           name: aws ec2 list
-          command: echo ${COMPOSE_TLS_VERSION}
+          command: aws ec2 describe-instances
           
 
 workflows:
