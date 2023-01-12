@@ -11,6 +11,8 @@ jobs:
     environment:
        - USER: "circleci"
        - COMPOSE_TLS_VERSION: "TLSv1_2"
+       - AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID_STAGING}"
+       - AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY_STAGING}"
        - AWS_DEFAULT_REGION: "us-west-1"
 
     working_directory: ~/repo
@@ -20,7 +22,7 @@ jobs:
       
       - run:
           name: aws ec2 list
-          command: aws ec2 describe-instances --access-key-id ${AWS_ACCESS_KEY_ID_STAGING} --secret-access-key ${AWS_SECRET_ACCESS_KEY_STAGING}
+          command: aws ec2 describe-instances
           
 
 workflows:
