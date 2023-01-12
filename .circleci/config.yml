@@ -6,59 +6,23 @@ version: 2
 jobs:
   build_verify_push:
     docker:
-      - image: cimg/ruby:2.4.10-node
+      - image: cimg/aws:2022.11
 
     environment:
        - USER: "circleci"
        - COMPOSE_TLS_VERSION: "TLSv1_2"
+       - AWS_ACCESS_KEY_ID: "AWS_ACCESS_KEY_ID_STAGING"
+       - AWS_SECRET_ACCESS_KEY: "AWS_SECRET_ACCESS_KEY_STAGING"
 
     working_directory: ~/repo
 
     steps:
       - checkout
-
+      
       - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-
-      - setup_remote_docker
-
-      # build test image to test, create semver tag
-      - run:
-          name: ./go build ci
-          command: ./go build ci
- 
-      # lint
-      - run:
-          name: ./go lint ci
-          command: ./go lint ci
-
-      # run tests!
-      - run:
-          name: ./go test ci
-          command: ./go test ci
-
-      # build prod image if tests pass
-      - run:
-          name: ./go build prod
-          command: ./go build prod
-
-      # tag image with semver
-      - run:
-          name: ./go tag
-          command: ./go tag
-
-      # login to docker hub in preparation for pushing image
-      - run:
-          name: Login to Docker Hub
-          command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
-
-      - run:
-          name: Upload Docker image to Docker Hub
-          command: ./go push
+          name: aws ec2 list
+          command: aws ec2 describe-instances
+          
 
 workflows:
   version: 2
