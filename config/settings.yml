@@ -3,6 +3,6 @@ oauth2:
     client_id: ''
     client_secret: ''
   github:
-    app_id: ''
-    app_secret: ''
+    app_id: <%= ENV["GITHUB_OAUTH_APP_ID"] %>
+    app_secret: <%= ENV["GITHUB_OAUTH_APP_SECRET"] %>
 api_session_duration: 60 # minutes
