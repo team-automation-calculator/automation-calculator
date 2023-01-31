@@ -1,7 +1,7 @@
 oauth2:
   google:
-    client_id: ''
-    client_secret: ''
+    client_id: <%= ENV["GOOGLE_OAUTH_APP_ID"] %>
+    client_secret: <%= ENV["GOOGLE_OAUTH_APP_SECRET"] %>
   github:
     app_id: <%= ENV["GITHUB_OAUTH_APP_ID"] %>
     app_secret: <%= ENV["GITHUB_OAUTH_APP_SECRET"] %>
