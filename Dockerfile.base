@@ -12,9 +12,9 @@ RUN npm install -g yarn
 #Setup development user
 ARG username
 ARG appdir=/usr/src/app
-RUN useradd -ms /bin/bash circleci
-RUN usermod -a -G staff circleci
-USER circleci
+RUN useradd -ms /bin/bash $username
+RUN usermod -a -G staff $username
+USER $username
 
 #Install rails dependencies as development user
 RUN gem install nokogiri -v 1.8.2
@@ -22,7 +22,7 @@ RUN gem install bundler -v 2.3.26
 
 #Installing gems here even though bundle install will need to be installed again to save 90 seconds on build server
 # This is because installing here installs a large number of gems that get cached.
-COPY --chown=circleci Gemfile $appdir/Gemfile
+COPY --chown=$username Gemfile $appdir/Gemfile
 WORKDIR $appdir
 RUN bundle install
 RUN rm $appdir/Gemfile.lock
