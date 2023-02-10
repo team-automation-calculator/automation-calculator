@@ -9,18 +9,20 @@ class Verify
         return
       end
 
-      exec(
+      system(
         "docker-compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
-        "run --rm #{env} rspec"
+        "run --rm #{env} rspec",
+        exception: true
       )
     end
 
     def lint(cmds)
       env = cmds.shift.to_s == 'ci' ? 'ci' : 'dev'
 
-      exec(
+      system(
         "docker-compose -f docker-compose.yml -f docker-compose.#{env}.yml "\
-        "run --no-deps --rm #{env} rubocop"
+        "run --no-deps --rm #{env} rubocop",
+        exception: true
       )
     end
   end
