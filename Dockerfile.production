@@ -20,7 +20,7 @@ RUN chown -R automation-calculator-production /usr/src/app
 USER automation-calculator-production
 
 #Install rails dependencies as non root user
-RUN gem install nokogiri -v 1.12.5
+RUN gem install nokogiri -v 1.14.1
 RUN gem install bundler -v 2.3.26
 
 #Calling bundle install in image creation to install dependencies,
