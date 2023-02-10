@@ -1,4 +1,4 @@
-FROM ruby:2.5.5-slim-stretch
+FROM ruby:2.6.10-slim-buster
 
 #Install dependencies as root
 RUN apt-get update
@@ -18,11 +18,11 @@ USER $username
 
 #Install rails dependencies as development user
 RUN gem install nokogiri -v 1.8.2
-RUN gem install bundler
+RUN gem install bundler -v 2.3.26
 
 #Installing gems here even though bundle install will need to be installed again to save 90 seconds on build server
 # This is because installing here installs a large number of gems that get cached.
-COPY --chown=circleci Gemfile $appdir/Gemfile
+COPY --chown=$username Gemfile $appdir/Gemfile
 WORKDIR $appdir
 RUN bundle install
 RUN rm $appdir/Gemfile.lock
