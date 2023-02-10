@@ -58,7 +58,8 @@ class DockerBuild
     def build_image(tag, file, username, additional_build_arg = '')
       system(
         "docker build -t #{tag} -f #{file} " \
-        "--build-arg username=#{username} #{additional_build_arg} ."
+        "--build-arg username=#{username} #{additional_build_arg} .",
+        exception: true
       )
     end
   end
