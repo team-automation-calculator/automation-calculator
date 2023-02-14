@@ -17,6 +17,8 @@
         %ul.navbar-nav.ml-auto
           %li.nav-item
             = link_to 'Dashboard', automation_scenarios_path, class: 'nav-link'
+          %li.nav-item
+            = link_to 'About', about_path, class: 'nav-link'
           - if user_signed_in?
             %li.nav-item
               = link_to('Profile', users_profile_path, class: 'nav-link')
