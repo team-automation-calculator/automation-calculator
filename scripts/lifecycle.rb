@@ -21,6 +21,10 @@ class Lifecycle
   }.freeze
 
   class << self
+    def clean
+      system('docker-compose down --remove-orphans --rmi all --volumes')
+    end
+
     def init(cmds)
       DockerBuild.build(['base'])
       DockerBuild.build(cmds)
@@ -37,7 +41,7 @@ class Lifecycle
     end
 
     def rmi
-      exec('docker rmi automationcalculator_dev:latest')
+      exec('docker rmi automation-calculator_dev:latest')
     end
 
     def start(cmds)
