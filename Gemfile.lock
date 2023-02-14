@@ -164,7 +164,7 @@ GEM
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
     faraday-retry (1.0.3)
-    ffi (1.9.25)
+    ffi (1.15.5)
     formatador (0.2.5)
     globalid (0.6.0)
       activesupport (>= 5.0)
