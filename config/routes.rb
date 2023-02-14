@@ -42,6 +42,7 @@ Rails.application.routes.draw do
   resource :visitor, only: %i[show create]
 
   get '/health', to: 'health_check#health', defaults: { format: 'json' }
+  get 'about', to: 'about#index'
 
   root to: 'automation_scenarios#index'
 end

@@ -49,7 +49,7 @@ class Lifecycle
       exec('docker rmi automation-calculator_dev:latest')
     end
 
-    def start(cmds=[])
+    def start(cmds = [])
       sub_cmd = cmds.shift || 'dev'
 
       if COMMAND_HASH.key? sub_cmd.to_sym

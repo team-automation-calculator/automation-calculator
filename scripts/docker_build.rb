@@ -53,7 +53,7 @@ class DockerBuild
         'Dockerfile.production',
         'circleci'
       )
-    end        
+    end
 
     def build_image(tag, file, username, additional_build_arg = '')
       system(
