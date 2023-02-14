@@ -166,7 +166,7 @@ GEM
     faraday-retry (1.0.3)
     ffi (1.15.5)
     formatador (0.2.5)
-    globalid (0.6.0)
+    globalid (1.1.0)
       activesupport (>= 5.0)
     guard (2.14.2)
       formatador (>= 0.2.4)
