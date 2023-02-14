@@ -34,6 +34,11 @@ class Lifecycle
       )
     end
 
+    def restart
+      stop
+      start
+    end
+
     def rm
       # stop, then remove
       system('docker compose down')
@@ -44,7 +49,7 @@ class Lifecycle
       exec('docker rmi automation-calculator_dev:latest')
     end
 
-    def start(cmds)
+    def start(cmds=[])
       sub_cmd = cmds.shift || 'dev'
 
       if COMMAND_HASH.key? sub_cmd.to_sym
@@ -65,7 +70,7 @@ class Lifecycle
     end
 
     def stop
-      exec('docker compose down --remove-orphans')
+      system('docker compose down --remove-orphans')
     end
   end
 end
