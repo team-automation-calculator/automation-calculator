@@ -13,6 +13,7 @@ COMMAND_HASH = {
   help: -> { HelpText.help(cmds) },
   init: -> { Lifecycle.init(cmds) },
   lint: -> { Verify.lint(cmds) },
+  logs: -> { Logs.logs },
   push: -> { DockerHub.push_to_docker_hub },
   restart: -> { Lifecycle.restart },
   rm: -> { Lifecycle.rm },
