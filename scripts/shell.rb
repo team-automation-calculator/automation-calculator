@@ -22,7 +22,7 @@ class Shell
 
     def dev_shell
       exec(
-        "UID=#{GetUID.read_uid} docker-compose -f docker-compose.yml" \
+        "UID=#{GetUID.read_uid} docker compose -f docker-compose.yml" \
         ' -f docker-compose.dev.yml' \
         ' run dev /bin/bash'
       )
@@ -30,7 +30,7 @@ class Shell
 
     def production_shell
       exec(
-        'docker-compose -f docker-compose.yml ' \
+        'docker compose -f docker-compose.yml ' \
         '-f docker-compose.production_http.yml run production /bin/bash'
       )
     end

@@ -8,13 +8,13 @@ class Lifecycle
     dev: lambda do
       ClearRailsPid.clear_pid_file_if_it_exists
       system(
-        'docker-compose -f docker-compose.yml ' \
+        "UID=#{GetUID.read_uid} docker compose -f docker-compose.yml " \
         '-f docker-compose.dev.yml up -d dev'
       )
     end,
     production: lambda do
       system(
-        'docker-compose -f docker-compose.yml ' \
+        'docker compose -f docker-compose.yml ' \
         '-f docker-compose.production_http.yml up -d'
       )
     end
@@ -22,21 +22,21 @@ class Lifecycle
 
   class << self
     def clean
-      system('docker-compose down --remove-orphans --rmi all --volumes')
+      system('docker compose down --remove-orphans --rmi all --volumes')
     end
 
     def init(cmds)
       DockerBuild.build(['base'])
       DockerBuild.build(cmds)
       exec(
-        "UID=#{GetUID.read_uid} docker-compose -f docker-compose.yml " \
+        "UID=#{GetUID.read_uid} docker compose -f docker-compose.yml " \
         '-f docker-compose.dev.yml run dev "/usr/src/app/bin/setup"'
       )
     end
 
     def rm
       # stop, then remove
-      system('docker-compose down')
+      system('docker compose down')
       exec('docker ps -aq | xargs docker rm')
     end
 
@@ -59,13 +59,13 @@ class Lifecycle
     def start_debug_production
       EnvironmentVariables.set_mock_production_vars
       system(
-        'docker-compose -f docker-compose.yml ' \
+        'docker compose -f docker-compose.yml ' \
         '-f docker-compose.production_http.yml up -d production'
       )
     end
 
     def stop
-      exec('docker-compose down --remove-orphans')
+      exec('docker compose down --remove-orphans')
     end
   end
 end

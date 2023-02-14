@@ -10,7 +10,7 @@ class Verify
       end
 
       system(
-        "docker-compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
+        "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
         "run --rm #{env} rspec",
         exception: true
       )
@@ -20,7 +20,7 @@ class Verify
       env = cmds.shift.to_s == 'ci' ? 'ci' : 'dev'
 
       system(
-        "docker-compose -f docker-compose.yml -f docker-compose.#{env}.yml "\
+        "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml "\
         "run --no-deps --rm #{env} rubocop",
         exception: true
       )
