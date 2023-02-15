@@ -71,7 +71,7 @@ document.addEventListener 'turbolinks:load', ->
       {}
 
   #Execution
-  if savedScenarioData()
+  if savedScenarioData().solutions
     layout =
       hovermode:'closest'
       title: savedScenarioData().display_name
