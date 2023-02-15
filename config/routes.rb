@@ -43,6 +43,7 @@ Rails.application.routes.draw do
 
   get '/health', to: 'health_check#health', defaults: { format: 'json' }
   get 'about', to: 'about#index'
+  get 'privacy', to: 'privacy#index'
 
   root to: 'automation_scenarios#index'
 end
