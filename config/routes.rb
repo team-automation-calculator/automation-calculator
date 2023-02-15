@@ -1,5 +1,6 @@
 # rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
+  get 'landing_page/index'
   namespace :api, defaults: { format: :json } do
     resources :iterations
 
@@ -45,6 +46,6 @@ Rails.application.routes.draw do
   get 'about', to: 'about#index'
   get 'privacy', to: 'privacy#index'
 
-  root to: 'automation_scenarios#index'
+  root to: 'landing_page#index'
 end
 # rubocop:enable Metrics/BlockLength
