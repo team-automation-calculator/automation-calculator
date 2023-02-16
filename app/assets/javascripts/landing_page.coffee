@@ -5,7 +5,14 @@
 
 document.addEventListener 'turbolinks:load', ->
   #Variables
+  scenario_title = 'Current Manual vs Future Automated Process'
   scenario_count = 100
+  iteration_count_form_id = 'automation_scenario_iteration_count'
+  scenario_title_form_id = 'automation_scenario_name'
+
+  layout =
+    hovermode:'closest'
+    title: scenario_title
 
   exampleManualSolution =
     initial_cost: 0
@@ -28,7 +35,6 @@ document.addEventListener 'turbolinks:load', ->
     exampleAutomatedSolution
   ]
 
-  iteration_count_form_id = 'automation_scenario_iteration_count'
   plotly_div_id = 'solutionsChart'
   
   #Functions
@@ -64,10 +70,19 @@ document.addEventListener 'turbolinks:load', ->
       name: name
     }
   
-  setExampleIterationCountFromFormValue = (form_id) -> 
+  buildPlotFromExampleData = (target_div) ->
+    Plotly.newPlot(
+      target_div, buildSolutionGraphLinesFromSolutionsArray(exampleSolutions), layout
+    )
+  
+  setScenarioIterationCountFromFormValue = (form_id) -> 
     scenario_count = document.getElementById(form_id).value
     exampleManualSolution.iteration_count = scenario_count
     exampleAutomatedSolution.iteration_count = scenario_count
+  
+  setScenarioTitleFromFormValue = (form_id) ->
+    scenario_title = document.getElementById(form_id).value
+    layout.title = scenario_title
   
   setExampleInitialCost = (solution, form_id) ->
     solution.initial_cost = document.getElementById(form_id).value
@@ -75,17 +90,10 @@ document.addEventListener 'turbolinks:load', ->
   setExampleIterationCost = (solution, form_id) ->
     solution.iteration_cost = document.getElementById(form_id).value  
   
-  buildPlotFromExampleData = (target_div) ->
-    Plotly.newPlot(
-      target_div, buildSolutionGraphLinesFromSolutionsArray(exampleSolutions), layout
-    )
-
+  
   #Execution
-  layout =
-    hovermode:'closest'
-    title: 'Current Manual vs Future Automated Process'
-
-  setExampleIterationCountFromFormValue(iteration_count_form_id)
+  setScenarioIterationCountFromFormValue(iteration_count_form_id)
+  setScenarioTitleFromFormValue(scenario_title_form_id)
 
   exampleSolutions.forEach (solution) ->
     #Ensure solution iteration count is set to scenario_count
@@ -105,5 +113,9 @@ document.addEventListener 'turbolinks:load', ->
   buildPlotFromExampleData(plotly_div_id)
 
   document.getElementById(iteration_count_form_id).addEventListener 'change', (event) ->
-    setExampleIterationCountFromFormValue(iteration_count_form_id)
+    setScenarioIterationCountFromFormValue(iteration_count_form_id)
+    buildPlotFromExampleData(plotly_div_id)
+  
+  document.getElementById(scenario_title_form_id).addEventListener 'change', (event) ->
+    setScenarioTitleFromFormValue(scenario_title_form_id)
     buildPlotFromExampleData(plotly_div_id)
