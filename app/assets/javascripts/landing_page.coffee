@@ -60,7 +60,7 @@ document.addEventListener 'turbolinks:load', ->
   #Execution
   layout =
     hovermode:'closest'
-    title: 'test'
+    title: 'Current Manual vs Future Automated Process'
 
   Plotly.newPlot(
     'solutionsChart', buildSolutionGraphLinesFromSolutionsArray(exampleSolutions), layout
