@@ -8,14 +8,14 @@ document.addEventListener 'turbolinks:load', ->
   scenario_count = 100
 
   exampleManualSolution =
-    initial_cost: 5
+    initial_cost: 0
     iteration_cost: 10
     iteration_count: scenario_count
     display_name: 'Current Manual Process'
   
   exampleAutomatedSolution =
-    initial_cost: 100
-    iteration_cost: 1
+    initial_cost: 500
+    iteration_cost: 0
     iteration_count: scenario_count
     display_name: 'Future Automated Process'
   
