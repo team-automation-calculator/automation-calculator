@@ -72,11 +72,9 @@ document.addEventListener 'turbolinks:load', ->
   setExampleInitialCost = (solution, form_id) ->
     solution.initial_cost = document.getElementById(form_id).value
 
-  setManualExampleIterationCost = (form_id) ->
-    exampleManualSolution.iteration_cost = document.getElementById(form_id).value
+  setExampleIterationCost = (solution, form_id) ->
+    solution.iteration_cost = document.getElementById(form_id).value
   
-  setAutomatedExampleIterationCost = (form_id) ->
-    exampleAutomatedSolution.iteration_cost = document.getElementById(form_id).value
   
   buildPlotFromExampleData = (target_div) ->
     Plotly.newPlot(
@@ -90,9 +88,9 @@ document.addEventListener 'turbolinks:load', ->
 
   setExampleIterationCountFromFormValue(iteration_count_form_id)
   setExampleInitialCost(exampleManualSolution, first_solution_initial_cost_form_id)
-  setManualExampleIterationCost(first_solution_iteration_cost_form_id)
+  setExampleIterationCost(exampleManualSolution, first_solution_iteration_cost_form_id)
   setExampleInitialCost(exampleAutomatedSolution, second_solution_initial_cost_form_id)
-  setAutomatedExampleIterationCost(second_solution_iteration_cost_form_id)
+  setExampleIterationCost(exampleAutomatedSolution, second_solution_iteration_cost_form_id)
   buildPlotFromExampleData(plotly_div_id)
 
   document.getElementById(iteration_count_form_id).addEventListener 'change', (event) ->
@@ -104,7 +102,7 @@ document.addEventListener 'turbolinks:load', ->
     buildPlotFromExampleData(plotly_div_id)
 
   document.getElementById(first_solution_iteration_cost_form_id).addEventListener 'change', (event) ->
-    setManualExampleIterationCost(first_solution_iteration_cost_form_id)
+    setExampleIterationCost(exampleManualSolution, first_solution_iteration_cost_form_id)
     buildPlotFromExampleData(plotly_div_id)
   
   document.getElementById(second_solution_initial_cost_form_id).addEventListener 'change', (event) ->
@@ -112,5 +110,5 @@ document.addEventListener 'turbolinks:load', ->
     buildPlotFromExampleData(plotly_div_id)
   
   document.getElementById(second_solution_iteration_cost_form_id).addEventListener 'change', (event) ->
-    setAutomatedExampleIterationCost(second_solution_iteration_cost_form_id)
+    setExampleIterationCost(exampleAutomatedSolution, second_solution_iteration_cost_form_id)
     buildPlotFromExampleData(plotly_div_id)
