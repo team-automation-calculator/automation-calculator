@@ -18,7 +18,7 @@ document.addEventListener 'turbolinks:load', ->
     initial_cost: 0
     iteration_cost: 10
     iteration_count: scenario_count
-    display_name: 'Current Manual Process'
+    display_name: 'Manual'
     initial_cost_form_id: 'automation_scenario_manual_solution_initial_cost'
     iteration_cost_form_id: 'automation_scenario_manual_solution_iteration_cost'
     display_name_form_id: 'automation_scenario_manual_solution_name'
@@ -27,7 +27,7 @@ document.addEventListener 'turbolinks:load', ->
     initial_cost: 500
     iteration_cost: 0
     iteration_count: scenario_count
-    display_name: 'Future Automated Process'
+    display_name: 'Automated'
     initial_cost_form_id: 'automation_scenario_automated_solution_initial_cost'
     iteration_cost_form_id: 'automation_scenario_automated_solution_iteration_cost'
     display_name_form_id: 'automation_scenario_automated_solution_name'
