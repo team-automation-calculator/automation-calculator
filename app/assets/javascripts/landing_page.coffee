@@ -88,9 +88,12 @@ document.addEventListener 'turbolinks:load', ->
   setExampleIterationCountFromFormValue(iteration_count_form_id)
 
   exampleSolutions.forEach (solution) ->
+    #Ensure solution iteration count is set to scenario_count
     solution.iteration_count = scenario_count
+    #Set initial and iteration cost from form values, keeping them if page is refreshed/back button is used
     setExampleInitialCost(solution, solution.initial_cost_form_id)
     setExampleIterationCost(solution, solution.iteration_cost_form_id)
+    #Add event listeners to update graph when form values are changed
     document.getElementById(solution.initial_cost_form_id).addEventListener 'change', (event) ->
       setExampleInitialCost(solution, solution.initial_cost_form_id)
       buildPlotFromExampleData(plotly_div_id)
@@ -98,6 +101,7 @@ document.addEventListener 'turbolinks:load', ->
       setExampleIterationCost(solution, solution.iteration_cost_form_id)
       buildPlotFromExampleData(plotly_div_id)
   
+  #Build inital plot
   buildPlotFromExampleData(plotly_div_id)
 
   document.getElementById(iteration_count_form_id).addEventListener 'change', (event) ->
