@@ -12,25 +12,23 @@ document.addEventListener 'turbolinks:load', ->
     if savedSolutions.length > 0
       savedSolutions.forEach (solution) ->
         solutionPoints.push(
-          buildGraphLineFromSolution(
-            solution.initial_cost,
-            solution.iteration_cost,
-            solution.iteration_count,
-            solution.display_name
-          )
+          buildGraphLineFromSolutionObject(solution)
         )
         return
     else
       #Example graph line here
       solutionPoints.push(
-        buildGraphLineFromSolution(
-          exampleSolution.initial_cost,
-          exampleSolution.iteration_cost,
-          exampleSolution.iteration_count,
-          exampleSolution.display_name
-        )
+        buildGraphLineFromSolutionObject(exampleSolution)
       )
     solutionPoints
+  
+  buildGraphLineFromSolutionObject = (solution) ->
+    buildGraphLineFromSolution(
+      solution.initial_cost,
+      solution.iteration_cost,
+      solution.iteration_count,
+      solution.display_name
+    )
 
   buildGraphLineFromSolution = (initialCost, costPerIteration, iterationCount, name) ->
     xAxisPoints = []
