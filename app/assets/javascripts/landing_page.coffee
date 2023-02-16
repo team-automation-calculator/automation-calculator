@@ -7,7 +7,7 @@ document.addEventListener 'turbolinks:load', ->
   #Variables
   scenario_title = 'Current Manual vs Future Automated Process'
   scenario_count = 100
-  iteration_count_form_id = 'automation_scenario_iteration_count'
+  scenario_iteration_count_form_id = 'automation_scenario_iteration_count'
   scenario_title_form_id = 'automation_scenario_name'
 
   layout =
@@ -96,7 +96,7 @@ document.addEventListener 'turbolinks:load', ->
     solution.display_name = document.getElementById(form_id).value  
   
   #Execution
-  setScenarioIterationCountFromFormValue(iteration_count_form_id)
+  setScenarioIterationCountFromFormValue(scenario_iteration_count_form_id)
   setScenarioTitleFromFormValue(scenario_title_form_id)
 
   exampleSolutions.forEach (solution) ->
@@ -120,8 +120,8 @@ document.addEventListener 'turbolinks:load', ->
   #Build inital plot
   buildPlotFromExampleData(plotly_div_id)
 
-  document.getElementById(iteration_count_form_id).addEventListener 'change', (event) ->
-    setScenarioIterationCountFromFormValue(iteration_count_form_id)
+  document.getElementById(scenario_iteration_count_form_id).addEventListener 'change', (event) ->
+    setScenarioIterationCountFromFormValue(scenario_iteration_count_form_id)
     buildPlotFromExampleData(plotly_div_id)
   
   document.getElementById(scenario_title_form_id).addEventListener 'change', (event) ->
