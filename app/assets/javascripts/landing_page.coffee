@@ -67,10 +67,10 @@ document.addEventListener 'turbolinks:load', ->
     exampleManualSolution.iteration_count = scenario_count
     exampleAutomatedSolution.iteration_count = scenario_count
   
-  setExampleInitialCost = (form_id) ->
+  setManualExampleInitialCost = (form_id) ->
     exampleManualSolution.initial_cost = document.getElementById(form_id).value
 
-  setExampleIterationCost = (form_id) ->
+  setManualExampleIterationCost = (form_id) ->
     exampleManualSolution.iteration_cost = document.getElementById(form_id).value
   
   buildPlotFromExampleData = (target_div) ->
@@ -84,8 +84,8 @@ document.addEventListener 'turbolinks:load', ->
     title: 'Current Manual vs Future Automated Process'
 
   setExampleIterationCountFromFormValue(iteration_count_form_id)
-  setExampleInitialCost(first_solution_initial_cost_form_id)
-  setExampleIterationCost(first_solution_iteration_cost_form_id)
+  setManualExampleInitialCost(first_solution_initial_cost_form_id)
+  setManualExampleIterationCost(first_solution_iteration_cost_form_id)
   buildPlotFromExampleData(plotly_div_id)
 
   document.getElementById(iteration_count_form_id).addEventListener 'change', (event) ->
@@ -93,10 +93,10 @@ document.addEventListener 'turbolinks:load', ->
     buildPlotFromExampleData(plotly_div_id)
   
   document.getElementById(first_solution_initial_cost_form_id).addEventListener 'change', (event) ->
-    setExampleInitialCost(first_solution_initial_cost_form_id)
+    setManualExampleInitialCost(first_solution_initial_cost_form_id)
     buildPlotFromExampleData(plotly_div_id)
-    
+
   document.getElementById(first_solution_iteration_cost_form_id).addEventListener 'change', (event) ->
-    setExampleIterationCost(first_solution_iteration_cost_form_id)
+    setManualExampleIterationCost(first_solution_iteration_cost_form_id)
     buildPlotFromExampleData(plotly_div_id)
 
