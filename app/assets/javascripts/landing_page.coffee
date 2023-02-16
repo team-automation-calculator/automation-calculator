@@ -23,6 +23,9 @@ document.addEventListener 'turbolinks:load', ->
     exampleManualSolution,
     exampleAutomatedSolution
   ]
+
+  iteration_count_form_id = 'automation_scenario_iteration_count'
+  plotly_div_id = 'solutionsChart'
   
   #Functions
   buildSolutionGraphLinesFromSolutionsArray = (solutions) ->
@@ -56,12 +59,29 @@ document.addEventListener 'turbolinks:load', ->
       type: 'scatter'
       name: name
     }
+  
+  setExampleIterationCountFromFormValue = (form_id) -> 
+    scenario_count = document.getElementById(form_id).value
+    exampleManualSolution.iteration_count = scenario_count
+    exampleAutomatedSolution.iteration_count = scenario_count
+  
+  buildPlotFromExampleData = (target_div) ->
+    Plotly.newPlot(
+      target_div, buildSolutionGraphLinesFromSolutionsArray(exampleSolutions), layout
+    )
+
 
   #Execution
   layout =
     hovermode:'closest'
     title: 'Current Manual vs Future Automated Process'
 
-  Plotly.newPlot(
-    'solutionsChart', buildSolutionGraphLinesFromSolutionsArray(exampleSolutions), layout
-  )
+  setExampleIterationCountFromFormValue(iteration_count_form_id)
+  buildPlotFromExampleData(plotly_div_id)
+
+  #Read value from form and update graph
+  document.getElementById(iteration_count_form_id).addEventListener 'change', (event) ->
+    setExampleIterationCountFromFormValue(iteration_count_form_id)
+    Plotly.newPlot(
+      plotly_div_id, buildSolutionGraphLinesFromSolutionsArray(exampleSolutions), layout
+    )

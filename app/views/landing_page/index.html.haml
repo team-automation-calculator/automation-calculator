@@ -8,12 +8,10 @@
       = form_for :automation_scenario do |f|
         .form-group
           = f.label :name
-          = f.text_field :name, placeholder: 'Current Manual vs Future Automated', class: 'form-control'
+          = f.text_field :name, value: 'Current Manual vs Future Automated', class: 'form-control'
         .form-group
           = f.label :iteration_count
-          = f.number_field :iteration_count, placeholder: 100, class: 'form-control'
-        .actions
-          = f.submit 'Add a new Automation Scenario', class: 'btn btn-primary'
+          = f.number_field :iteration_count, value: 100, class: 'form-control'
     .col-8
       #solutionsChart
 
