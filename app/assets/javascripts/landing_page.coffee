@@ -106,7 +106,21 @@ document.addEventListener 'turbolinks:load', ->
     setExampleInitialCost(solution, solution.initial_cost_form_id)
     setExampleIterationCost(solution, solution.iteration_cost_form_id)
     setExampleName(solution, solution.display_name_form_id)
-    #Add event listeners to update graph when form values are changed
+  
+  #Build inital plot
+  buildPlotFromExampleData(plotly_div_id)
+
+  #Add event listeners to update scenario when form values are changed
+  document.getElementById(scenario_iteration_count_form_id).addEventListener 'change', (event) ->
+    setScenarioIterationCountFromFormValue(scenario_iteration_count_form_id)
+    buildPlotFromExampleData(plotly_div_id)
+  
+  document.getElementById(scenario_title_form_id).addEventListener 'change', (event) ->
+    setScenarioTitleFromFormValue(scenario_title_form_id)
+    buildPlotFromExampleData(plotly_div_id)
+
+  #Add event listeners to update solutions when form values are changed
+  exampleSolutions.forEach (solution) ->
     document.getElementById(solution.initial_cost_form_id).addEventListener 'change', (event) ->
       setExampleInitialCost(solution, solution.initial_cost_form_id)
       buildPlotFromExampleData(plotly_div_id)
@@ -116,14 +130,3 @@ document.addEventListener 'turbolinks:load', ->
     document.getElementById(solution.display_name_form_id).addEventListener 'change', (event) ->
       setExampleName(solution, solution.display_name_form_id)
       buildPlotFromExampleData(plotly_div_id)
-  
-  #Build inital plot
-  buildPlotFromExampleData(plotly_div_id)
-
-  document.getElementById(scenario_iteration_count_form_id).addEventListener 'change', (event) ->
-    setScenarioIterationCountFromFormValue(scenario_iteration_count_form_id)
-    buildPlotFromExampleData(plotly_div_id)
-  
-  document.getElementById(scenario_title_form_id).addEventListener 'change', (event) ->
-    setScenarioTitleFromFormValue(scenario_title_form_id)
-    buildPlotFromExampleData(plotly_div_id)
