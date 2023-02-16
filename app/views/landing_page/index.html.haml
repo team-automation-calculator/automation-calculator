@@ -15,14 +15,23 @@
         = f.fields_for :first_solution do |fs|
           .form-horizontal
             .form-group
-              = f.label :fsolution_name
-              = f.text_field :name, value: 'Current Manual Process', class: 'form-control'
+              .row
+                .col-4
+                  = f.label :fsolution_name
+                .col-8
+                  = f.text_field :name, value: 'Current Manual Process', class: 'form-control'
             .form-group
-              = f.label :fs_initial_cost
-              = f.number_field :first_solution_initial_cost, value: 0, class: 'form-control'
+              .row
+                .col-4
+                  = f.label :fs_initial_cost
+                .col-8
+                  = f.number_field :first_solution_initial_cost, value: 0, class: 'form-control'
             .form-group
-              = f.label :fs_iteration_cost
-              = f.number_field :first_solution_iteration_cost, value: 10, class: 'form-control'
+              .row
+                .col-4
+                  = f.label :fs_iteration_cost
+                .col-8
+                  = f.number_field :first_solution_iteration_cost, value: 10, class: 'form-control'
     .col-8
       #solutionsChart
 
