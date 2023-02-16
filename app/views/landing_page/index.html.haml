@@ -32,6 +32,25 @@
                   = f.label :first_solution_iteration_cost
                 .col-8
                   = f.number_field :first_solution_iteration_cost, value: 10, class: 'form-control'
+          .form-horizontal
+            .form-group
+              .row
+                .col-4
+                  = f.label :second_solution_name
+                .col-8
+                  = f.text_field :name, value: 'Future Automated Process', class: 'form-control'
+            .form-group
+              .row
+                .col-4
+                  = f.label :second_solution_initial_cost
+                .col-8
+                  = f.number_field :second_solution_initial_cost, value: 0, class: 'form-control'
+            .form-group
+              .row
+                .col-4
+                  = f.label :second_solution_iteration_cost
+                .col-8
+                  = f.number_field :second_solution_iteration_cost, value: 50, class: 'form-control'
     .col-8
       #solutionsChart
 
