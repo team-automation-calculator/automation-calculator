@@ -21,6 +21,7 @@ document.addEventListener 'turbolinks:load', ->
     display_name: 'Current Manual Process'
     initial_cost_form_id: 'automation_scenario_manual_solution_initial_cost'
     iteration_cost_form_id: 'automation_scenario_manual_solution_iteration_cost'
+    display_name_form_id: 'automation_scenario_manual_solution_name'
   
   exampleAutomatedSolution =
     initial_cost: 500
@@ -29,6 +30,7 @@ document.addEventListener 'turbolinks:load', ->
     display_name: 'Future Automated Process'
     initial_cost_form_id: 'automation_scenario_automated_solution_initial_cost'
     iteration_cost_form_id: 'automation_scenario_automated_solution_iteration_cost'
+    display_name_form_id: 'automation_scenario_automated_solution_name'
   
   exampleSolutions = [
     exampleManualSolution,
@@ -88,8 +90,10 @@ document.addEventListener 'turbolinks:load', ->
     solution.initial_cost = document.getElementById(form_id).value
 
   setExampleIterationCost = (solution, form_id) ->
-    solution.iteration_cost = document.getElementById(form_id).value  
-  
+    solution.iteration_cost = document.getElementById(form_id).value
+
+  setExampleName = (solution, form_id) ->
+    solution.display_name = document.getElementById(form_id).value  
   
   #Execution
   setScenarioIterationCountFromFormValue(iteration_count_form_id)
@@ -98,15 +102,19 @@ document.addEventListener 'turbolinks:load', ->
   exampleSolutions.forEach (solution) ->
     #Ensure solution iteration count is set to scenario_count
     solution.iteration_count = scenario_count
-    #Set initial and iteration cost from form values, keeping them if page is refreshed/back button is used
+    #Set solution form values, keeping them if page is refreshed/back button is used
     setExampleInitialCost(solution, solution.initial_cost_form_id)
     setExampleIterationCost(solution, solution.iteration_cost_form_id)
+    setExampleName(solution, solution.display_name_form_id)
     #Add event listeners to update graph when form values are changed
     document.getElementById(solution.initial_cost_form_id).addEventListener 'change', (event) ->
       setExampleInitialCost(solution, solution.initial_cost_form_id)
       buildPlotFromExampleData(plotly_div_id)
     document.getElementById(solution.iteration_cost_form_id).addEventListener 'change', (event) ->
       setExampleIterationCost(solution, solution.iteration_cost_form_id)
+      buildPlotFromExampleData(plotly_div_id)
+    document.getElementById(solution.display_name_form_id).addEventListener 'change', (event) ->
+      setExampleName(solution, solution.display_name_form_id)
       buildPlotFromExampleData(plotly_div_id)
   
   #Build inital plot
