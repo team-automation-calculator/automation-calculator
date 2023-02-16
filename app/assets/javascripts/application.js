@@ -17,3 +17,5 @@
 //= require bootstrap-sprockets
 //= require plotly-latest.min
 //= require_tree .
+//= stub 'automation_scenarios'
+//= stub 'landing_page'

@@ -12,25 +12,23 @@ document.addEventListener 'turbolinks:load', ->
     if savedSolutions.length > 0
       savedSolutions.forEach (solution) ->
         solutionPoints.push(
-          buildGraphLineFromSolution(
-            solution.initial_cost,
-            solution.iteration_cost,
-            solution.iteration_count,
-            solution.display_name
-          )
+          buildGraphLineFromSolutionObject(solution)
         )
         return
     else
       #Example graph line here
       solutionPoints.push(
-        buildGraphLineFromSolution(
-          exampleSolution.initial_cost,
-          exampleSolution.iteration_cost,
-          exampleSolution.iteration_count,
-          exampleSolution.display_name
-        )
+        buildGraphLineFromSolutionObject(exampleSolution)
       )
     solutionPoints
+  
+  buildGraphLineFromSolutionObject = (solution) ->
+    buildGraphLineFromSolution(
+      solution.initial_cost,
+      solution.iteration_cost,
+      solution.iteration_count,
+      solution.display_name
+    )
 
   buildGraphLineFromSolution = (initialCost, costPerIteration, iterationCount, name) ->
     xAxisPoints = []
@@ -69,23 +67,27 @@ document.addEventListener 'turbolinks:load', ->
       JSON.parse $('#scenarioData').text()
     else
       {}
-
-  #Execution
-  if savedScenarioData().solutions
+  
+  buildPlotlyPlotFromSavedScenarios = (savedScenarios) ->
     layout =
       hovermode:'closest'
-      title: savedScenarioData().display_name
+      title: savedScenarios.display_name
 
     lines =
       buildSolutionGraphLinesFromSolutionsArray(
-        savedScenarioData().solutions
+        savedScenarios.solutions
       )
+
     lines.push(
-       buildIntersectionPoints(savedScenarioData().intersections)
+      buildIntersectionPoints(savedScenarios.intersections)
     )
 
     Plotly.newPlot(
       'solutionsChart', lines, layout
     )
+
+  #Execution
+  if savedScenarioData().solutions
+    buildPlotlyPlotFromSavedScenarios(savedScenarioData())
 
   return

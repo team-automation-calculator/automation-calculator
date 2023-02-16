@@ -4,7 +4,7 @@
   .row
     - @automation_scenarios.each do |automation_scenario|
       .col-4
-        %h4= link_to automation_scenario.display_name, automation_scenario
+        %h4= link_to automation_scenario.display_name, automation_scenario, data: { turbolinks: false }
         .row
           .col Iteration Count:
           .col= automation_scenario.iteration_count

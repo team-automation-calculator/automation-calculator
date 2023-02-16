@@ -1,0 +1,57 @@
+%h1 Automation ROI Calculator
+
+.container
+  .row
+    .col-4
+      = form_for :automation_scenario do |f|
+        .form-group
+          = f.label :name
+          = f.text_field :name, value: 'Current Manual vs Future Automated', class: 'form-control'
+        .form-group
+          = f.label :iteration_count
+          = f.number_field :iteration_count, value: 100, class: 'form-control'
+        %h5
+          Solutions:
+        = f.fields_for :manual_solution do |fs|
+          .form-horizontal
+            .form-group
+              .row
+                .col-4
+                  = f.label :manual_solution_name
+                .col-8
+                  = f.text_field :manual_solution_name, value: 'Current Manual Process', class: 'form-control'
+            .form-group
+              .row
+                .col-4
+                  = f.label :manual_solution_initial_cost
+                .col-8
+                  = f.number_field :manual_solution_initial_cost, value: 0, class: 'form-control'
+            .form-group
+              .row
+                .col-4
+                  = f.label :manual_solution_iteration_cost
+                .col-8
+                  = f.number_field :manual_solution_iteration_cost, value: 10, class: 'form-control'
+          .form-horizontal
+            .form-group
+              .row
+                .col-4
+                  = f.label :automated_solution_name
+                .col-8
+                  = f.text_field :automated_solution_name, value: 'Future Automated Process', class: 'form-control'
+            .form-group
+              .row
+                .col-4
+                  = f.label :automated_solution_initial_cost
+                .col-8
+                  = f.number_field :automated_solution_initial_cost, value: 500, class: 'form-control'
+            .form-group
+              .row
+                .col-4
+                  = f.label :automated_solution_iteration_cost
+                .col-8
+                  = f.number_field :automated_solution_iteration_cost, value: 0, class: 'form-control'
+    .col-8
+      #solutionsChart
+
+= javascript_include_tag 'landing_page', 'data-turbolinks-track': 'reload'
