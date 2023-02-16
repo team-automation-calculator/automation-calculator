@@ -2,6 +2,9 @@
 
 .container
   .row
+    .col-8
+      #solutionsChart
+  .row
     .col-4
       = form_for :automation_scenario do |f|
         .form-group
@@ -51,7 +54,5 @@
                   = f.label :automated_solution_iteration_cost
                 .col-8
                   = f.number_field :automated_solution_iteration_cost, value: 0, class: 'form-control'
-    .col-8
-      #solutionsChart
 
 = javascript_include_tag 'landing_page', 'data-turbolinks-track': 'reload'
