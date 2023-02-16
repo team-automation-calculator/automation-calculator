@@ -19,4 +19,3 @@
 //= require_tree .
 //= stub 'automation_scenarios'
 //= stub 'landing_page'
-
