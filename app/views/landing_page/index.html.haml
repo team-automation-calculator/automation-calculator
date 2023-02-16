@@ -12,6 +12,8 @@
         .form-group
           = f.label :iteration_count
           = f.number_field :iteration_count, value: 100, class: 'form-control'
+        %h5
+          Solutions:
         = f.fields_for :first_solution do |fs|
           .form-horizontal
             .form-group
