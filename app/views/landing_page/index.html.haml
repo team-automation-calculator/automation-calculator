@@ -14,26 +14,26 @@
           = f.number_field :iteration_count, value: 100, class: 'form-control'
         %h5
           Solutions:
-        = f.fields_for :first_solution do |fs|
+        = f.fields_for :manual_solution do |fs|
           .form-horizontal
             .form-group
               .row
                 .col-4
-                  = f.label :first_solution_name
+                  = f.label :manual_solution_name
                 .col-8
                   = f.text_field :name, value: 'Current Manual Process', class: 'form-control'
             .form-group
               .row
                 .col-4
-                  = f.label :first_solution_initial_cost
+                  = f.label :manual_solution_initial_cost
                 .col-8
-                  = f.number_field :first_solution_initial_cost, value: 0, class: 'form-control'
+                  = f.number_field :manual_solution_initial_cost, value: 0, class: 'form-control'
             .form-group
               .row
                 .col-4
-                  = f.label :first_solution_iteration_cost
+                  = f.label :manual_solution_iteration_cost
                 .col-8
-                  = f.number_field :first_solution_iteration_cost, value: 10, class: 'form-control'
+                  = f.number_field :manual_solution_iteration_cost, value: 10, class: 'form-control'
           .form-horizontal
             .form-group
               .row

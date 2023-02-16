@@ -25,8 +25,8 @@ document.addEventListener 'turbolinks:load', ->
   ]
 
   iteration_count_form_id = 'automation_scenario_iteration_count'
-  first_solution_initial_cost_form_id = 'automation_scenario_first_solution_initial_cost'
-  first_solution_iteration_cost_form_id = 'automation_scenario_first_solution_iteration_cost'
+  manual_solution_initial_cost_form_id = 'automation_scenario_manual_solution_initial_cost'
+  manual_solution_iteration_cost_form_id = 'automation_scenario_manual_solution_iteration_cost'
   second_solution_initial_cost_form_id = 'automation_scenario_second_solution_initial_cost'
   second_solution_iteration_cost_form_id = 'automation_scenario_second_solution_iteration_cost'
   plotly_div_id = 'solutionsChart'
@@ -73,8 +73,7 @@ document.addEventListener 'turbolinks:load', ->
     solution.initial_cost = document.getElementById(form_id).value
 
   setExampleIterationCost = (solution, form_id) ->
-    solution.iteration_cost = document.getElementById(form_id).value
-  
+    solution.iteration_cost = document.getElementById(form_id).value  
   
   buildPlotFromExampleData = (target_div) ->
     Plotly.newPlot(
@@ -87,8 +86,8 @@ document.addEventListener 'turbolinks:load', ->
     title: 'Current Manual vs Future Automated Process'
 
   setExampleIterationCountFromFormValue(iteration_count_form_id)
-  setExampleInitialCost(exampleManualSolution, first_solution_initial_cost_form_id)
-  setExampleIterationCost(exampleManualSolution, first_solution_iteration_cost_form_id)
+  setExampleInitialCost(exampleManualSolution, manual_solution_initial_cost_form_id)
+  setExampleIterationCost(exampleManualSolution, manual_solution_iteration_cost_form_id)
   setExampleInitialCost(exampleAutomatedSolution, second_solution_initial_cost_form_id)
   setExampleIterationCost(exampleAutomatedSolution, second_solution_iteration_cost_form_id)
   buildPlotFromExampleData(plotly_div_id)
@@ -97,12 +96,12 @@ document.addEventListener 'turbolinks:load', ->
     setExampleIterationCountFromFormValue(iteration_count_form_id)
     buildPlotFromExampleData(plotly_div_id)
   
-  document.getElementById(first_solution_initial_cost_form_id).addEventListener 'change', (event) ->
-    setExampleInitialCost(exampleManualSolution, first_solution_initial_cost_form_id)
+  document.getElementById(manual_solution_initial_cost_form_id).addEventListener 'change', (event) ->
+    setExampleInitialCost(exampleManualSolution, manual_solution_initial_cost_form_id)
     buildPlotFromExampleData(plotly_div_id)
 
-  document.getElementById(first_solution_iteration_cost_form_id).addEventListener 'change', (event) ->
-    setExampleIterationCost(exampleManualSolution, first_solution_iteration_cost_form_id)
+  document.getElementById(manual_solution_iteration_cost_form_id).addEventListener 'change', (event) ->
+    setExampleIterationCost(exampleManualSolution, manual_solution_iteration_cost_form_id)
     buildPlotFromExampleData(plotly_div_id)
   
   document.getElementById(second_solution_initial_cost_form_id).addEventListener 'change', (event) ->
