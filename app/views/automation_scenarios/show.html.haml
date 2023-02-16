@@ -63,3 +63,5 @@
 
 #scenarioData{hidden: true}
   = AutomationScenarioForGraphSerializer.new(@automation_scenario).to_json
+
+= javascript_include_tag 'automation_scenarios', 'data-turbolinks-track': 'reload'

@@ -69,23 +69,27 @@ document.addEventListener 'turbolinks:load', ->
       JSON.parse $('#scenarioData').text()
     else
       {}
-
-  #Execution
-  if savedScenarioData().solutions
+  
+  buildPlotlyPlotFromSavedScenarios = (savedScenarios) ->
     layout =
       hovermode:'closest'
-      title: savedScenarioData().display_name
+      title: savedScenarios.display_name
 
     lines =
       buildSolutionGraphLinesFromSolutionsArray(
-        savedScenarioData().solutions
+        savedScenarios.solutions
       )
+
     lines.push(
-       buildIntersectionPoints(savedScenarioData().intersections)
+      buildIntersectionPoints(savedScenarios.intersections)
     )
 
     Plotly.newPlot(
       'solutionsChart', lines, layout
     )
+
+  #Execution
+  if savedScenarioData().solutions
+    buildPlotlyPlotFromSavedScenarios(savedScenarioData())
 
   return

@@ -14,3 +14,7 @@
           = f.number_field :iteration_count, placeholder: 100, class: 'form-control'
         .actions
           = f.submit 'Add a new Automation Scenario', class: 'btn btn-primary'
+    .col-8
+      #solutionsChart
+
+= javascript_include_tag 'landing_page', 'data-turbolinks-track': 'reload'
