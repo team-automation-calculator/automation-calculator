@@ -25,6 +25,8 @@ document.addEventListener 'turbolinks:load', ->
   ]
 
   iteration_count_form_id = 'automation_scenario_iteration_count'
+  first_solution_initial_cost_form_id = 'automation_scenario_first_solution_initial_cost'
+  first_solution_iteration_cost_form_id = 'automation_scenario_first_solution_iteration_cost'
   plotly_div_id = 'solutionsChart'
   
   #Functions
@@ -65,11 +67,16 @@ document.addEventListener 'turbolinks:load', ->
     exampleManualSolution.iteration_count = scenario_count
     exampleAutomatedSolution.iteration_count = scenario_count
   
+  setExampleInitialCost = (form_id) ->
+    exampleManualSolution.initial_cost = document.getElementById(form_id).value
+
+  setExampleIterationCost = (form_id) ->
+    exampleManualSolution.iteration_cost = document.getElementById(form_id).value
+  
   buildPlotFromExampleData = (target_div) ->
     Plotly.newPlot(
       target_div, buildSolutionGraphLinesFromSolutionsArray(exampleSolutions), layout
     )
-
 
   #Execution
   layout =
@@ -77,11 +84,19 @@ document.addEventListener 'turbolinks:load', ->
     title: 'Current Manual vs Future Automated Process'
 
   setExampleIterationCountFromFormValue(iteration_count_form_id)
+  setExampleInitialCost(first_solution_initial_cost_form_id)
+  setExampleIterationCost(first_solution_iteration_cost_form_id)
   buildPlotFromExampleData(plotly_div_id)
 
-  #Read value from form and update graph
   document.getElementById(iteration_count_form_id).addEventListener 'change', (event) ->
     setExampleIterationCountFromFormValue(iteration_count_form_id)
-    Plotly.newPlot(
-      plotly_div_id, buildSolutionGraphLinesFromSolutionsArray(exampleSolutions), layout
-    )
+    buildPlotFromExampleData(plotly_div_id)
+  
+  document.getElementById(first_solution_initial_cost_form_id).addEventListener 'change', (event) ->
+    setExampleInitialCost(first_solution_initial_cost_form_id)
+    buildPlotFromExampleData(plotly_div_id)
+    
+  document.getElementById(first_solution_iteration_cost_form_id).addEventListener 'change', (event) ->
+    setExampleIterationCost(first_solution_iteration_cost_form_id)
+    buildPlotFromExampleData(plotly_div_id)
+
