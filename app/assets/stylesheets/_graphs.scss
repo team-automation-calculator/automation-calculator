@@ -1,0 +1,19 @@
+.graph-container {
+    .form-control {
+        justify-content: center;
+        text-align: left;
+    }
+    
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem;
+
+    @media (min-width: 300px) {
+        flex-direction: row;
+        .js-plotly-plot {
+            flex-grow: 1;
+        }
+    }
+}
