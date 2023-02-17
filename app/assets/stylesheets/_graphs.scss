@@ -13,7 +13,6 @@
     @media (min-width: 300px) {
         flex-direction: row;
         .js-plotly-plot {
-            flex-shrink: 1;
             flex-grow: 1;
         }
     }
