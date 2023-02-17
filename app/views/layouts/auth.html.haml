@@ -7,11 +7,25 @@
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
   %body
-    .auth-container
-      .auth-header
-        %h2
-          %span.banner-title Fill in the form below to gain access to
-          %span Automation Calculator
-      .auth-page
-        = yield
-        = render "devise/shared/links"
+    %nav.navbar.navbar-expand.navbar-dark.bg-primary
+      = link_to  root_url, class: 'navbar-brand', data: { turbolinks: false } do
+        = image_tag 'logo.png', height: 60, alt: 'Automation Calculator'
+        Automation Calculator
+      %button.navbar-toggler{type: :button, "0data-toggle" => :collapse, "data-target" => "#navbarNavDropdown", "aria-controls" => "navbarNavDropdown", "aria-expanded" => "false", "aria-label" => "Toggle navigation" }
+        %span.navbar-toggler-icon
+      .collapse.navbar-collapse#navbarNavDropdown
+        %ul.navbar-nav.ml-auto
+          %li.nav-item
+            = link_to 'Dashboard', automation_scenarios_path, class: 'nav-link', data: { turbolinks: false }
+          %li.nav-item
+            = link_to 'About', about_path, class: 'nav-link'
+          - if user_signed_in?
+            %li.nav-item
+              = link_to('Profile', users_profile_path, class: 'nav-link')
+            %li.nav-item
+              = link_to('Log out', destroy_user_session_path, method: :delete, class: 'nav-link')
+          - else
+            %li.nav-item
+              = link_to('Log in', new_user_session_path, class: 'nav-link')
+    = yield
+    = render "devise/shared/links"

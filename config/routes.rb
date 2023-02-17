@@ -1,6 +1,7 @@
 # rubocop:disable Metrics/BlockLength
 Rails.application.routes.draw do
   get 'landing_page/index'
+  
   namespace :api, defaults: { format: :json } do
     resources :iterations
 
