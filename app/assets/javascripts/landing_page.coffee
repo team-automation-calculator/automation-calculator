@@ -130,3 +130,7 @@ document.addEventListener 'turbolinks:load', ->
     document.getElementById(solution.display_name_form_id).addEventListener 'change', (event) ->
       setExampleName(solution, solution.display_name_form_id)
       buildPlotFromExampleData(plotly_div_id)
+
+  # re-render the plot when the window is resized
+  window.addEventListener 'resize', ->
+    buildPlotFromExampleData(plotly_div_id)
