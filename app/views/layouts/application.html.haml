@@ -6,6 +6,8 @@
     = csrf_meta_tags
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+    - if Rails.env.production?
+      = render 'layouts/google_analytics'
   %body
     %nav.navbar.navbar-expand.navbar-dark.bg-primary
       = link_to  root_url, class: 'navbar-brand', data: { turbolinks: false } do
