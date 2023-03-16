@@ -11,8 +11,10 @@
     }
 
     @media (min-width: 300px) {
+        flex-direction: row;
         .js-plotly-plot {
             flex-grow: 1;
+            flex-shrink: 1;
         }
     }
 }
