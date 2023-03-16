@@ -48,8 +48,7 @@
             .col-8
               = f.number_field :automated_solution_iteration_cost, value: 0, class: 'form-control'
   #solutionsChart
-  //create a button to link to the sign in page if clicked
-  .btn-container
-    = link_to 'Create Account or Sign In to Save Scenarios', new_user_session_path, class: 'btn btn-primary'
+.btn-container
+  = link_to 'Create Account or Sign In to Save Scenarios', new_user_session_path, class: 'btn btn-primary'
 
 = javascript_include_tag 'landing_page', 'data-turbolinks-track': 'reload'

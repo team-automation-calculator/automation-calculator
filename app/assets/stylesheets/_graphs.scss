@@ -8,11 +8,14 @@
     .form-control {
         justify-content: center;
         text-align: left;
+        flex-grow: 1;
+        flex-shrink: 1;
     }
 
     @media (min-width: 300px) {
         .js-plotly-plot {
             flex-grow: 1;
+            flex-shrink: 1;
         }
     }
 }
