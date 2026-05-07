@@ -7,7 +7,7 @@ services:
       - POSTGRES_USER=${USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-automation-calculator-password}
       - POSTGRES_DB=${POSTGRES_DB:-automation-calculator-development}
-    image: postgres:10.1-alpine
+    image: postgres:13-alpine
     ports:
       - "5434:5432"
     volumes:
