@@ -85,3 +85,11 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 ### Testing Stack
 
 RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Matchers, and SimpleCov. Test files mirror `app/` under `spec/`.
+
+## GitHub Workflow
+
+Use the `hub` CLI (not `gh`) for all GitHub operations such as opening pull requests:
+
+```bash
+hub pull-request --draft -m "Title" -m "Body"
+```
