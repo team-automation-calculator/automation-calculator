@@ -40,7 +40,7 @@ class DockerBuild
       build_image(
         'automation-calculator_dev',
         'Dockerfile.development',
-        ENV['USERNAME'],
+        ENV['USERNAME'] || ENV['USER'],
         "--build-arg uid=#{GetUID.read_uid}"
       )
     end
