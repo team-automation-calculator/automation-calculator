@@ -1,0 +1,12 @@
+{
+  "phase": 6,
+  "name": "Rails 7.1 → 7.2 or 8.0 (long-term target)",
+  "status": "not_started",
+  "note": "Exploratory — evaluate based on ecosystem readiness at the time. Rails 8.0 drops Sprockets as default, which forces CoffeeScript migration.",
+  "changes": {
+    "rails": "7.1.x → 7.2.x or 8.0.x",
+    "ruby": "3.2.x minimum; 3.3.x recommended for 8.0",
+    "coffee_rails": "remove — Sprockets no longer default in Rails 8.0, CoffeeScript migration to plain JS required",
+    "asset_pipeline": "Sprockets → Propshaft (if targeting Rails 8.0)"
+  }
+}
