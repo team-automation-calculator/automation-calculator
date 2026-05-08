@@ -1,0 +1,64 @@
+{
+  "nokogiri": {
+    "version": "1.14.1",
+    "release_date": "2023-02-06",
+    "source": "Gemfile.lock, Dockerfiles gem install nokogiri -v 1.14.1"
+  },
+  "pg": {
+    "version": "1.0.0",
+    "release_date": "2018-01-25",
+    "source": "Gemfile.lock"
+  },
+  "puma": {
+    "version": "4.3.12",
+    "release_date": "2022-03-09",
+    "source": "Gemfile.lock"
+  },
+  "devise": {
+    "version": "4.7.1",
+    "release_date": "2020-01-31",
+    "source": "Gemfile.lock"
+  },
+  "jwt": {
+    "version": "2.7.0",
+    "release_date": "2022-12-02",
+    "source": "Gemfile.lock"
+  },
+  "bootstrap": {
+    "version": "4.3.1",
+    "release_date": "2019-03-11",
+    "source": "Gemfile.lock"
+  },
+  "omniauth": {
+    "version": "1.9.2",
+    "release_date": "2020-08-05",
+    "source": "Gemfile.lock"
+  },
+  "omniauth_google_oauth2": {
+    "version": "0.8.2",
+    "source": "Gemfile.lock"
+  },
+  "omniauth_github": {
+    "version": "1.4.0",
+    "source": "Gemfile.lock"
+  },
+  "active_model_serializers": {
+    "version": "0.10.7",
+    "source": "Gemfile.lock"
+  },
+  "rspec_rails": {
+    "version": "3.7.2",
+    "release_date": "2018-06-29",
+    "source": "Gemfile.lock"
+  },
+  "rubocop": {
+    "version": "0.57.1",
+    "release_date": "2018-06-12",
+    "source": "Gemfile.lock"
+  },
+  "capybara": {
+    "version": "3.2.1",
+    "release_date": "2018-07-24",
+    "source": "Gemfile.lock"
+  }
+}

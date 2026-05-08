@@ -1,0 +1,17 @@
+{
+  "debian": {
+    "codename": "Bullseye",
+    "version": "11",
+    "release_date": "2021-08-14",
+    "end_of_life": "2026-06-01",
+    "source": "Dockerfile.base FROM ruby:2.7.7-slim-bullseye",
+    "notes": "slim-bullseye is the minimal Debian 11 variant shipped with the official Ruby Docker image"
+  },
+  "openssl": {
+    "version": "1.1.1",
+    "series_release_date": "2016-09-11",
+    "series_end_of_life": "2023-09-11",
+    "debian_bullseye_package": "openssl 1.1.1n (or later 1.1.1 patch shipped with Bullseye updates)",
+    "notes": "OpenSSL 1.1.1 is the version bundled with Debian Bullseye; exact patch level depends on when the Docker image was pulled"
+  }
+}
