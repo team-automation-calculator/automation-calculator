@@ -8,7 +8,7 @@ main_arg = cmds.shift || 'init'
 COMMAND_HASH = {
   build: -> { DockerBuild.build(cmds) },
   clean: -> { Lifecycle.clean },
-db: -> { DatabaseTerminal.connect(cmds) },
+  db: -> { DatabaseTerminal.connect(cmds) },
   help: -> { HelpText.help(cmds) },
   init: -> { Lifecycle.init(cmds) },
   lint: -> { Verify.lint(cmds) },
