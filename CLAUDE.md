@@ -13,6 +13,7 @@ All commands run via the `./go` script (a Ruby dispatcher into `scripts/`):
 ./go lint              # Run RuboCop in Docker
 ./go shell             # Open a shell in the dev container
 ./go stop              # Stop containers
+./go restart           # Stop and restart the dev environment
 ./go clean             # Remove all containers, images, volumes
 ./go build             # Rebuild Docker images (required after Gemfile changes)
 ./go db dev            # Connect to PostgreSQL with psql

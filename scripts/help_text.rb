@@ -6,21 +6,24 @@ class HelpText
         '[Default] Build docker containers for your development environment.',
       ci: 'Build docker containers to simulate the ci environment.'
     }.freeze,
+    clean: 'Remove all containers, images, and volumes (full reset).',
     db: {
       dev:
         '[Default] Connect to the application\'s database ' \
         'in the development environment with psql'
     }.freeze,
     create_host: 'Create a docker-machine host for the application.',
-    init: 'Setup your development environment with docker.',
+    init: 'First-time setup: build images and run database setup.',
+    logs: 'Tail logs from the dev container.',
     push:
       'Push docker image to docker hub. ' \
       'Useful for debugging when CI fails to do this properly.',
     lint:
       'Use a linter on the application ' \
       'and test code to ensure code style is consistent.',
-    rm: 'Remove running or stopped docker containers for a clean restart.',
-    rmi: 'Remove the development docker image. ',
+    restart: 'Stop and restart the dev environment.',
+    rm: 'Stop and remove all docker containers.',
+    rmi: 'Remove the development docker image.',
     shell: {
       dev: '[Default] Open a terminal inside of the development container.',
       production: 'Open a terminal container with the production image.'
@@ -39,7 +42,7 @@ class HelpText
     tag:
       'Tag CI\'s docker image with semver. ' \
       'Useful for debugging when CI fails to do this properly.',
-    test: 'Run all tests in the docker containers.'
+    test: 'Run the RSpec test suite in docker.'
   }.freeze
 
   class << self
