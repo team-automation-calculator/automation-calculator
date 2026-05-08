@@ -1,0 +1,13 @@
+{
+  "phase": 1,
+  "name": "Rails 5.2 → 6.1",
+  "status": "not_started",
+  "ruby_version": "2.7.7 (unchanged)",
+  "changes": {
+    "rails": "5.2.8.1 → 6.1.x",
+    "rspec_rails": "3.7.2 → 5.x",
+    "puma": "4.3.12 → 5.x",
+    "pg": "1.0.0 → 1.5.x",
+    "sprockets": "3.7.2 → 4.x"
+  }
+}
