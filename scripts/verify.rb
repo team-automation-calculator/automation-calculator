@@ -16,6 +16,21 @@ class Verify
       )
     end
 
+    def smoke_test(cmds)
+      env = cmds.shift.to_s == 'ci' ? 'ci' : 'dev'
+
+      unless %w[dev ci].include?(env)
+        warn "Unrecognized env: #{env}"
+        return
+      end
+
+      system(
+        "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
+        "run --rm #{env} rspec spec/smoke/ --tag smoke",
+        exception: true
+      )
+    end
+
     def lint(cmds)
       env = cmds.shift.to_s == 'ci' ? 'ci' : 'dev'
 

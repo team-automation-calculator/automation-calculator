@@ -19,6 +19,7 @@ COMMAND_HASH = {
   rm: -> { Lifecycle.rm },
   rmi: -> { Lifecycle.rmi },
   shell: -> { Shell.shell(cmds) },
+  smoke: -> { Verify.smoke_test(cmds) },
   start: -> { Lifecycle.start(cmds) },
   stop: -> { Lifecycle.stop },
   tag: -> { DockerHub.tag_latest_with_semver },
