@@ -6,7 +6,8 @@ class HelpText
         '[Default] Build docker containers for your development environment.',
       ci: 'Build docker containers to simulate the ci environment.',
       base: 'Build the base docker image used by ci and development.',
-      prod: 'Build the production docker image.'
+      prod: 'Build the production docker image.',
+      '--no-cache': 'Disable Docker layer caching (applies to any subcommand).'
     }.freeze,
     db: {
       dev:
