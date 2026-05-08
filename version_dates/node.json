@@ -1,0 +1,15 @@
+{
+  "node": {
+    "major_version": "20",
+    "lts_codename": "Iron",
+    "lts_start_date": "2023-10-24",
+    "lts_end_date": "2026-04-30",
+    "source": "Dockerfiles: curl -sL https://deb.nodesource.com/setup_20.x",
+    "notes": "Exact minor/patch version is resolved at image build time from the NodeSource 20.x channel"
+  },
+  "yarn": {
+    "version": "latest at build time",
+    "source": "Dockerfiles: npm install -g yarn",
+    "notes": "Pinned to latest yarn via npm at image build; not locked to a specific version"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "rails": {
+    "version": "5.2.8.1",
+    "release_date": "2022-09-13",
+    "source": "Gemfile.lock",
+    "end_of_life": "2022-06-01",
+    "notes": "5.2.x EOL; 5.2.8.1 was a security patch release after the branch went unsupported"
+  }
+}

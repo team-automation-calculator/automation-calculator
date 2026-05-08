@@ -1,0 +1,14 @@
+{
+  "ruby": {
+    "version": "2.7.7",
+    "release_date": "2022-11-24",
+    "source": ".ruby-version, Dockerfile.base FROM ruby:2.7.7-slim-bullseye",
+    "end_of_life": "2023-03-31",
+    "notes": "Security-only maintenance ended; EOL as of 2023-03-31"
+  },
+  "bundler": {
+    "version": "2.3.26",
+    "release_date": "2022-09-28",
+    "source": "Gemfile.lock BUNDLED WITH, Dockerfiles gem install bundler -v 2.3.26"
+  }
+}

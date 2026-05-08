@@ -1,0 +1,11 @@
+{
+  "postgresql": {
+    "version": "16",
+    "variant": "Alpine",
+    "docker_image": "postgres:16-alpine",
+    "release_date": "2023-09-14",
+    "end_of_life": "2027-11-09",
+    "source": "docker-compose.yml",
+    "notes": "Used for local dev and CI; exact patch version resolved at image pull time"
+  }
+}
