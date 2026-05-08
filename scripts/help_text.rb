@@ -4,13 +4,16 @@ class HelpText
     build: {
       dev:
         '[Default] Build docker containers for your development environment.',
-      ci: 'Build docker containers to simulate the ci environment.'
+      ci: 'Build docker containers to simulate the ci environment.',
+      base: 'Build the base docker image used by ci and development.',
+      prod: 'Build the production docker image.'
     }.freeze,
     db: {
       dev:
         '[Default] Connect to the application\'s database ' \
         'in the development environment with psql'
     }.freeze,
+    clean: 'Remove all docker containers, images, and volumes for a full reset.',
     create_host: 'Create a docker-machine host for the application.',
     init: 'Setup your development environment with docker.',
     push:
