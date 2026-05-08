@@ -1,0 +1,15 @@
+{
+  "phase": 4,
+  "name": "Rails 6.1 → 7.0 + omniauth 1 → 2",
+  "status": "not_started",
+  "ruby_version": "3.1.x (unchanged, applied after Phase 2)",
+  "changes": {
+    "rails": "6.1.x → 7.0.x",
+    "omniauth": "1.9.2 → 2.x",
+    "omniauth_google_oauth2": "0.8.2 → 1.x",
+    "omniauth_github": "1.4.0 → 2.x",
+    "omniauth_rails_csrf_protection": "add ~> 1.0 (required for omniauth 2 + Rails)",
+    "rspec_rails": "5.x → 6.x",
+    "sass_rails": "consider migration to dartsass-rails"
+  }
+}
