@@ -1,0 +1,12 @@
+{
+  "phase": 3,
+  "name": "Linux Bullseye → Bookworm (OpenSSL 1.1.1 → 3.0)",
+  "status": "not_started",
+  "ruby_version": "3.1.x (unchanged, applied after Phase 2)",
+  "rails_version": "6.1.x (unchanged, applied after Phase 1)",
+  "changes": {
+    "docker_base_image": "ruby:3.1.x-slim-bullseye → ruby:3.1.x-slim-bookworm",
+    "debian": "11 (Bullseye) → 12 (Bookworm)",
+    "openssl": "1.1.1 (EOL Sept 2023) → 3.0.x"
+  }
+}
