@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :automation_scenario do
     owner { create(:visitor) }
-    iteration_count 10
+    iteration_count { 10 }
     name { Faker::Lorem.sentence }
   end
 end
