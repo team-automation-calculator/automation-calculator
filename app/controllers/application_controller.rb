@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
     if resource.sign_in_count < 2
       url_for resource.automation_scenarios.first
     else
-      super
+      automation_scenarios_path
     end
   end
 

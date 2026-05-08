@@ -3,7 +3,7 @@ RSpec.describe 'User sessions', type: :feature do
   let(:user) { create :user }
 
   before do
-    visit root_url
+    visit new_user_session_path
     fill_in 'Email', with: user.email
     fill_in 'Password', with: password
     click_button 'Log in'
@@ -29,8 +29,8 @@ RSpec.describe 'User sessions', type: :feature do
     context 'when a user signs in for the second time' do
       let(:user) { create :user, sign_in_count: 2 }
 
-      it 'sends a user to the root page' do
-        expect(page).to have_current_path(root_url)
+      it 'sends a user to the scenarios dashboard' do
+        expect(page).to have_current_path(automation_scenarios_path)
       end
 
       it 'displays the protected content' do

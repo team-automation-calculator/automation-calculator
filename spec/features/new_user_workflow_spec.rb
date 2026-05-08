@@ -2,7 +2,7 @@ require 'rails_helper'
 RSpec.describe 'New user workflow', type: :feature do
   def visit_visitor_path
     Capybara.reset_session!
-    visit '/'
+    visit new_user_session_path
     click_on 'Visit as a guest'
   end
 

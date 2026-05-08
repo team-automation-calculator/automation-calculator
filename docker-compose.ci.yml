@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   ci:
-    image: automationcalculator/automation-calculator-rails:latest
+    image: automationcalculationsci/automation-calculator:latest
     depends_on:
       - db
     command: rspec

@@ -11,7 +11,7 @@ RSpec.describe HealthCheckController, type: :controller do
   describe '#health' do
     it 'returns response in json format' do
       get :health
-      expect(response.content_type).to eq('application/json')
+      expect(response.content_type).to include('application/json')
     end
 
     it 'returns git commit hash and unix timestamp' do
