@@ -25,5 +25,5 @@ RUN gem install bundler -v 2.3.26
 COPY --chown=$username Gemfile $appdir/Gemfile
 COPY --chown=$username Gemfile.lock $appdir/Gemfile.lock
 WORKDIR $appdir
-RUN bundle install
+RUN bundle install --frozen
 RUN rm $appdir/Gemfile.lock
