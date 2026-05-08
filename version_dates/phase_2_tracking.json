@@ -1,0 +1,13 @@
+{
+  "phase": 2,
+  "name": "Ruby 2.7.7 → 3.1.x + replace therubyracer",
+  "status": "not_started",
+  "rails_version": "6.1.x (unchanged, applied after Phase 1)",
+  "changes": {
+    "ruby": "2.7.7 → 3.1.x",
+    "docker_base_image": "ruby:2.7.7-slim-bullseye → ruby:3.1.x-slim-bullseye",
+    "therubyracer": "remove (incompatible with Ruby 3.x)",
+    "mini_racer": "add ~> 0.6 (ExecJS runtime replacement)",
+    "bundler": "2.3.26 → 2.4.x (ships with Ruby 3.1)"
+  }
+}
