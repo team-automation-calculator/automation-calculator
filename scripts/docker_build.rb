@@ -22,8 +22,7 @@ class DockerBuild
       build_image(
         "#{DOCKER_ORG}/automation-calculator-base:0.5.1",
         'Dockerfile.base',
-        'circleci',
-        '--no-cache'
+        'circleci'
       )
     end
 
