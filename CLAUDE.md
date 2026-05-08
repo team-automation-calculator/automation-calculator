@@ -86,6 +86,10 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 
 RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Matchers, and SimpleCov. Test files mirror `app/` under `spec/`.
 
+## Dockerfile Changes
+
+Test plans for Dockerfile changes do not need to include steps for building the image or running the test suite — CI handles both automatically on every PR. The test plan only needs to cover anything CI cannot verify, such as confirming the app starts correctly locally or checking that a new system dependency is available inside the container.
+
 ## GitHub Workflow
 
 Use the `hub` CLI (not `gh`) for all GitHub operations such as opening pull requests:
