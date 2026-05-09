@@ -45,7 +45,11 @@ module SmokeSchema
 
   def validate_schema!(schema_name, body)
     data = body.is_a?(String) ? JSON.parse(body) : body
-    valid, errors = schema_store.find("file:/#{schema_name}#").validate(data)
+    # JsonSchema normalizes id "file:/foo.json#" to URI "file:///foo.json".
+    schema = schema_store.lookup_schema("file:///#{schema_name}")
+    raise "Schema not loaded: #{schema_name}" if schema.nil?
+
+    valid, errors = schema.validate(data)
     return if valid
 
     raise "Schema mismatch for #{schema_name}: " \
