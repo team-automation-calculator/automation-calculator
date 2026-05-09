@@ -16,7 +16,7 @@ COMMAND_HASH = {
   init: -> { Lifecycle.init(cmds) },
   lint: -> { Verify.lint(cmds) },
   logs: -> { Logs.logs },
-  push: -> { DockerHub.push_to_docker_hub },
+  push: -> { DockerHub.push_to_docker_hub(cmds) },
   restart: -> { Lifecycle.restart },
   rm: -> { Lifecycle.rm },
   rmi: -> { Lifecycle.rmi },
