@@ -46,11 +46,13 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
   end
 
   shared_examples_for 'a correct automation scenario response' do
+    let(:expected_status) { :ok }
+
     it 'returns scenario data' do
       expect(json_response.symbolize_keys).to include scenario_attributes
     end
     it { expect(response.headers['Access-Token']).to be_blank }
-    it { expect(response).to have_http_status(:ok) }
+    it { expect(response).to have_http_status(expected_status) }
     it { expect(response).to match_json_schema('automation_scenario') }
   end
 
@@ -81,6 +83,7 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
       end
 
       it_behaves_like 'a correct automation scenario response' do
+        let(:expected_status) { :created }
         let(:scenario_attributes) do
           {
             display_name: 'test',

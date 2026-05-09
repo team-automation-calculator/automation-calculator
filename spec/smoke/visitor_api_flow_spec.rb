@@ -70,29 +70,18 @@ RSpec.describe 'Visitor API flow', :smoke do
   end
 
   describe 'break-even math' do
-    # manual:    $0 upfront, $10/iteration  -> cost(n) = 10n
-    # automated: $100 upfront, $2/iteration -> cost(n) = 100 + 2n
-    # intersection: 10n = 100 + 2n  ->  n = 12.5, cost = 125.0
+    # manual:    $10 upfront, $10/iteration -> cost(n) = 10 + 10n
+    # automated: $90 upfront, $2/iteration  -> cost(n) = 90 + 2n
+    # intersection: 10 + 10n = 90 + 2n -> n = 10, cost = 110
+    # Solution#initial_cost has a `greater_than: 0` validation, so the
+    # manual scenario uses 10 rather than 0.
     let(:scenario_id) do
-      response = smoke_v1_post(
-        '/api/automation_scenarios',
-        body: { name: 'smoke-math', iteration_count: 100 },
-        token: token
-      )
-      JSON.parse(response.body)['id']
+      create_smoke_scenario(name: 'smoke-math', iteration_count: 100)
     end
 
     before do
-      smoke_v1_post(
-        "/api/automation_scenarios/#{scenario_id}/solutions",
-        body: { initial_cost: 0, iteration_cost: 10 },
-        token: token
-      )
-      smoke_v1_post(
-        "/api/automation_scenarios/#{scenario_id}/solutions",
-        body: { initial_cost: 100, iteration_cost: 2 },
-        token: token
-      )
+      create_smoke_solution(scenario_id, initial_cost: 10, iteration_cost: 10)
+      create_smoke_solution(scenario_id, initial_cost: 90, iteration_cost: 2)
     end
 
     it 'returns a 200 from the intersections endpoint' do
@@ -126,8 +115,8 @@ RSpec.describe 'Visitor API flow', :smoke do
       # intersection is [x, y] where x=iteration, y=cost
       point = intersections.first&.fetch('intersection')
       expect(point).not_to be_nil, 'Expected at least one intersection'
-      expect(point[0].to_f).to be_within(0.01).of(12.5)
-      expect(point[1].to_f).to be_within(0.01).of(125.0)
+      expect(point[0].to_f).to be_within(0.01).of(10.0)
+      expect(point[1].to_f).to be_within(0.01).of(110.0)
     end
   end
 end
