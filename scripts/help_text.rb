@@ -64,6 +64,18 @@ class HelpText
     tag:
       'Tag CI\'s docker image with semver. ' \
       'Useful for debugging when CI fails to do this properly.',
+    smoke: {
+      dev:
+        '[Default] Run smoke tests against a live target. ' \
+        'Set SMOKE_TARGET_URL to override the default (http://localhost:3001).',
+      ci:
+        'Run smoke tests in the ci container. ' \
+        'Set SMOKE_TARGET_URL to target a specific environment.',
+      staging:
+        'Run smoke tests against staging (https://staging.automation-calculations.io).',
+      prod:
+        'Run smoke tests against production (https://automation-calculations.io).'
+    }.freeze,
     test: {
       dev: '[Default] Run the RSpec suite in the development container.',
       ci: 'Run the RSpec suite in the ci container.'

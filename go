@@ -3,6 +3,7 @@
 # macOS exposes USERNAME; Linux exposes USER.
 # Normalize to USER for docker-compose.
 ENV['USER'] ||= ENV['USERNAME']
+ENV['UID'] ||= Process.uid.to_s
 
 Dir['./scripts/*.rb'].each { |file| require file }
 
@@ -22,6 +23,7 @@ COMMAND_HASH = {
   rm: -> { Lifecycle.rm },
   rmi: -> { Lifecycle.rmi },
   shell: -> { Shell.shell(cmds) },
+  smoke: -> { Verify.smoke_test(cmds) },
   start: -> { Lifecycle.start(cmds) },
   stop: -> { Lifecycle.stop },
   tag: -> { DockerHub.tag_latest_with_semver },
