@@ -25,7 +25,7 @@ RUN gem install bundler -v 2.3.26
 
 #Calling bundle install in image creation to install dependencies,
 # and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
-RUN bundle install
+RUN bundle install --frozen
 
 #precompile static assets, set dummy SECRET_KEY_BASE to avoid this issue: https://github.com/heartcombo/devise/issues/4879
 #note this var gets set on prod in a different way

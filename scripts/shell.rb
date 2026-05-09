@@ -23,7 +23,8 @@ class Shell
 
     def ci_shell
       exec(
-        "USER=#{ENV.fetch('USER', 'circleci')} docker compose -f docker-compose.yml" \
+        "USER=#{ENV.fetch('USER', 'circleci')} " \
+        'docker compose -f docker-compose.yml' \
         ' -f docker-compose.ci.yml' \
         ' run --entrypoint /bin/bash ci'
       )
