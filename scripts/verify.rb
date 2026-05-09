@@ -16,17 +16,25 @@ class Verify
       )
     end
 
-    def smoke_test(cmds)
-      env = cmds.shift.to_s == 'ci' ? 'ci' : 'dev'
+    SMOKE_URLS = {
+      'prod' => 'https://automation-calculations.io',
+      'staging' => 'https://staging.automation-calculations.io'
+    }.freeze
 
-      unless %w[dev ci].include?(env)
-        warn "Unrecognized env: #{env}"
+    def smoke_test(cmds)
+      arg = cmds.shift.to_s
+      docker_env = arg == 'ci' ? 'ci' : 'dev'
+
+      if SMOKE_URLS.key?(arg)
+        ENV['SMOKE_TARGET_URL'] = SMOKE_URLS[arg]
+      elsif !%w[dev ci].include?(arg) && !arg.empty?
+        warn "Unrecognized command: #{arg}"
         return
       end
 
       system(
-        "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
-        "run --rm -e SMOKE_TARGET_URL #{env} rspec spec/smoke/ --tag smoke",
+        "docker compose -f docker-compose.yml -f docker-compose.#{docker_env}.yml " \
+        "run --rm -e SMOKE_TARGET_URL #{docker_env} rspec spec/smoke/ --tag smoke",
         exception: true
       )
     end
