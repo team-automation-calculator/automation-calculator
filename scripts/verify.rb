@@ -18,7 +18,10 @@ class Verify
 
     SMOKE_URLS = {
       'prod' => 'https://automation-calculations.io',
-      'staging' => 'https://staging.automation-calculations.io'
+      'staging' => 'https://staging.automation-calculations.io',
+      # Inside the docker-compose network, the dev service resolves
+      # by service name on its internal port (not the host-mapped 3001).
+      'dev' => 'http://dev:3000'
     }.freeze
 
     def smoke_test(cmds)

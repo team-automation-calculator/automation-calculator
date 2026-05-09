@@ -44,7 +44,7 @@ class DockerBuild
       build_image(
         'automation-calculator_dev',
         'Dockerfile.development',
-        ENV['USERNAME'],
+        ENV['USERNAME'] || ENV['USER'],
         additional_build_arg: "--build-arg uid=#{GetUID.read_uid}",
         no_cache: no_cache,
         multi_platform: multi_platform

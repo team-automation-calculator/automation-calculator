@@ -13,7 +13,7 @@ module API
         automation_scenario =
           current_member.automation_scenarios.create! permitted_params
 
-        render json: automation_scenario
+        render json: automation_scenario, status: :created
       end
 
       def show
