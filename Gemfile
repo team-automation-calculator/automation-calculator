@@ -13,7 +13,6 @@ gem 'puma'
 gem 'rails'
 gem 'rake'
 gem 'sass-rails'
-gem 'therubyracer', platforms: :ruby
 gem 'turbolinks'
 gem 'uglifier'
 
