@@ -42,6 +42,7 @@ class HelpText
     rm: 'Remove running or stopped docker containers for a clean restart.',
     rmi: 'Remove the development docker image.',
     shell: {
+      ci: 'Open a terminal inside of the CI container.',
       dev: '[Default] Open a terminal inside of the development container.',
       production: 'Open a terminal container with the production image.'
     }.freeze,
