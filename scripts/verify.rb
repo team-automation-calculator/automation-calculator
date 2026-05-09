@@ -11,7 +11,7 @@ class Verify
 
       system(
         "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
-        "run --rm #{env} rspec",
+        "run --rm --remove-orphans #{env} rspec",
         exception: true
       )
     end
@@ -34,7 +34,7 @@ class Verify
 
       system(
         "docker compose -f docker-compose.yml -f docker-compose.#{docker_env}.yml " \
-        "run --rm -e SMOKE_TARGET_URL #{docker_env} rspec spec/smoke/ --tag smoke",
+        "run --rm --remove-orphans -e SMOKE_TARGET_URL #{docker_env} rspec spec/smoke/ --tag smoke",
         exception: true
       )
     end
@@ -44,7 +44,7 @@ class Verify
 
       system(
         "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml "\
-        "run --no-deps --rm #{env} rubocop",
+        "run --no-deps --rm --remove-orphans #{env} rubocop",
         exception: true
       )
     end
