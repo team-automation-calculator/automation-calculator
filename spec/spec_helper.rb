@@ -69,4 +69,5 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 
   config.filter_run_when_matching :focus
+  config.filter_run_excluding :smoke
 end

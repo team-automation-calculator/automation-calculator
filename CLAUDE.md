@@ -90,6 +90,12 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 
 RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Matchers, and SimpleCov. Test files mirror `app/` under `spec/`.
 
+**Keeping `./go test` and `./go smoke` in sync:**
+
+- Smoke tests (`spec/smoke/`) are tagged `:smoke` and excluded from the regular suite via `config.filter_run_excluding :smoke` in `spec/spec_helper.rb`. The `./go smoke` command re-includes them with `--tag smoke`. Never remove that exclusion — smoke tests make live HTTP calls and will fail with `ECONNREFUSED` when run without a live server.
+- When app behavior changes (new HTTP status codes, response bodies, URL paths, UI text), update **both** the unit/feature tests and the smoke tests in the same commit. The two suites test the same contracts from different angles.
+- The smoke spec `spec/smoke/visitor_api_flow_spec.rb` documents the expected API contract (status codes, response shapes, break-even math). Keep it in sync with `spec/requests/api/v1/` request specs and `spec/support/api_schemas/*.json` JSON schemas.
+
 ## Dockerfile Changes
 
 Test plans for Dockerfile changes do not need to include steps for building the image or running the test suite — CI handles both automatically on every PR. The test plan only needs to cover anything CI cannot verify, such as confirming the app starts correctly locally or checking that a new system dependency is available inside the container.

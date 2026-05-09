@@ -12,3 +12,8 @@
       = f.label :remember_me, class: 'form-check-label'
   .actions.col-4
     = f.submit "Log in", class: 'btn btn-primary'
+= link_to 'Forgot your password?', new_user_password_path
+- provider_names = { github: 'GitHub', google_oauth2: 'GoogleOauth2' }
+- resource_class.omniauth_providers.each do |provider|
+  - display = provider_names.fetch(provider, OmniAuth::Utils.camelize(provider))
+  = link_to "Sign in with #{display}", omniauth_authorize_path(resource_name, provider)

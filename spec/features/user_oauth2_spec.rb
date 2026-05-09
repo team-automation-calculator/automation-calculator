@@ -8,7 +8,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
     def oauth2_sign_in
       link_title = "Sign in with #{provider_link_name}"
 
-      visit root_path
+      visit new_user_session_path
       expect(page).to have_link(link_title)
       click_link link_title
     end
