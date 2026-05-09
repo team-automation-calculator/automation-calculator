@@ -32,6 +32,8 @@ Or from the host:
 docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspec spec/path/to/file_spec.rb
 ```
 
+**Before committing:** Run `./go lint` and fix all RuboCop offenses. CI runs lint and will fail on any offense, including in scripts and config files.
+
 **Troubleshooting:**
 - After updating the Gemfile, run `./go build` before `./go test` or `./go start`.
 - If `./go start` exits with "A server is already running", run `./go shell` then `rm /usr/src/app/tmp/pids/server.pid`.
