@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :iteration do
     time { Time.zone.now.yesterday }
-    cost { 1 }
+    cost 1
 
     automation_scenario
   end
