@@ -1,5 +1,8 @@
 #! /usr/bin/env ruby
 
+# macOS exposes USERNAME; Linux exposes USER. Normalize to USER for docker-compose.
+ENV['USER'] ||= ENV['USERNAME']
+
 Dir['./scripts/*.rb'].each { |file| require file }
 
 cmds = ARGF.argv
