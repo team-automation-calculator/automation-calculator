@@ -26,7 +26,7 @@ class Verify
 
       system(
         "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
-        "run --rm #{env} rspec spec/smoke/ --tag smoke",
+        "run --rm -e SMOKE_TARGET_URL #{env} rspec spec/smoke/ --tag smoke",
         exception: true
       )
     end
