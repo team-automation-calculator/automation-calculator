@@ -1,8 +1,8 @@
-FROM automationcalculationsci/automation-calculator-base:0.4.0
+FROM automationcalculationsci/automation-calculator-base:0.5.3
 
 COPY --chown=circleci . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN bundle install
 
-RUN rake assets:precompile
+RUN bundle exec rake assets:precompile
