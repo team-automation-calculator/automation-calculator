@@ -34,7 +34,7 @@ RSpec.describe 'User sessions', type: :feature do
       end
 
       it 'displays the protected content' do
-        expect(page).to have_content('All Automation Scenarios')
+        expect(page).to have_content('Sign out')
       end
     end
   end

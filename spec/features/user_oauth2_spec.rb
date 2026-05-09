@@ -89,8 +89,8 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
         oauth2_sign_in
       end
 
-      it 'redirects to the sign in form' do
-        expect(page).to have_current_path(new_user_session_path)
+      it 'redirects to the root path' do
+        expect(page).to have_current_path(root_path)
       end
 
       it 'does not display the protected content' do
