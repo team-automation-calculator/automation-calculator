@@ -31,6 +31,25 @@ module SmokeHttp
     smoke_http(uri).request(req)
   end
 
+  def create_smoke_scenario(attrs)
+    path = '/api/automation_scenarios'
+    response = smoke_v1_post(path, body: attrs, token: token)
+    expect_smoke_created!(path, response)
+    JSON.parse(response.body).fetch('id')
+  end
+
+  def create_smoke_solution(scenario_id, attrs)
+    path = "/api/automation_scenarios/#{scenario_id}/solutions"
+    response = smoke_v1_post(path, body: attrs, token: token)
+    expect_smoke_created!(path, response)
+    JSON.parse(response.body).fetch('id')
+  end
+
+  def expect_smoke_created!(path, response)
+    msg = "POST #{path} failed: #{response.code} #{response.body}"
+    expect(response.code.to_i).to eq(201), msg
+  end
+
   private
 
   def smoke_http(uri)
@@ -45,10 +64,9 @@ module SmokeSchema
 
   def validate_schema!(schema_name, body)
     data = body.is_a?(String) ? JSON.parse(body) : body
-    # JsonSchema normalizes id "file:/foo.json#" to URI "file:///foo.json".
-    schema = schema_store.lookup_schema("file:///#{schema_name}")
-    raise "Schema not loaded: #{schema_name}" if schema.nil?
-
+    schema = SmokeSchema.schemas.fetch(schema_name) do
+      raise "Unknown schema: #{schema_name}"
+    end
     valid, errors = schema.validate(data)
     return if valid
 
@@ -56,16 +74,25 @@ module SmokeSchema
           "#{errors.map(&:message).join(', ')}"
   end
 
-  private
+  def self.schemas
+    @schemas ||= load_schemas
+  end
 
-  def schema_store
-    @schema_store ||= JsonSchema::DocumentStore.new.tap do |store|
-      Dir[File.join(SCHEMA_DIR, '*.json')].each do |path|
-        schema = JsonSchema.parse!(JSON.parse(File.read(path)))
-        store.add_schema(schema)
-      end
-      store.each { |_, s| s.expand_references!(store: store) }
+  # Parse every schema in SCHEMA_DIR, register them under canonical
+  # `file:///<basename>` URIs, then expand $refs using a shared store.
+  # Without canonical URIs, schemas missing an `id` collide on `"/"`
+  # in the DocumentStore and $refs fail to resolve.
+  def self.load_schemas
+    store = JsonSchema::DocumentStore.new
+    parsed = {}
+    Dir[File.join(SCHEMA_DIR, '*.json')].each do |path|
+      schema = JsonSchema.parse!(JSON.parse(File.read(path)))
+      schema.uri = "file:///#{File.basename(path)}"
+      store.add_schema(schema)
+      parsed[File.basename(path)] = schema
     end
+    parsed.each_value { |s| s.expand_references!(store: store) }
+    parsed
   end
 end
 
