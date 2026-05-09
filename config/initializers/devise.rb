@@ -171,9 +171,9 @@ Devise.setup do |config|
   # If true, extends the user's remember period when remembered via cookie.
   # config.extend_remember_period = false
 
-  # Options to be passed to the created cookie. 
+  # Options to be passed to the created cookie.
   config.rememberable_options = { secure: Rails.env.production? }
-  #config.cookie_options = { secure: Rails.env.production?, same_site: :strict }
+  # config.cookie_options = { secure: Rails.env.production?, same_site: :strict }
 
   # ==> Configuration for :validatable
   # Range for password length.

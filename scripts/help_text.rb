@@ -8,11 +8,13 @@ class HelpText
       base: 'Build the base docker image used by ci and development.',
       prod: 'Build the production docker image.',
       '--multi-platform':
-        'Build for linux/amd64 and linux/arm64 using docker buildx (applies to any subcommand). ' \
+        'Build for linux/amd64 and linux/arm64 using docker buildx ' \
+        '(applies to any subcommand). ' \
         'Images are cached in the buildx builder for later pushing.',
       '--push':
         'Push the built image to Docker Hub immediately. ' \
-        'Required with --multi-platform since multi-platform images cannot be loaded locally.',
+        'Required with --multi-platform since multi-platform ' \
+        'images cannot be loaded locally.',
       '--no-cache': 'Disable Docker layer caching (applies to any subcommand).'
     }.freeze,
     db: {
@@ -20,7 +22,8 @@ class HelpText
         '[Default] Connect to the application\'s database ' \
         'in the development environment with psql'
     }.freeze,
-    clean: 'Remove all docker containers, images, and volumes for a full reset.',
+    clean:
+      'Remove all docker containers, images, and volumes for a full reset.',
     init: 'Setup your development environment with docker.',
     lint: {
       dev: '[Default] Run RuboCop in the development container.',
@@ -29,14 +32,15 @@ class HelpText
     logs: 'Tail logs from the dev container.',
     push: {
       prod:
-        '[Default] Push the production image to Docker Hub (:latest and :semver tags).',
+        '[Default] Push the production image to Docker Hub ' \
+        '(:latest and :semver tags).',
       ci:
         'Push the CI image to Docker Hub (:latest and :semver tags).',
       base:
         'Push the base image to Docker Hub.',
       '--multi-platform':
-        'Push linux/amd64 and linux/arm64 images to Docker Hub using docker buildx ' \
-        '(applies to any subcommand).'
+        'Push linux/amd64 and linux/arm64 images to Docker Hub ' \
+        'using docker buildx (applies to any subcommand).'
     }.freeze,
     restart: 'Stop and restart docker containers.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
