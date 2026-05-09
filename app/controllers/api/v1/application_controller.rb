@@ -41,11 +41,11 @@ module API
         token = request.headers['HTTP_ACCESS_TOKEN']
         JwtTokenService.decode_token(token)[:data]
       rescue JwtTokenService::ExpiredError
-        head :unauthorized
+        render json: { error: 'Unauthorized' }, status: :unauthorized
       rescue JwtTokenService::DecodeError
-        head :unauthorized
+        render json: { error: 'Unauthorized' }, status: :unauthorized
       rescue ActiveRecord::RecordNotFound
-        head :unauthorized
+        render json: { error: 'Unauthorized' }, status: :unauthorized
       end
     end
   end

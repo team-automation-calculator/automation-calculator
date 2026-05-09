@@ -3,7 +3,7 @@ RSpec.describe 'New user workflow', type: :feature do
   def visit_visitor_path
     Capybara.reset_session!
     visit '/'
-    click_on 'Visit as a guest'
+    click_on 'Continue as Guest'
   end
 
   context 'when visit the /visitors path' do

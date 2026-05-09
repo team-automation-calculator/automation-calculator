@@ -50,5 +50,6 @@
   #solutionsChart
 .btn-container
   = link_to 'Create Account or Sign In to Save Scenarios', new_user_session_path, class: 'btn btn-primary'
+  = link_to 'Continue as Guest', visitor_path, class: 'btn btn-secondary'
 
 = javascript_include_tag 'landing_page', 'data-turbolinks-track': 'reload'
