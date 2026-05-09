@@ -74,6 +74,11 @@ RSpec.describe "Visitor API flow", :smoke do
       expect(response.code.to_i).to eq(200)
     end
 
+    it "returns a 200 from the differences endpoint" do
+      response = smoke_v1_get("/api/automation_scenarios/#{scenario_id}/differences", token: token)
+      expect(response.code.to_i).to eq(200)
+    end
+
     it "calculates the correct break-even point" do
       response = smoke_v1_get("/api/automation_scenarios/#{scenario_id}/intersections", token: token)
       intersections = JSON.parse(response.body)
