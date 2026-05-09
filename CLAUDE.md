@@ -15,7 +15,8 @@ All commands run via the `./go` script (a Ruby dispatcher into `scripts/`):
 ./go stop              # Stop containers
 ./go restart           # Stop and restart the dev environment
 ./go clean             # Remove all containers, images, volumes
-./go build             # Rebuild Docker images (required after Gemfile changes)
+./go build             # Build Docker images locally (required after Gemfile changes); does not push
+./go push              # Push built images to Docker Hub; separate from build
 ./go db dev            # Connect to PostgreSQL with psql
 ./go logs              # Tail container logs
 ```

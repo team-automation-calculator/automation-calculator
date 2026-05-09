@@ -7,6 +7,12 @@ class HelpText
       ci: 'Build docker containers to simulate the ci environment.',
       base: 'Build the base docker image used by ci and development.',
       prod: 'Build the production docker image.',
+      '--multi-platform':
+        'Build for linux/amd64 and linux/arm64 using docker buildx (applies to any subcommand). ' \
+        'Images are cached in the buildx builder for later pushing.',
+      '--push':
+        'Push the built image to Docker Hub immediately. ' \
+        'Required with --multi-platform since multi-platform images cannot be loaded locally.',
       '--no-cache': 'Disable Docker layer caching (applies to any subcommand).'
     }.freeze,
     db: {
@@ -21,9 +27,17 @@ class HelpText
       ci: 'Run RuboCop in the ci container.'
     }.freeze,
     logs: 'Tail logs from the dev container.',
-    push:
-      'Push docker image to docker hub. ' \
-      'Useful for debugging when CI fails to do this properly.',
+    push: {
+      prod:
+        '[Default] Push the production image to Docker Hub (:latest and :semver tags).',
+      ci:
+        'Push the CI image to Docker Hub (:latest and :semver tags).',
+      base:
+        'Push the base image to Docker Hub.',
+      '--multi-platform':
+        'Push linux/amd64 and linux/arm64 images to Docker Hub using docker buildx ' \
+        '(applies to any subcommand).'
+    }.freeze,
     restart: 'Stop and restart docker containers.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
     rmi: 'Remove the development docker image.',
