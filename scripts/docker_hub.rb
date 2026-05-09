@@ -25,8 +25,7 @@ class DockerHub
     end
 
     def push_to_docker_hub(cmds = [])
-      has_sub_cmd = !cmds.first.nil? && !cmds.first.start_with?('--')
-      sub_cmd = has_sub_cmd ? cmds.shift : 'prod'
+      sub_cmd = sub_cmd_from(cmds)
       multi_platform = !cmds.delete('--multi-platform').nil?
       config = image_configs[sub_cmd]
       return warn("Unrecognized image: #{sub_cmd}") if config.nil?
@@ -36,27 +35,22 @@ class DockerHub
 
     private
 
+    def sub_cmd_from(cmds)
+      !cmds.first.nil? && !cmds.first.start_with?('--') ? cmds.shift : 'prod'
+    end
+
     def push_tags(config)
       config[:tags].each { |tag| system("docker push #{tag}") }
     end
 
     def image_configs
+      tags = [image_w_semver, latest_tag]
       {
-        'ci' => {
-          tags: [image_w_semver, latest_tag],
-          file: 'Dockerfile.ci',
-          username: 'circleci'
-        },
-        'prod' => {
-          tags: [image_w_semver, latest_tag],
-          file: 'Dockerfile.production',
-          username: 'circleci'
-        },
-        'base' => {
-          tags: ["#{REPO_BASE}:#{BASE_VERSION}"],
-          file: 'Dockerfile.base',
-          username: 'circleci'
-        }
+        'ci' => { tags: tags, file: 'Dockerfile.ci', username: 'circleci' },
+        'prod' => { tags: tags, file: 'Dockerfile.production',
+                    username: 'circleci' },
+        'base' => { tags: ["#{REPO_BASE}:#{BASE_VERSION}"],
+                    file: 'Dockerfile.base', username: 'circleci' }
       }
     end
 

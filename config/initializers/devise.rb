@@ -173,7 +173,8 @@ Devise.setup do |config|
 
   # Options to be passed to the created cookie.
   config.rememberable_options = { secure: Rails.env.production? }
-  # config.cookie_options = { secure: Rails.env.production?, same_site: :strict }
+  # config.cookie_options = { secure: Rails.env.production?,
+  #                           same_site: :strict }
 
   # ==> Configuration for :validatable
   # Range for password length.
