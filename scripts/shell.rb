@@ -3,6 +3,7 @@ require './scripts/utils/get_uid.rb'
 
 class Shell
   COMMAND_HASH = {
+    ci: -> { ci_shell },
     dev: -> { dev_shell },
     production: -> { production_shell }
   }.freeze
@@ -18,6 +19,14 @@ class Shell
         puts
         warn("Unrecognized command: #{sub_cmd}")
       end
+    end
+
+    def ci_shell
+      exec(
+        "USER=#{ENV.fetch('USER', 'circleci')} docker compose -f docker-compose.yml" \
+        ' -f docker-compose.ci.yml' \
+        ' run --entrypoint /bin/bash ci'
+      )
     end
 
     def dev_shell
