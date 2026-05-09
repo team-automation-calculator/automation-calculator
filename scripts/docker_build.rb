@@ -72,7 +72,7 @@ class DockerBuild
       if multi_platform
         ensure_buildx_builder
         system(
-          "docker buildx build --platform #{MULTI_PLATFORMS} " \
+          "docker buildx build --builder multiplatform --platform #{MULTI_PLATFORMS} " \
           "-t #{tag} -f #{file} " \
           "--build-arg username=#{username} #{additional_build_arg} #{no_cache_flag} .",
           exception: true

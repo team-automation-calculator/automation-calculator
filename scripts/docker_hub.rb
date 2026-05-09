@@ -2,7 +2,7 @@
 class DockerHub
   REPO = 'automationcalculationsci/automation-calculator'.freeze
   REPO_BASE = 'automationcalculationsci/automation-calculator-base'.freeze
-  BASE_VERSION = '0.5.3'.freeze
+  BASE_VERSION = '0.5.4'.freeze
 
   class << self
     def semver_tag
