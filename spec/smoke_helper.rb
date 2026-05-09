@@ -2,6 +2,7 @@ require 'net/http'
 require 'net/https'
 require 'json'
 require 'nokogiri'
+require 'json_schema'
 
 module SmokeHttp
   BASE_URL = ENV.fetch("SMOKE_TARGET_URL", "http://localhost:3001").freeze
@@ -39,6 +40,29 @@ module SmokeHttp
   end
 end
 
+module SmokeSchema
+  SCHEMA_DIR = File.expand_path("../support/api_schemas", __FILE__).freeze
+
+  def validate_schema!(schema_name, body)
+    data = body.is_a?(String) ? JSON.parse(body) : body
+    valid, errors = schema_store.find("file:/#{schema_name}#").validate(data)
+    raise "Schema mismatch for #{schema_name}: #{errors.map(&:message).join(', ')}" unless valid
+  end
+
+  private
+
+  def schema_store
+    @schema_store ||= JsonSchema::DocumentStore.new.tap do |store|
+      Dir[File.join(SCHEMA_DIR, "*.json")].each do |path|
+        schema = JsonSchema.parse!(JSON.parse(File.read(path)))
+        store.add_schema(schema)
+      end
+      store.each { |_, s| s.expand_references!(store: store) }
+    end
+  end
+end
+
 RSpec.configure do |config|
   config.include SmokeHttp, :smoke
+  config.include SmokeSchema, :smoke
 end
