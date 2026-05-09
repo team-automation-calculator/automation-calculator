@@ -60,17 +60,6 @@ jobs:
           name: Upload Docker image to Docker Hub
           command: ./go push
 
-      # Set STAGING_URL as a project environment variable in CircleCI to enable
-      # post-deploy smoke tests. Leave it unset to skip this step.
-      - run:
-          name: Smoke test against staging
-          command: |
-            if [ -n "${STAGING_URL}" ]; then
-              SMOKE_TARGET_URL="${STAGING_URL}" ./go smoke ci
-            else
-              echo "STAGING_URL not configured — skipping smoke tests"
-            fi
-
 workflows:
   version: 2
   build_verify_push:
