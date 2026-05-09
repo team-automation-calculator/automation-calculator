@@ -36,3 +36,19 @@ Style/MixinUsage:
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+RSpec/DescribeClass:
+  Exclude:
+    - spec/smoke/**/*_spec.rb
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - spec/smoke/**/*_spec.rb
+
+RSpec/ExampleLength:
+  Exclude:
+    - spec/smoke/**/*_spec.rb
+
+Metrics/ClassLength:
+  Exclude:
+    - scripts/help_text.rb
