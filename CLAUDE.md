@@ -13,8 +13,10 @@ All commands run via the `./go` script (a Ruby dispatcher into `scripts/`):
 ./go lint              # Run RuboCop in Docker
 ./go shell             # Open a shell in the dev container
 ./go stop              # Stop containers
+./go restart           # Stop and restart the dev environment
 ./go clean             # Remove all containers, images, volumes
-./go build             # Rebuild Docker images (required after Gemfile changes)
+./go build             # Build Docker images locally (required after Gemfile changes); does not push
+./go push              # Push built images to Docker Hub; separate from build
 ./go db dev            # Connect to PostgreSQL with psql
 ./go logs              # Tail container logs
 ```
@@ -29,6 +31,8 @@ Or from the host:
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspec spec/path/to/file_spec.rb
 ```
+
+**Before committing:** Run `./go lint` and fix all RuboCop offenses. CI runs lint and will fail on any offense, including in scripts and config files.
 
 **Troubleshooting:**
 - After updating the Gemfile, run `./go build` before `./go test` or `./go start`.
@@ -85,6 +89,12 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 ### Testing Stack
 
 RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Matchers, and SimpleCov. Test files mirror `app/` under `spec/`.
+
+**Keeping `./go test` and `./go smoke` in sync:**
+
+- Smoke tests (`spec/smoke/`) are tagged `:smoke` and excluded from the regular suite via `config.filter_run_excluding :smoke` in `spec/spec_helper.rb`. The `./go smoke` command re-includes them with `--tag smoke`. Never remove that exclusion — smoke tests make live HTTP calls and will fail with `ECONNREFUSED` when run without a live server.
+- When app behavior changes (new HTTP status codes, response bodies, URL paths, UI text), update **both** the unit/feature tests and the smoke tests in the same commit. The two suites test the same contracts from different angles.
+- The smoke spec `spec/smoke/visitor_api_flow_spec.rb` documents the expected API contract (status codes, response shapes, break-even math). Keep it in sync with `spec/requests/api/v1/` request specs and `spec/support/api_schemas/*.json` JSON schemas.
 
 ## Dockerfile Changes
 

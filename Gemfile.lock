@@ -220,7 +220,6 @@ GEM
       addressable (~> 2.3)
     letter_opener (1.6.0)
       launchy (~> 2.2)
-    libv8 (3.16.14.19)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -283,7 +282,7 @@ GEM
     parallel (1.12.1)
     parser (2.5.1.0)
       ast (~> 2.4.0)
-    pg (1.0.0)
+    pg (1.5.9)
     popper_js (1.16.1)
     powerpack (0.1.1)
     pry (0.11.3)
@@ -325,7 +324,6 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    ref (2.0.0)
     responders (3.0.1)
       actionpack (>= 5.0)
       railties (>= 5.0)
@@ -413,9 +411,6 @@ GEM
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
     temple (0.8.0)
-    therubyracer (0.12.3)
-      libv8 (~> 3.16.14.15)
-      ref
     thor (1.2.1)
     thread_safe (0.3.6)
     tilt (2.0.8)
@@ -469,7 +464,7 @@ DEPENDENCIES
   listen
   omniauth-github
   omniauth-google-oauth2
-  pg
+  pg (~> 1.5)
   pry
   puma
   rails
@@ -484,7 +479,6 @@ DEPENDENCIES
   simplecov
   spring
   spring-watcher-listen
-  therubyracer
   turbolinks
   uglifier
   web-console

@@ -1,12 +1,15 @@
 .actions {
-  @extend .mx-auto;
+  margin-left: auto;
+  margin-right: auto;
 
   .btn {
-    @extend .btn-block;
+    display: block;
+    width: 100%;
   }
 }
 
 .form-header {
-  @extend .text-center;
-  @extend .my-4;
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
