@@ -6,3 +6,6 @@ WORKDIR /usr/src/app
 RUN bundle install --frozen
 
 RUN bundle exec rake assets:precompile
+
+ARG GIT_COMMIT=unknown
+LABEL org.opencontainers.image.revision=$GIT_COMMIT
