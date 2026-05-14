@@ -60,7 +60,8 @@ class DockerHub
       system(
         "docker buildx build --platform #{DockerBuild::MULTI_PLATFORMS} " \
         "#{tags_flags} -f #{config[:file]} " \
-        "--build-arg username=#{config[:username]} --push .",
+        "--build-arg username=#{config[:username]} " \
+        "--build-arg GIT_COMMIT=#{GitShortSha.read} --push .",
         exception: true
       )
     end

@@ -1,5 +1,6 @@
 # Build docker images for different environments
 require './scripts/utils/get_uid.rb'
+require './scripts/utils/git_short_sha.rb'
 
 class DockerBuild
   DOCKER_ORG = 'automationcalculationsci'.freeze
@@ -23,6 +24,7 @@ class DockerBuild
         "#{DOCKER_ORG}/automation-calculator-base:0.5.4",
         'Dockerfile.base',
         'circleci',
+        additional_build_arg: "--build-arg GIT_COMMIT=#{GitShortSha.read}",
         no_cache: no_cache,
         multi_platform: multi_platform
       )
@@ -35,6 +37,7 @@ class DockerBuild
         image,
         'Dockerfile.ci',
         'circleci',
+        additional_build_arg: "--build-arg GIT_COMMIT=#{GitShortSha.read}",
         no_cache: no_cache,
         multi_platform: multi_platform
       )
@@ -45,7 +48,8 @@ class DockerBuild
         'automation-calculator_dev',
         'Dockerfile.development',
         ENV['USERNAME'] || ENV['USER'],
-        additional_build_arg: "--build-arg uid=#{GetUID.read_uid}",
+        additional_build_arg: "--build-arg uid=#{GetUID.read_uid} " \
+                              "--build-arg GIT_COMMIT=#{GitShortSha.read}",
         no_cache: no_cache,
         multi_platform: multi_platform
       )
@@ -58,6 +62,7 @@ class DockerBuild
         image,
         'Dockerfile.production',
         'circleci',
+        additional_build_arg: "--build-arg GIT_COMMIT=#{GitShortSha.read}",
         no_cache: no_cache,
         multi_platform: multi_platform
       )

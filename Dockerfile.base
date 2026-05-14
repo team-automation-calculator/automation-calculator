@@ -27,3 +27,6 @@ COPY --chown=$username Gemfile.lock $appdir/Gemfile.lock
 WORKDIR $appdir
 RUN bundle install
 #RUN rm $appdir/Gemfile.lock
+
+ARG GIT_COMMIT=unknown
+LABEL org.opencontainers.image.revision=$GIT_COMMIT
