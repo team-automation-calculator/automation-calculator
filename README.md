@@ -42,11 +42,9 @@ This repo holds the Rails application code. The sibling [`core-iac`](../core-iac
 
 The two repos meet at a Docker image on Docker Hub:
 
-```
-automation-calculator/  ──build & push──▶  Docker Hub                 ──pull──▶  core-iac/
-(this repo)             ./go build               automationcalculationsci/                Helm chart
-                        ./go push                automation-calculator:<tag>              deploys to EKS
-```
+![Relationship between automation-calculator and core-iac](docs/repo-relationship.svg)
+
+The Graphviz source is at [`docs/repo-relationship.dot`](docs/repo-relationship.dot); see the header of that file for the render command.
 
 1. **Build & publish (this repo).** `./go build prod` produces a production image from `Dockerfile.production`. `./go push prod` tags it as both `:latest` and a semver tag (e.g. `0.9.6-830`) and pushes both to `automationcalculationsci/automation-calculator` on Docker Hub. The image repository name is defined in `scripts/docker_hub.rb` as the `REPO` constant.
 2. **Deploy (core-iac).** The Helm chart at `core-iac/helm/automation-calculator/` defines the Kubernetes resources (Deployment, Service, Ingress, ConfigMap, Secret). Its `values.yaml` points `image.repository` at the same Docker Hub repo above; the Terraform module `core-iac/terraform/modules/aws/main_rails_app/` renders the chart with `image.tag = var.app_version`.
