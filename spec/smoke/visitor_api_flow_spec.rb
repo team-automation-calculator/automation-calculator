@@ -46,8 +46,8 @@ RSpec.describe 'Visitor API flow', :smoke do
         body: { name: 'smoke-test', iteration_count: 100 },
         token: token
       ).tap do |r|
-        msg = "Expected 200 creating scenario, got #{r.code}: #{r.body}"
-        expect(r.code.to_i).to eq(200), msg
+        msg = "Expected 201 creating scenario, got #{r.code}: #{r.body}"
+        expect(r.code.to_i).to eq(201), msg
       end
     end
 
