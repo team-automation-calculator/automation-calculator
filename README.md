@@ -63,6 +63,20 @@ The Graphviz source is at [`docs/repo-relationship.dot`](docs/repo-relationship.
 
 A change to a Ruby file → ship via this repo (build + push a new image, then bump `app_version` in `core-iac`). A change to how the app is deployed or to its surrounding cloud resources → ship via `core-iac` alone.
 
+## App structure
+
+Inside this repo the Rails app exposes the same domain through two parallel stacks — an HTML interface with Devise session auth and a versioned JSON API with JWT auth — that share a single ActiveRecord domain. `AutomationScenario` belongs to a polymorphic `owner` (either a `User` or an anonymous `Visitor`), and the break-even math lives in the `SolutionPair` service.
+
+![Core components of the automation-calculator Rails app](docs/app-structure.svg)
+
+The Graphviz source is at [`docs/app-structure.dot`](docs/app-structure.dot); render command is in the header.
+
+Things worth knowing that the diagram does not spell out:
+
+- **Visitor pattern.** The `Visitable` controller concern provides `current_visitor` / `current_user_or_visitor` so unauthenticated users can use the app immediately. A `Visitor` record (UUID + IP) is created on first visit and stored in `session[:visitor_id]`. Scenarios are *not* migrated to a `User` on signup.
+- **Chart data handoff is server-rendered, not API-driven.** The scenario show view embeds the output of `AutomationScenarioForGraphSerializer` (including pre-computed intersection points) into a hidden `#scenarioData` element; `automation_scenarios.coffee` reads it on `turbolinks:load` and renders Plotly traces into `#solutionsChart`. The HTML page does not call the JSON API for chart data.
+- **Break-even formula.** `SolutionPair#intersection_iteration` solves `(initial_cost₁ − initial_cost₂) / (iteration_cost₂ − iteration_cost₁)`, and `Solution#cost_at(n) = initial_cost + iteration_cost * n` is the linear cost line each pair intersects.
+
 ## Troubleshooting/Gotchas
 
 * Problem: If you update the Gemfile and run `./go test`, `./go shell` or a similar command, you will see `Could not find NEW_GEM_DEPENDENCY_NAME_HERE`.
