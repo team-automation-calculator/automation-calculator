@@ -46,6 +46,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
 
         context 'when a user is signed in' do
           before { oauth2_sign_in }
+
           let(:registered_user) { User.find_by email: user.email }
 
           it 'signs in the user and displays a scenario' do

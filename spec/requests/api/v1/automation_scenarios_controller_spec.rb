@@ -51,6 +51,7 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
     it 'returns scenario data' do
       expect(json_response.symbolize_keys).to include scenario_attributes
     end
+
     it { expect(response.headers['Access-Token']).to be_blank }
     it { expect(response).to have_http_status(expected_status) }
     it { expect(response).to match_json_schema('automation_scenario') }
@@ -63,6 +64,7 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
       before { v1_get '/api/automation_scenarios' }
 
       it { expect(json_response.size).to eq 1 }
+
       it 'returns scenario data' do
         expect(json_response.first.symbolize_keys).to include(
           id: automation_scenario.id,
@@ -70,6 +72,7 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
           iteration_count: automation_scenario.iteration_count
         )
       end
+
       it { expect(response.headers['Access-Token']).to be_blank }
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to match_json_schema('automation_scenarios') }
@@ -168,6 +171,7 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
         end
 
         it { expect(json_response.size).to eq 1 }
+
         it 'returns scenario data' do
           expect(json_response.first.symbolize_keys).to include(
             difference: 140,
@@ -175,6 +179,7 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
             solution2_id: solution2.id
           )
         end
+
         it { expect(response.headers['Access-Token']).to be_blank }
         it { expect(response).to have_http_status(:ok) }
         it { expect(response).to match_json_schema('solution_differences') }

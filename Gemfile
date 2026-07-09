@@ -46,7 +46,8 @@ group :development, :test do
   gem 'faker'
   gem 'pry'
   # A Ruby static code analyzer
-  gem 'rubocop', '0.57.1', require: false
+  gem 'rubocop', '~> 1.28.0', require: false
+  gem 'rubocop-rails', '~> 2.14.0', require: false
 end
 
 group :development do
@@ -72,7 +73,7 @@ group :test do
 
   gem 'selenium-webdriver'
   # Rspec cops for rubocop
-  gem 'rubocop-rspec'
+  gem 'rubocop-rspec', '~> 2.10.0', require: false
   gem 'shoulda-matchers'
   # Code coverage for Ruby
   gem 'simplecov', require: false

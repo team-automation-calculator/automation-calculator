@@ -1,0 +1,19 @@
+{
+  "phase": 2,
+  "name": "Ruby 2.7.7 → 3.1.x + replace therubyracer",
+  "status": "in_progress",
+  "rails_version": "6.1.x (unchanged, applied after Phase 1)",
+  "changes": {
+    "ruby": "2.7.7 → 3.1.7 (final 3.1 release)",
+    "docker_base_image": "ruby:2.7.7-slim-bullseye → ruby:3.1.7-slim-bullseye",
+    "therubyracer": "already removed from Gemfile in #192, before this phase",
+    "mini_racer": "not needed — all images install Node.js 20, which ExecJS auto-detects as its runtime (verified via assets:precompile)",
+    "bundler": "2.3.26 → 2.4.22",
+    "base_image_version": "0.5.4 → 0.6.0 (rebuilt on Ruby 3.1.7)",
+    "ci_executor": "cimg/ruby:2.7-node → cimg/ruby:3.1-node",
+    "json": "2.3.0 → 2.20.0 (locked 2.3.0 conflicted with Ruby 3.1's activated default gem 2.6.1)",
+    "capybara": "3.9.0 → 3.40.0 (3.9.0 raises ArgumentError at load under Ruby 3 keyword-argument separation; pulled nokogiri 1.18.10, rack 2.2.23, xpath 3.2.0)",
+    "rubocop": "0.57.1 → 1.28.x + rubocop-rails 2.14.x, rubocop-rspec 2.10.x (0.57.1 incompatible with Psych 4; all now require: false so they never load at app boot)",
+    "v1_helper": "spec/support/helpers/v1_helper.rb passes request options as keyword args (Ruby 3 kwargs separation)"
+  }
+}

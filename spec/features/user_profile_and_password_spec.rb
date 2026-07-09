@@ -96,7 +96,7 @@ RSpec.describe 'User profile and password change', type: :feature do
     context 'with invalid confirmation' do
       let(:current_password) { user_password }
       let(:new_password) { '222222' }
-      let(:password_confirmation) { new_password + '2' }
+      let(:password_confirmation) { "#{new_password}2" }
 
       specify do
         expect { change_password }

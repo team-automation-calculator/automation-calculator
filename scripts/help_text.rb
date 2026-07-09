@@ -98,7 +98,7 @@ class HelpText
     end
 
     def print_help_key_value(key, value)
-      if value.class == Hash
+      if value.instance_of?(Hash)
         puts(" #{key}:")
         value.each_pair do |sub_key, sub_value|
           puts("   #{sub_key} - #{sub_value}")

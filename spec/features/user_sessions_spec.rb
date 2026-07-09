@@ -40,7 +40,7 @@ RSpec.describe 'User sessions', type: :feature do
   end
 
   context 'with an incorrect password' do
-    let(:password) { user.password + 'invalid' }
+    let(:password) { "#{user.password}invalid" }
 
     it 'sends a user to the sign in page' do
       expect(page).to have_current_path(new_user_session_path)

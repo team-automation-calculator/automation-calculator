@@ -49,7 +49,7 @@ class SolutionPair
 
     return 'No intersection' if point.blank?
 
-    format '[%.2f, %.2f]', point.first, point.second
+    format '[%<x>.2f, %<y>.2f]', x: point.first, y: point.second
   end
 
   protected

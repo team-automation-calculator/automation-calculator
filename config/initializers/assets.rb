@@ -15,4 +15,4 @@ Rails.application.config.assets.precompile +=
   %w[landing_page.js automation_scenarios.js]
 
 Rails.application.config.assets.paths <<
-  Rails.root.join('vendor', 'assets', 'fonts')
+  Rails.root.join('vendor/assets/fonts')

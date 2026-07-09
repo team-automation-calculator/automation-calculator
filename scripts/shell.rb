@@ -1,5 +1,5 @@
 # Using a shell in docker containers
-require './scripts/utils/get_uid.rb'
+require './scripts/utils/get_uid'
 
 class Shell
   COMMAND_HASH = {
