@@ -9,8 +9,8 @@ gem 'coffee-rails'
 gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 1.5'
-gem 'puma'
-gem 'rails'
+gem 'puma', '~> 5.6'
+gem 'rails', '~> 6.1.0'
 gem 'rake'
 gem 'sass-rails'
 gem 'turbolinks'
@@ -28,7 +28,8 @@ gem 'config'
 # brings convention over configuration to your JSON generation
 gem 'active_model_serializers'
 # provides Haml generators for Rails
-gem 'haml-rails'
+gem 'haml', '~> 5.1'
+gem 'haml-rails', '~> 2.0'
 # Bootstrap 4 Ruby Gem for Rails / Sprockets and Compass
 gem 'bootstrap'
 # A pure ruby implementation of
@@ -45,7 +46,7 @@ group :development, :test do
   gem 'faker'
   gem 'pry'
   # A Ruby static code analyzer
-  gem 'rubocop', require: false
+  gem 'rubocop', '0.57.1', require: false
 end
 
 group :development do
@@ -65,7 +66,7 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'rspec-rails'
+  gem 'rspec-rails', '~> 5.1'
   # The RSpec testing framework with Rails integrations
   gem 'rspec-its'
 
