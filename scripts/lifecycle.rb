@@ -1,6 +1,6 @@
 # Main commands to run a container
-require './scripts/utils/clear_rails_pid.rb'
-require './scripts/utils/get_uid.rb'
+require './scripts/utils/clear_rails_pid'
+require './scripts/utils/get_uid'
 
 class Lifecycle
   COMMAND_HASH = {

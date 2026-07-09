@@ -1,6 +1,6 @@
 # Build docker images for different environments
-require './scripts/utils/get_uid.rb'
-require './scripts/utils/git_short_sha.rb'
+require './scripts/utils/get_uid'
+require './scripts/utils/git_short_sha'
 
 class DockerBuild
   DOCKER_ORG = 'automationcalculationsci'.freeze
@@ -21,7 +21,7 @@ class DockerBuild
 
     def build_base_image(no_cache: false, multi_platform: false)
       build_image(
-        "#{DOCKER_ORG}/automation-calculator-base:0.5.4",
+        "#{DOCKER_ORG}/automation-calculator-base:0.6.0",
         'Dockerfile.base',
         'circleci',
         additional_build_arg: "--build-arg GIT_COMMIT=#{GitShortSha.read}",

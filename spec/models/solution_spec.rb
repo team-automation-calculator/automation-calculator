@@ -7,13 +7,15 @@ RSpec.describe Solution, type: :model do
     it { is_expected.to validate_numericality_of(:initial_cost).only_integer }
     it { is_expected.to validate_numericality_of(:iteration_cost).only_integer }
     it { is_expected.to belong_to(:automation_scenario) }
+
     specify do
-      is_expected
+      expect(subject)
         .to validate_numericality_of(:iteration_cost)
         .is_greater_than(0)
     end
+
     specify do
-      is_expected.to validate_numericality_of(:initial_cost).is_greater_than(0)
+      expect(subject).to validate_numericality_of(:initial_cost).is_greater_than(0)
     end
   end
 end

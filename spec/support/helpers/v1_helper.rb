@@ -8,11 +8,9 @@ module Requests
       headers.reverse_merge!('Access-Token' => token) if token
 
       params = request_options[:params]
-      if params.present? && !params.is_a?(String)
-        request_options[:params] = params.to_json
-      end
+      request_options[:params] = params.to_json if params.present? && !params.is_a?(String)
 
-      public_send meth, path, request_options
+      public_send meth, path, **request_options
     end
 
     %i[get post put patch delete].each do |meth|

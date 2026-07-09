@@ -13,9 +13,8 @@ module Requests
       v1_post '/api/visitor'
       @current_token = response.headers['Access-Token']
       raise 'v1_login_visitor failed' unless @current_token
-      visitor = Visitor.last
 
-      visitor
+      Visitor.last
     end
   end
 end

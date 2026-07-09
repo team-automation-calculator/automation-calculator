@@ -8,7 +8,7 @@ module SmokeHttp
   BASE_URL = ENV.fetch('SMOKE_TARGET_URL', 'http://localhost:3001').freeze
   V1_HEADERS = {
     'Content-Type' => 'application/json',
-    'Accept'       => 'application/json; version=1'
+    'Accept' => 'application/json; version=1'
   }.freeze
 
   def smoke_get(path)

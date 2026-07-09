@@ -7,6 +7,7 @@ class SolutionTuple
 
   def list
     return if solutions.blank?
+
     solutions.sort_by(&:cost)
   end
 end

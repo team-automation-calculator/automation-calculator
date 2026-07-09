@@ -35,9 +35,9 @@ RSpec.describe AutomationScenariosController, type: :controller do
         end
 
         context 'when inspecting the scenario attributes' do
-          before { create_post }
-
           subject(:last_scenario) { AutomationScenario.last }
+
+          before { create_post }
 
           its(:iteration_count) { is_expected.to eq 7 }
           its(:name) { is_expected.to eq 'Test name' }
@@ -52,6 +52,7 @@ RSpec.describe AutomationScenariosController, type: :controller do
 
             its(:iteration_count) { is_expected.to eq 8 }
             its(:name) { is_expected.to be_blank }
+
             its(:display_name) do
               is_expected.to eq "Automation Scenario ##{last_scenario.id}"
             end
@@ -130,9 +131,9 @@ RSpec.describe AutomationScenariosController, type: :controller do
     end
 
     context 'when inspecting the scenario attributes' do
-      before { update_put }
-
       subject { automation_scenario.reload }
+
+      before { update_put }
 
       its(:iteration_count) { is_expected.to eq 11 }
       its(:name) { is_expected.to eq 'Another name' }
@@ -168,17 +169,19 @@ RSpec.describe AutomationScenariosController, type: :controller do
       end
 
       context 'when inspecting the solution attributes' do
-        before { update_put }
-
         subject { Solution.last }
+
+        before { update_put }
 
         its(:initial_cost) { is_expected.to eq 5 }
         its(:iteration_cost) { is_expected.to eq 6 }
         its(:name) { is_expected.to eq 'New solution' }
         its(:display_name) { is_expected.to eq 'New solution' }
+
         its(:automation_scenario_id) do
           is_expected.to eq automation_scenario.id
         end
+
         its(:cost) { is_expected.to eq 5 + 6 * 11 }
       end
     end
