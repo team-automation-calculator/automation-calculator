@@ -10,7 +10,7 @@ RSpec.describe HealthCheckController, type: :controller do
 
       it 'returns json content type' do
         get :health
-        expect(response.content_type).to eq('application/json')
+        expect(response.media_type).to eq('application/json')
       end
 
       it 'returns a unix timestamp' do

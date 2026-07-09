@@ -22,8 +22,8 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
             email: user.email
           },
           credentials: {
-            token: Faker::Lorem.characters(10),
-            refresh_token: Faker::Lorem.characters(10),
+            token: Faker::Lorem.characters(number: 10),
+            refresh_token: Faker::Lorem.characters(number: 10),
             expires_at: Time.current
           }
         )

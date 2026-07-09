@@ -24,6 +24,11 @@ Metrics/BlockLength:
 Rails/HttpPositionalArguments:
   Enabled: false
 
+# FactoryBot 5+ removed static attributes; block syntax is now required.
+# This cop predates that change and recommends the removed syntax.
+FactoryBot/StaticAttributeDefinedDynamically:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
