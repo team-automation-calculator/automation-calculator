@@ -8,7 +8,7 @@ end
 gem 'coffee-rails'
 gem 'jbuilder'
 gem 'jquery-rails'
-gem 'pg', '~> 1.5'
+gem 'pg', '~> 1.5.0'
 gem 'puma', '~> 5.6'
 gem 'rails', '~> 6.1.0'
 gem 'rake'
