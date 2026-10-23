@@ -13,11 +13,13 @@ module SmokeHttp
 
   # Plain GET. Redirects are not followed, so callers can assert on
   # the Location header. Pass `cookie:` to replay a session captured
-  # with `smoke_cookie` on an earlier response.
-  def smoke_get(path, cookie: nil)
+  # with `smoke_cookie` on an earlier response. Extra request headers
+  # (a forged X-Forwarded-Host, say) go in `headers`.
+  def smoke_get(path, cookie: nil, headers: {})
     uri = URI("#{BASE_URL}#{path}")
     req = Net::HTTP::Get.new(uri.request_uri)
     req['Cookie'] = cookie if cookie
+    headers.each { |name, value| req[name] = value }
     smoke_http(uri).request(req)
   end
 
