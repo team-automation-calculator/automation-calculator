@@ -1,16 +1,16 @@
-# Ruby CircleCI 2.0 configuration file
+# Ruby CircleCI 2.1 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-ruby/ for more details
+# Check https://circleci.com/docs/language-ruby/ for more details
 #
-version: 2
+version: 2.1
 jobs:
   build_verify_push:
     docker:
       - image: cimg/ruby:3.1-node
 
     environment:
-       - USER: "circleci"
-       - COMPOSE_TLS_VERSION: "TLSv1_2"
+      USER: "circleci"
+      COMPOSE_TLS_VERSION: "TLSv1_2"
 
     working_directory: ~/repo
 
@@ -30,7 +30,7 @@ jobs:
       - run:
           name: ./go build ci
           command: ./go build ci
- 
+
       # lint
       - run:
           name: ./go lint ci
@@ -61,7 +61,6 @@ jobs:
           command: ./go push
 
 workflows:
-  version: 2
   build_verify_push:
     jobs:
       - build_verify_push
