@@ -108,14 +108,16 @@ RSpec.describe 'OAuth providers', :smoke do
       end
 
       # A forged Host or X-Forwarded-Host must not become the callback
-      # host. With OmniAuth.config.allowed_hosts set (see
-      # config/initializers/omniauth.rb) omniauth 2.3 answers an unlisted
-      # host with its failure redirect (302 to /) before it builds the
-      # authorize URL; the ALB may also refuse an unknown Host outright
-      # with a 4xx. Either is fine. A 5xx, or a redirect_uri on the forged
-      # host, is not. On dev without credentials every POST already fails
-      # to /, so this only discriminates on deployed targets; the request
-      # spec in spec/requests/omniauth_allowed_hosts_spec.rb covers the
+      # host. Rails host authorization answers an unlisted host with 403
+      # (config/initializers/host_authorization.rb); behind it,
+      # OmniAuth.config.allowed_hosts (config/initializers/omniauth.rb)
+      # would answer with the failure redirect (302 to /) before building
+      # the authorize URL; the ALB may also refuse an unknown Host
+      # outright with a 4xx. Any of these is fine. A 5xx, or a
+      # redirect_uri on the forged host, is not. On dev without
+      # credentials every POST already fails to /, so this only
+      # discriminates on deployed targets; the request spec in
+      # spec/requests/omniauth_allowed_hosts_spec.rb covers the
       # rejection itself.
       %w[X-Forwarded-Host Host].each do |header|
         it "does not build redirect_uri from a forged #{header}" do

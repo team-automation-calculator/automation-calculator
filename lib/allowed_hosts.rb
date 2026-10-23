@@ -1,7 +1,7 @@
-# The hostnames this app answers to. One list feeds Rails host
-# authorization (config/initializers/host_authorization.rb) and is the
-# list OmniAuth.config.allowed_hosts should share, so the two never
-# drift apart.
+# The hostnames this app answers to. One list feeds both Rails host
+# authorization (config/initializers/host_authorization.rb) and
+# OmniAuth.config.allowed_hosts (config/initializers/omniauth.rb), so
+# the two never drift apart.
 #
 # Deployed environments run as production with APP_HOSTNAME set by the
 # core-iac Helm chart from the ingress host, which also routes the www
