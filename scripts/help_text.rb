@@ -67,7 +67,8 @@ class HelpText
     smoke: {
       dev:
         '[Default] Run smoke tests against a live target. ' \
-        'Set SMOKE_TARGET_URL to override the default (http://localhost:3001).',
+        'Set SMOKE_TARGET_URL to override the default ' \
+        '(http://dev:3000, the compose dev service).',
       ci:
         'Run smoke tests in the ci container. ' \
         'Set SMOKE_TARGET_URL to target a specific environment.',

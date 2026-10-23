@@ -125,8 +125,12 @@ GEM
       railties (>= 5.0.0)
     faker (3.4.2)
       i18n (>= 1.8.11, < 2)
-    faraday (2.0.0)
-      ruby2_keywords (>= 0.0.4)
+    faraday (2.15.0)
+      faraday-net_http (>= 2.0, < 3.6)
+      json
+      logger
+    faraday-net_http (3.5.0)
+      net-http (~> 0.5)
     ffi (1.15.5)
     formatador (0.2.5)
     globalid (1.4.0)
@@ -200,6 +204,8 @@ GEM
     multi_json (1.15.0)
     multi_xml (0.6.0)
     nenv (0.3.0)
+    net-http (0.9.1)
+      uri (>= 0.11.1)
     net-imap (0.4.25)
       date
       net-protocol
@@ -338,7 +344,6 @@ GEM
     rubocop-rspec (2.10.0)
       rubocop (~> 1.19)
     ruby-progressbar (1.13.0)
-    ruby2_keywords (0.0.5)
     rubyzip (2.4.1)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
@@ -387,6 +392,7 @@ GEM
     uglifier (4.1.11)
       execjs (>= 0.3.0, < 3)
     unicode-display_width (2.6.0)
+    uri (1.1.2)
     warden (1.2.9)
       rack (>= 2.0.9)
     web-console (4.2.1)

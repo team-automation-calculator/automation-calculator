@@ -49,9 +49,12 @@ class Verify
     private
 
     def setup_smoke_url(arg)
-      if SMOKE_URLS.key?(arg)
+      if arg.empty? || arg == 'dev'
+        # Default to the compose dev service, but honor an explicit override.
+        ENV['SMOKE_TARGET_URL'] ||= SMOKE_URLS['dev']
+      elsif SMOKE_URLS.key?(arg)
         ENV['SMOKE_TARGET_URL'] = SMOKE_URLS[arg]
-      elsif !%w[dev ci].include?(arg) && !arg.empty?
+      elsif arg != 'ci'
         warn "Unrecognized command: #{arg}"
         return false
       end

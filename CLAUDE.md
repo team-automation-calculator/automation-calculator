@@ -45,7 +45,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspe
 The app exposes the same domain through two completely separate stacks:
 
 1. **HTML web interface** — Haml views, Bootstrap 4, Rails form submissions, Devise session authentication. Entry point: `AutomationScenariosController` (`app/controllers/automation_scenarios_controller.rb`).
-2. **JSON API** — `app/controllers/api/v1/`, JWT token authentication via `HTTP_ACCESS_TOKEN` header, ActiveModel Serializers for responses. Routes are version-gated by a `Constraint` class.
+2. **JSON API** — `app/controllers/api/v1/`, JWT token authentication via `HTTP_ACCESS_TOKEN` header, ActiveModel Serializers for responses. Routes are version-gated by a `Constraint` class (`app/lib/constraint.rb`): the version lives in the `Accept` header (`application/json; version=1`), not the path. Paths have no `/v1` segment — e.g. `GET /api` (root), `POST /api/visitor`, `GET /api/automation_scenarios/:id/intersections`. A request without that header (or to `/api/v1/...`) gets a 404.
 
 These are not coupled — changing one doesn't affect the other.
 
@@ -102,8 +102,8 @@ Test plans for Dockerfile changes do not need to include steps for building the 
 
 ## GitHub Workflow
 
-Use the `hub` CLI (not `gh`) for all GitHub operations such as opening pull requests:
+Use the `gh` CLI (not `hub`) for all GitHub operations such as opening pull requests. `hub`'s token gets `Forbidden (HTTP 403): Resource not accessible by personal access token` when opening PRs on this repo.
 
 ```bash
-hub pull-request --draft -m "Title" -m "Body"
+gh pr create --draft --title "Title" --body "Body"
 ```
