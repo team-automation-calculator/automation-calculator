@@ -46,19 +46,36 @@ jobs:
           name: ./go build prod
           command: ./go build prod
 
-      # tag image with semver
-      - run:
-          name: ./go tag
-          command: ./go tag
+      # Publishing is gated to main. Every branch above verifies that the
+      # production image builds; only main gives it a semver tag, moves
+      # :latest and pushes to Docker Hub. Branch builds must never publish a
+      # tag matching ^\d+\.\d+\.\d+-\d+$, because core-iac opens a deploy
+      # bump PR for every such tag.
+      - when:
+          condition:
+            equal: [main, << pipeline.git.branch >>]
+          steps:
+            # tag image with semver (uses this job's CIRCLE_BUILD_NUM)
+            - run:
+                name: ./go tag
+                command: ./go tag
 
-      # login to docker hub in preparation for pushing image
-      - run:
-          name: Login to Docker Hub
-          command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
+            # login to docker hub in preparation for pushing image
+            - run:
+                name: Login to Docker Hub
+                command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
 
-      - run:
-          name: Upload Docker image to Docker Hub
-          command: ./go push
+            - run:
+                name: Upload Docker image to Docker Hub
+                command: ./go push
+
+      - unless:
+          condition:
+            equal: [main, << pipeline.git.branch >>]
+          steps:
+            - run:
+                name: Skip Docker Hub publish (not main)
+                command: echo "Branch ${CIRCLE_BRANCH} is not main; skipping ./go tag, Docker Hub login and ./go push."
 
 workflows:
   build_verify_push:
