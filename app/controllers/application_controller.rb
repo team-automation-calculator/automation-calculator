@@ -17,12 +17,19 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Devise may pass a scope symbol (e.g. :user) instead of a record, and a
+  # user may have deleted all of their scenarios; fall back to Devise's
+  # default in either case.
   def after_sign_in_path_for(resource_or_scope)
-    if resource.sign_in_count < 2
-      url_for resource.automation_scenarios.first
-    else
-      super
-    end
+    scenario = first_sign_in_scenario(resource_or_scope)
+    scenario ? url_for(scenario) : super
+  end
+
+  def first_sign_in_scenario(resource_or_scope)
+    return unless resource_or_scope.is_a?(User)
+    return unless resource_or_scope.sign_in_count < 2
+
+    resource_or_scope.automation_scenarios.first
   end
 
   def layout_selector
