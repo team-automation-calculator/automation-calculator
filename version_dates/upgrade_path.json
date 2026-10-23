@@ -54,46 +54,86 @@
     },
     {
       "phase": 4,
-      "name": "Rails 6.1 → 7.0 + omniauth 1 → 2",
-      "rationale": "Rails 7.0 introduces Hotwire as the default and removes several long-deprecated APIs. omniauth 2.x must be addressed here because it drops GET-based OAuth callbacks (CSRF fix) — the integration with Devise and Google/GitHub strategies requires explicit adapter gems.",
+      "name": "omniauth 1 → 2",
+      "rationale": "omniauth 2.x drops GET-based OAuth authorize requests (CSRF fix) and, with Rails/Devise, requires the omniauth-rails_csrf_protection adapter. Shipping it separately from the Rails bump keeps an OAuth regression attributable to this change alone — it is the highest-risk piece of the path, so it ships and gets verified on staging by itself.",
       "ruby_version": "3.1.x (unchanged)",
+      "rails_version": "6.1.x (unchanged)",
       "changes": {
-        "rails": "6.1.x → 7.0.x",
         "omniauth": "1.9.2 → 2.x",
         "omniauth_google_oauth2": "0.8.2 → 1.x (2.x-compatible release)",
         "omniauth_github": "1.4.0 → 2.x",
-        "omniauth_rails_csrf_protection": "add ~> 1.0 (required adapter for omniauth 2 + Rails)",
-        "rspec_rails": "5.x → 6.x",
-        "sass_rails": "consider migration to dartsass-rails (sassc-based sass-rails is unmaintained)"
+        "omniauth_rails_csrf_protection": "add ~> 1.0 (required adapter for omniauth 2 + Rails)"
       },
       "known_risks": [
-        "omniauth 2.x rejects GET /auth/:provider — all OAuth flows must use POST; Devise's OmniAuth integration may need omniauth-rails_csrf_protection gem",
-        "Rails 7.0 removes several ActiveRecord and ActionView helpers removed in 6.x deprecation cycle",
-        "sass-rails 5.x is effectively unmaintained; dartsass-rails is a drop-in replacement but uses a different sass binary"
+        "omniauth 2.x rejects GET /auth/:provider — the sign-in links must become POST buttons (button_to) carrying the Rails authenticity token",
+        "The smoke suite can only cover the authorize redirect, not the provider callback — verify Google and GitHub sign-in manually on staging before promoting"
       ]
     },
     {
       "phase": 5,
-      "name": "Ruby 3.1 → 3.2 + Rails 7.0 → 7.1",
-      "rationale": "Ruby 3.2 adds significant performance improvements (YJIT stable) and Prism parser. Rails 7.1 pairs naturally with Ruby 3.2 and adds native async queries, better error pages, and Trilogy adapter support. Doing them together is low-risk since 7.1 explicitly targets 3.2.",
+      "name": "Rails 6.1 → 7.0",
+      "rationale": "Rails 7.0 introduces Hotwire as the default and removes several long-deprecated APIs. With omniauth already on 2.x, this phase is a pure framework bump. load_defaults stays at 6.1 here; bumping it to 7.0 is a follow-up so the framework upgrade and the default-behavior changes are separately attributable.",
+      "ruby_version": "3.1.x (unchanged)",
       "changes": {
-        "ruby": "3.1.x → 3.2.x",
-        "rails": "7.0.x → 7.1.x",
-        "docker_base_image": "ruby:3.1.x-slim-bookworm → ruby:3.2.x-slim-bookworm",
-        "puma": "5.x → 6.x"
+        "rails": "6.1.x → 7.0.x",
+        "rspec_rails": "5.x → 6.x",
+        "spring": "remove spring and spring-watcher-listen (spring 2 is pinned < 3.0 and does not load under Rails 7)",
+        "load_defaults": "keep 6.1; bump to 7.0 in a follow-up",
+        "sass_rails": "consider migration to dartsass-rails (sassc-based sass-rails is unmaintained)"
       },
       "known_risks": [
-        "Rails 7.1 changes the default serialization format for encrypted attributes — if any model uses encrypts, existing ciphertext may be unreadable without a migration",
-        "Ruby 3.2 removes some long-deprecated features (e.g. rb_cData C API) that may affect native gems like pg — verify gem compatibility before upgrading"
+        "Rails 7.0 removes several ActiveRecord and ActionView helpers removed in the 6.x deprecation cycle",
+        "sass-rails 5.x is effectively unmaintained; dartsass-rails is a drop-in replacement but uses a different sass binary"
       ]
     },
     {
       "phase": 6,
-      "name": "Rails 7.1 → 7.2 or 8.0 (long-term target)",
-      "rationale": "Rails 7.2 requires Ruby 3.1+ (already satisfied). Rails 8.0 ships Solid Cache, Solid Queue, and Solid Cable as first-class options and drops several legacy defaults. This phase is exploratory — evaluate based on ecosystem readiness at the time.",
+      "name": "Rails 7.0 → 7.1",
+      "rationale": "Rails 7.1 adds native async queries, better error pages, and Trilogy adapter support, and is a required stop on the way to 7.2. Ruby stays at 3.1 so the framework bump is isolated.",
+      "ruby_version": "3.1.x (unchanged)",
       "changes": {
-        "rails": "7.1.x → 7.2.x or 8.0.x",
-        "ruby": "3.2.x (minimum; 3.3.x recommended for 8.0)"
+        "rails": "7.0.x → 7.1.x"
+      },
+      "known_risks": [
+        "Rails.application.secrets is deprecated in 7.1 (used in app/services/jwt_token_service.rb and config/secrets.yml) — migrate to Rails.application.secret_key_base",
+        "Rails 7.1 changes the default serialization format for encrypted attributes — if any model uses encrypts, existing ciphertext may be unreadable without a migration"
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Rails 7.1 → 7.2",
+      "rationale": "Rails 7.0 and 7.1 are past security support; 7.2 is the first supported target reachable without a Ruby bump (its minimum Ruby is 3.1).",
+      "ruby_version": "3.1.x (unchanged)",
+      "changes": {
+        "rails": "7.1.x → 7.2.x"
+      },
+      "known_risks": [
+        "Rails.application.secrets is removed in 7.2 — the migration to Rails.application.secret_key_base from phase 6 must be complete",
+        "Review all gem dependencies for Rails 7.2 compatibility before upgrading"
+      ]
+    },
+    {
+      "phase": 8,
+      "name": "Ruby 3.1 → 3.3/3.4 + puma 5 → 6",
+      "rationale": "Ruby 3.1 is EOL. Done separately from the Rails bumps so regressions are attributable to the runtime change alone.",
+      "rails_version": "7.2.x (unchanged)",
+      "changes": {
+        "ruby": "3.1.x → 3.3.x or 3.4.x",
+        "docker_base_image": "ruby:3.1.x-slim-bookworm → ruby:3.3.x-slim-bookworm or ruby:3.4.x-slim-bookworm",
+        "puma": "5.x → 6.x"
+      },
+      "known_risks": [
+        "Newer Rubies remove long-deprecated features (e.g. rb_cData C API) that may affect native gems like pg — verify gem compatibility before upgrading",
+        "Ruby 3.4 changes frozen string literal warnings and Hash#inspect output — watch for spec failures that compare inspected output"
+      ]
+    },
+    {
+      "phase": 9,
+      "name": "Rails 7.2 → 8.x (long-term target)",
+      "rationale": "Rails 8.0 ships Solid Cache, Solid Queue, and Solid Cable as first-class options and drops several legacy defaults. This phase is exploratory — evaluate based on ecosystem readiness at the time.",
+      "changes": {
+        "rails": "7.2.x → 8.x",
+        "ruby": "3.3.x or later (minimum; 3.3.x recommended for 8.0)"
       },
       "known_risks": [
         "Rails 8.0 removes Sprockets as the default asset pipeline in favor of Propshaft — CoffeeScript migration to plain JS would become necessary at this point",

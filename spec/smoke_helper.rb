@@ -21,6 +21,18 @@ module SmokeHttp
     smoke_http(uri).request(req)
   end
 
+  # HTML form submission (application/x-www-form-urlencoded), as a
+  # browser sends a button_to form. omniauth 2 only starts an OAuth
+  # flow from such a POST, so pass the Rails authenticity token in
+  # `fields` and the session cookie it was issued under.
+  def smoke_post_form(path, fields, cookie: nil)
+    uri = URI("#{BASE_URL}#{path}")
+    req = Net::HTTP::Post.new(uri.request_uri)
+    req['Cookie'] = cookie if cookie
+    req.set_form_data(fields)
+    smoke_http(uri).request(req)
+  end
+
   # Net::HTTP has no cookie jar. Collapse a response's Set-Cookie
   # headers into a single Cookie header value for the next request.
   def smoke_cookie(response)

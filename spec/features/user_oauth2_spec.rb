@@ -5,12 +5,14 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
   end
 
   shared_examples_for 'an oauth2 provider' do
+    # omniauth 2 rejects GET /auth/:provider, so the sign-in control is a
+    # button_to form that POSTs rather than a link.
     def oauth2_sign_in
-      link_title = "Sign in with #{provider_link_name}"
+      button_title = "Sign in with #{provider_link_name}"
 
       visit new_user_session_path
-      expect(page).to have_link(link_title)
-      click_link link_title
+      expect(page).to have_button(button_title)
+      click_button button_title
     end
 
     context 'when it is successful' do
