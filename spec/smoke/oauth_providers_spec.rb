@@ -3,7 +3,7 @@ require 'smoke_helper'
 # OAuth sign-in checks that need no Google or GitHub account.
 #
 # Three layers, each stronger than the last:
-#   1. the provider links render on the sign-in page
+#   1. the provider sign-in forms render on the sign-in page
 #   2. the authorize redirect carries a client_id and a redirect_uri
 #      that points back at the target being smoked
 #   3. a callback with a bogus code round-trips the real token exchange
@@ -13,32 +13,78 @@ require 'smoke_helper'
 # regression fixed in #210. OmniAuth test mode in
 # spec/features/user_oauth2_spec.rb never exercises the HTTP client,
 # so a broken Faraday stack only shows up as a 500 on a live callback.
+#
+# omniauth 2 only starts a flow from POST /users/auth/:provider carrying
+# the Rails authenticity token (omniauth-rails_csrf_protection), so the
+# authorize step is driven the way a browser does it: load the sign-in
+# page, keep its session cookie, and submit the provider's button_to
+# form with the token it rendered. The callback stays a GET.
 RSpec.describe 'OAuth providers', :smoke do
-  shared_examples_for 'an oauth provider' do |provider, link:, authorize:|
+  shared_examples_for 'an oauth provider' do |provider, button:, authorize:|
     let(:authorize_path) { "/users/auth/#{provider}" }
     let(:callback_path) { "#{authorize_path}/callback" }
 
+    def sign_in_form(authorize_path)
+      response = smoke_get('/users/sign_in')
+      form = Nokogiri::HTML(response.body)
+                     .at_css("form[action='#{authorize_path}']")
+      expect(form).not_to be_nil, "Expected a form posting to #{authorize_path}"
+      [form, smoke_cookie(response)]
+    end
+
+    def start_oauth(authorize_path)
+      form, cookie = sign_in_form(authorize_path)
+      token = form.at_css("input[name='authenticity_token']")&.[]('value')
+      smoke_post_form(authorize_path, { 'authenticity_token' => token.to_s },
+                      cookie: cookie)
+    end
+
     describe 'GET /users/sign_in' do
-      it "links to #{link}" do
-        response = smoke_get('/users/sign_in')
-        doc = Nokogiri::HTML(response.body)
-        href = doc.at_xpath("//a[normalize-space(text())='#{link}']/@href")
-        expect(href&.value).to eq(authorize_path)
+      it "renders a POST form for #{button}" do
+        form, = sign_in_form(authorize_path)
+        expect(form['method'].to_s.downcase).to eq('post')
+        submit = form.at_css("input[type='submit'][value='#{button}'], button")
+        expect(submit).not_to be_nil, "Expected a '#{button}' submit control"
       end
     end
 
     describe "GET /users/auth/#{provider}" do
-      let(:response) { smoke_get(authorize_path) }
+      it 'does not start the OAuth flow (omniauth 2 rejects GET)' do
+        response = smoke_get(authorize_path)
+        location = response['Location'].to_s
+        msg = "GET must not start OAuth, got #{response.code} #{location}"
+        expect(URI(location).host).not_to eq(URI(authorize).host), msg
+      end
+    end
+
+    # omniauth-oauth2 1.8+ refuses to build the authorize redirect without
+    # a client_id, so the provider redirect (and the callback round-trip
+    # that depends on it) can only be checked where the OAuth app id
+    # secrets are configured: staging and prod. On dev, where the env
+    # vars are normally unset, the POST must still fail cleanly.
+    describe "POST /users/auth/#{provider}" do
+      let(:response) { start_oauth(authorize_path) }
       let(:location) { response['Location'].to_s }
       let(:params) { smoke_query(location) }
 
-      it 'redirects to the provider authorize endpoint' do
+      it 'fails to the failure redirect without credentials (dev only)' do
+        skip 'deployed targets have credentials' if smoke_deployed_target?
+        msg = "Expected 302 to /, got #{response.code} #{location}"
+        expect(response.code.to_i).to eq(302), msg
+        expect(URI(location).path).to eq('/'), msg
+      end
+
+      it 'redirects to the provider authorize endpoint (deployed only)' do
+        skip 'credentials are only expected on staging/prod' \
+          unless smoke_deployed_target?
         expect(response.code.to_i).to eq(302),
                                       "Expected 302, got #{response.code}"
         expect(location).to start_with(authorize)
       end
 
-      it 'sets a redirect_uri that points back at the smoke target' do
+      it 'sets a redirect_uri back at the smoke target (deployed only)' do
+        skip 'credentials are only expected on staging/prod' \
+          unless smoke_deployed_target?
         target = URI(SmokeHttp::BASE_URL)
         redirect_uri = URI(params.fetch('redirect_uri', ''))
         expect(redirect_uri.scheme).to eq(target.scheme)
@@ -46,13 +92,15 @@ RSpec.describe 'OAuth providers', :smoke do
         expect(redirect_uri.path).to eq(callback_path)
       end
 
-      it 'includes a CSRF state' do
+      it 'includes a CSRF state (deployed only)' do
+        skip 'credentials are only expected on staging/prod' \
+          unless smoke_deployed_target?
         expect(params['state']).not_to be_nil
         expect(params['state']).not_to be_empty
       end
 
-      it 'includes a client_id (deployed targets only)' do
-        skip 'client_id is only expected on staging/prod' \
+      it 'includes a client_id (deployed only)' do
+        skip 'credentials are only expected on staging/prod' \
           unless smoke_deployed_target?
         expect(params['client_id'].to_s).not_to be_empty,
                                                 'OAuth app id env var unset'
@@ -64,7 +112,9 @@ RSpec.describe 'OAuth providers', :smoke do
       # must be replayed, or omniauth-oauth2 rejects the callback as
       # CSRF before it ever attempts the token exchange.
       it 'rejects a bogus code via the failure redirect, not a 500' do
-        start = smoke_get(authorize_path)
+        skip 'credentials are only expected on staging/prod' \
+          unless smoke_deployed_target?
+        start = start_oauth(authorize_path)
         state = smoke_query(start['Location'].to_s)['state']
         expect(state).not_to be_nil, 'Expected state in authorize redirect'
 
@@ -81,10 +131,10 @@ RSpec.describe 'OAuth providers', :smoke do
   end
 
   it_behaves_like 'an oauth provider', 'github',
-                  link: 'Sign in with GitHub',
+                  button: 'Sign in with GitHub',
                   authorize: 'https://github.com/login/oauth/authorize'
 
   it_behaves_like 'an oauth provider', 'google_oauth2',
-                  link: 'Sign in with GoogleOauth2',
+                  button: 'Sign in with GoogleOauth2',
                   authorize: 'https://accounts.google.com/o/oauth2/auth'
 end
