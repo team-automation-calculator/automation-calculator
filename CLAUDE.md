@@ -102,8 +102,8 @@ Test plans for Dockerfile changes do not need to include steps for building the 
 
 ## GitHub Workflow
 
-Use the `hub` CLI (not `gh`) for all GitHub operations such as opening pull requests:
+Use the `gh` CLI (not `hub`) for all GitHub operations such as opening pull requests. `hub`'s token gets `Forbidden (HTTP 403): Resource not accessible by personal access token` when opening PRs on this repo.
 
 ```bash
-hub pull-request --draft -m "Title" -m "Body"
+gh pr create --draft --title "Title" --body "Body"
 ```
