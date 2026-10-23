@@ -18,6 +18,24 @@ RSpec.describe 'User registrations', type: :feature do
     expect { sign_up }.to change(AutomationScenario, :count).by(1)
   end
 
+  context 'when the sign-up is invalid' do
+    before do
+      visit new_user_registration_path
+      fill_in 'Email', with: user.email
+      fill_in 'Password', with: user.password
+      fill_in 'Password confirmation', with: "#{user.password}-mismatch"
+      click_button 'Sign up'
+    end
+
+    it 'renders the error block' do
+      expect(page).to have_css('#error_explanation')
+    end
+
+    it 'lists the validation message' do
+      expect(page).to have_content("Password confirmation doesn't match Password")
+    end
+  end
+
   context 'when a user signs up successfully' do
     before { sign_up }
 
