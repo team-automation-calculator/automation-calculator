@@ -1,0 +1,26 @@
+{
+  "phase": 5,
+  "name": "Rails 6.1 → 7.0",
+  "status": "in_progress",
+  "ruby_version": "3.1.7 (unchanged, applied in Phase 2)",
+  "changes": {
+    "rails": "6.1.7.10 → 7.0.10",
+    "rspec_rails": "5.1.2 → 6.1.5",
+    "spring": "2.0.2 removed (spring-watcher-listen 2.0.1 pins spring < 3.0, which does not load under Rails 7; nobody runs Spring inside Docker)",
+    "spring_watcher_listen": "2.0.1 removed",
+    "config_spring_rb": "deleted",
+    "new_framework_defaults_7_0": "added config/initializers/new_framework_defaults_7_0.rb with every default commented out",
+    "uglifier": "production js_compressor switched from :uglifier to Uglifier.new(harmony: true) — actionview 7.0 ships rails-ujs as ES6, which the ES5-only parser rejected during assets:precompile"
+  },
+  "notes": {
+    "load_defaults": "stays 6.1 — the bump to 7.0 defaults is a deliberate follow-up once this phase is on production",
+    "secrets": "Rails.application.secrets.secret_key_base (app/services/jwt_token_service.rb, config/secrets.yml) still works in 7.0; deprecated in 7.1, removed in 7.2 — migrate in Phase 6",
+    "held_back": {
+      "sass_rails": "6.0.0 / sassc-rails retained (no dartsass-rails migration)",
+      "turbolinks": "5.1.1 retained (no Turbo migration)",
+      "coffee_rails": "5.0.0 retained (CoffeeScript untouched)",
+      "omniauth": "1.9.2 → 2.x is Phase 4 (separate PR); not touched here",
+      "rubocop": "1.28.2 / rubocop-rails 2.14.2 / rubocop-rspec 2.10.0 unchanged"
+    }
+  }
+}

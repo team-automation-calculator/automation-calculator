@@ -10,7 +10,7 @@ gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 1.5.0'
 gem 'puma', '~> 5.6'
-gem 'rails', '~> 6.1.0'
+gem 'rails', '~> 7.0.0'
 gem 'rake'
 gem 'sass-rails'
 gem 'turbolinks'
@@ -58,8 +58,6 @@ group :development do
   gem 'annotate'
 
   gem 'listen'
-  gem 'spring'
-  gem 'spring-watcher-listen'
   gem 'web-console'
 
   # guard
@@ -70,7 +68,7 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'rspec-rails', '~> 5.1'
+  gem 'rspec-rails', '~> 6.0'
   # The RSpec testing framework with Rails integrations
   gem 'rspec-its'
 
