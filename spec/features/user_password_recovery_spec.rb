@@ -24,6 +24,22 @@ RSpec.describe 'User password recovery', type: :feature do
     end
   end
 
+  context 'when the email is unknown' do
+    before do
+      visit new_user_password_path
+      fill_in 'Email', with: 'nobody@example.com'
+      click_button 'Reset Password'
+    end
+
+    it 'renders the error block' do
+      expect(page).to have_css('#error_explanation')
+    end
+
+    it 'lists the validation message' do
+      expect(page).to have_content('Email not found')
+    end
+  end
+
   context 'when update the password' do
     before { update_password }
 
