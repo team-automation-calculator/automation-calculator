@@ -13,8 +13,10 @@ All commands run via the `./go` script (a Ruby dispatcher into `scripts/`):
 ./go lint              # Run RuboCop in Docker
 ./go shell             # Open a shell in the dev container
 ./go stop              # Stop containers
+./go restart           # Stop and restart the dev environment
 ./go clean             # Remove all containers, images, volumes
-./go build             # Rebuild Docker images (required after Gemfile changes)
+./go build             # Build Docker images locally (required after Gemfile changes); does not push
+./go push              # Push built images to Docker Hub; separate from build
 ./go db dev            # Connect to PostgreSQL with psql
 ./go logs              # Tail container logs
 ```
@@ -30,6 +32,8 @@ Or from the host:
 docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspec spec/path/to/file_spec.rb
 ```
 
+**Before committing:** Run `./go lint` and fix all RuboCop offenses. CI runs lint and will fail on any offense, including in scripts and config files.
+
 **Troubleshooting:**
 - After updating the Gemfile, run `./go build` before `./go test` or `./go start`.
 - If `./go start` exits with "A server is already running", run `./go shell` then `rm /usr/src/app/tmp/pids/server.pid`.
@@ -41,7 +45,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspe
 The app exposes the same domain through two completely separate stacks:
 
 1. **HTML web interface** — Haml views, Bootstrap 4, Rails form submissions, Devise session authentication. Entry point: `AutomationScenariosController` (`app/controllers/automation_scenarios_controller.rb`).
-2. **JSON API** — `app/controllers/api/v1/`, JWT token authentication via `HTTP_ACCESS_TOKEN` header, ActiveModel Serializers for responses. Routes are version-gated by a `Constraint` class.
+2. **JSON API** — `app/controllers/api/v1/`, JWT token authentication via `HTTP_ACCESS_TOKEN` header, ActiveModel Serializers for responses. Routes are version-gated by a `Constraint` class (`app/lib/constraint.rb`): the version lives in the `Accept` header (`application/json; version=1`), not the path. Paths have no `/v1` segment — e.g. `GET /api` (root), `POST /api/visitor`, `GET /api/automation_scenarios/:id/intersections`. A request without that header (or to `/api/v1/...`) gets a 404.
 
 These are not coupled — changing one doesn't affect the other.
 
@@ -86,14 +90,20 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 
 RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Matchers, and SimpleCov. Test files mirror `app/` under `spec/`.
 
+**Keeping `./go test` and `./go smoke` in sync:**
+
+- Smoke tests (`spec/smoke/`) are tagged `:smoke` and excluded from the regular suite via `config.filter_run_excluding :smoke` in `spec/spec_helper.rb`. The `./go smoke` command re-includes them with `--tag smoke`. Never remove that exclusion — smoke tests make live HTTP calls and will fail with `ECONNREFUSED` when run without a live server.
+- When app behavior changes (new HTTP status codes, response bodies, URL paths, UI text), update **both** the unit/feature tests and the smoke tests in the same commit. The two suites test the same contracts from different angles.
+- The smoke spec `spec/smoke/visitor_api_flow_spec.rb` documents the expected API contract (status codes, response shapes, break-even math). Keep it in sync with `spec/requests/api/v1/` request specs and `spec/support/api_schemas/*.json` JSON schemas.
+
 ## Dockerfile Changes
 
 Test plans for Dockerfile changes do not need to include steps for building the image or running the test suite — CI handles both automatically on every PR. The test plan only needs to cover anything CI cannot verify, such as confirming the app starts correctly locally or checking that a new system dependency is available inside the container.
 
 ## GitHub Workflow
 
-Use the `hub` CLI (not `gh`) for all GitHub operations such as opening pull requests:
+Use the `gh` CLI (not `hub`) for all GitHub operations such as opening pull requests. `hub`'s token gets `Forbidden (HTTP 403): Resource not accessible by personal access token` when opening PRs on this repo.
 
 ```bash
-hub pull-request --draft -m "Title" -m "Body"
+gh pr create --draft --title "Title" --body "Body"
 ```

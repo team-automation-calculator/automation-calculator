@@ -3,7 +3,7 @@ RSpec.describe 'New user workflow', type: :feature do
   def visit_visitor_path
     Capybara.reset_session!
     visit '/'
-    click_on 'Visit as a guest'
+    click_on 'Continue as Guest'
   end
 
   context 'when visit the /visitors path' do
@@ -35,7 +35,7 @@ RSpec.describe 'New user workflow', type: :feature do
         expect(page).to have_css(
           '#scenarioData',
           text: json_scenario_data,
-          visible: false
+          visible: :all
         )
       end
     end
@@ -76,7 +76,7 @@ RSpec.describe 'New user workflow', type: :feature do
       expect(page).to have_css(
         '#scenarioData',
         text: json_solutions,
-        visible: false
+        visible: :all
       )
     end
   end

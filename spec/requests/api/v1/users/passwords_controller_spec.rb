@@ -38,21 +38,25 @@ RSpec.describe API::V1::Users::PasswordsController, type: :request do
 
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to match_json_schema('user') }
+
       it 'returns old user data' do
         expect(json_response)
           .to include(
             email: current_user.email
           )
       end
+
       it 'fails to sign in with the old password' do
         expect { v1_login_user(current_user) }
           .to raise_error(/failed/)
       end
+
       it 'signs in with the new password' do
         current_user.password = new_password
         expect { v1_login_user(current_user) }
           .not_to raise_error
       end
+
       it 'has a valid password' do
         expect(current_user.reload)
           .to be_valid_password(new_password)

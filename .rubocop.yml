@@ -1,10 +1,10 @@
-require: rubocop-rspec
-
-Rails:
-  Enabled: true
+require:
+  - rubocop-rails
+  - rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 3.1
+  NewCops: disable
   DisplayCopNames: true
 
   Exclude:
@@ -13,7 +13,7 @@ AllCops:
     - 'vendor/bundle/**/*'
 
 Metrics/BlockLength:
-  ExcludedMethods:
+  IgnoredMethods:
     - describe
     - context
     - shared_examples_for
@@ -30,9 +30,39 @@ Style/Documentation:
 RSpec/NestedGroups:
   Max: 7
 
+# Existing specs reference `subject` directly; renaming them adds churn
+# without behavior benefit.
+RSpec/NamedSubject:
+  Enabled: false
+
+# Existing specs predate this cop; restructuring their let blocks adds churn
+# without behavior benefit.
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 Style/MixinUsage:
   Exclude:
     - bin/*
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+# Do not force Ruby 3.1 hash value shorthand; accept both styles
+Style/HashSyntax:
+  EnforcedShorthandSyntax: either
+
+RSpec/DescribeClass:
+  Exclude:
+    - spec/smoke/**/*_spec.rb
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - spec/smoke/**/*_spec.rb
+
+RSpec/ExampleLength:
+  Exclude:
+    - spec/smoke/**/*_spec.rb
+
+Metrics/ClassLength:
+  Exclude:
+    - scripts/help_text.rb

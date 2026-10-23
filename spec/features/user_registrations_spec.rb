@@ -20,6 +20,7 @@ RSpec.describe 'User registrations', type: :feature do
 
   context 'when a user signs up successfully' do
     before { sign_up }
+
     let(:registered_user) { User.find_by email: user.email }
 
     it 'sends a user to the first scenario' do

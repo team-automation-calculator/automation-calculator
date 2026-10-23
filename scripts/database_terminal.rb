@@ -11,7 +11,7 @@ class DatabaseTerminal
       if COMMAND_HASH.key? sub_cmd.to_sym
         COMMAND_HASH[sub_cmd.to_sym].call
       else
-        HelpText.help(['shell'])
+        HelpText.help(['db'])
         puts
         warn("Unrecognized command: #{sub_cmd}")
       end

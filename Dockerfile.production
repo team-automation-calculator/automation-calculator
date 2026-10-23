@@ -1,4 +1,4 @@
-FROM ruby:2.7.7-slim-bullseye
+FROM ruby:3.1.7-slim-bookworm
 
 #Install dependencies as root
 RUN apt-get update
@@ -20,12 +20,12 @@ RUN chown -R automation-calculator-production /usr/src/app
 USER automation-calculator-production
 
 #Install rails dependencies as non root user
-RUN gem install nokogiri -v 1.14.1
-RUN gem install bundler -v 2.3.26
+RUN gem install nokogiri -v 1.18.10
+RUN gem install bundler -v 2.4.22
 
 #Calling bundle install in image creation to install dependencies,
 # and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
-RUN bundle install
+RUN bundle install --frozen
 
 #precompile static assets, set dummy SECRET_KEY_BASE to avoid this issue: https://github.com/heartcombo/devise/issues/4879
 #note this var gets set on prod in a different way
@@ -33,8 +33,11 @@ ENV SECRET_KEY_BASE="dummy"
 RUN rake assets:precompile
 ENV SECRET_KEY_BASE=""
 
-#Set this var to a reasonable default value, to be overridden per environment 
+#Set this var to a reasonable default value, to be overridden per environment
 ENV APP_HOSTNAME="automation-calculations.net"
+
+ARG GIT_COMMIT=unknown
+LABEL org.opencontainers.image.revision=$GIT_COMMIT
 
 ENTRYPOINT [ "/usr/src/app/entrypoint.sh" ]
 

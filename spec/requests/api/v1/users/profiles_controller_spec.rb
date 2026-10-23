@@ -43,6 +43,7 @@ RSpec.describe API::V1::Users::ProfilesController, type: :request do
 
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to match_json_schema('user') }
+
       it 'returns correct user data' do
         expect(json_response)
           .to include(
@@ -60,12 +61,14 @@ RSpec.describe API::V1::Users::ProfilesController, type: :request do
 
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to match_json_schema('user') }
+
       it 'returns correct user data' do
         expect(json_response)
           .to include(
             email: new_email
           )
       end
+
       it 'does not return old user data' do
         expect(json_response)
           .not_to include(

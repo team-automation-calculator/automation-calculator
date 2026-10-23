@@ -52,11 +52,14 @@ RSpec.describe API::V1::SolutionsController, type: :request do
   end
 
   shared_examples_for 'a correct solution response' do
+    let(:expected_status) { :ok }
+
     it 'returns scenario data' do
       expect(json_response.symbolize_keys).to include solution_attributes
     end
+
     it { expect(response.headers['Access-Token']).to be_blank }
-    it { expect(response).to have_http_status(:ok) }
+    it { expect(response).to have_http_status(expected_status) }
     it { expect(response).to match_json_schema('solution') }
   end
 
@@ -82,10 +85,12 @@ RSpec.describe API::V1::SolutionsController, type: :request do
       end
 
       it { expect(json_response.size).to eq 1 }
+
       it 'returns scenario data' do
         expect(json_response.first.symbolize_keys)
           .to include(solution_attributes)
       end
+
       it { expect(response.headers['Access-Token']).to be_blank }
       it { expect(response).to have_http_status(:ok) }
       it { expect(response).to match_json_schema('solutions') }
@@ -100,6 +105,7 @@ RSpec.describe API::V1::SolutionsController, type: :request do
       end
 
       it_behaves_like 'a correct solution response' do
+        let(:expected_status) { :created }
         let(:solution_attributes) do
           {
             display_name: 'test',
@@ -171,6 +177,7 @@ RSpec.describe API::V1::SolutionsController, type: :request do
         it { expect(response.headers['Access-Token']).to be_blank }
         it { expect(response).to have_http_status(:ok) }
         it { expect(response.body).to be_blank }
+
         specify do
           expect { solution.reload }
             .to raise_error(ActiveRecord::RecordNotFound)

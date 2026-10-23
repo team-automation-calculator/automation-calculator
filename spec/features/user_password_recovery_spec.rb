@@ -11,7 +11,7 @@ RSpec.describe 'User password recovery', type: :feature do
   end
 
   it 'displays the forgot password link' do
-    visit root_url
+    visit new_user_session_path
     expect(page).to have_content('Forgot your password?')
   end
 

@@ -1,5 +1,10 @@
 #! /usr/bin/env ruby
 
+# macOS exposes USERNAME; Linux exposes USER.
+# Normalize to USER for docker-compose.
+ENV['USER'] ||= ENV['USERNAME']
+ENV['UID'] ||= Process.uid.to_s
+
 Dir['./scripts/*.rb'].each { |file| require file }
 
 cmds = ARGF.argv
@@ -8,17 +13,17 @@ main_arg = cmds.shift || 'init'
 COMMAND_HASH = {
   build: -> { DockerBuild.build(cmds) },
   clean: -> { Lifecycle.clean },
-  create_host: -> { DockerMachine.create_host(cmds) },
   db: -> { DatabaseTerminal.connect(cmds) },
   help: -> { HelpText.help(cmds) },
   init: -> { Lifecycle.init(cmds) },
   lint: -> { Verify.lint(cmds) },
   logs: -> { Logs.logs },
-  push: -> { DockerHub.push_to_docker_hub },
+  push: -> { DockerHub.push_to_docker_hub(cmds) },
   restart: -> { Lifecycle.restart },
   rm: -> { Lifecycle.rm },
   rmi: -> { Lifecycle.rmi },
   shell: -> { Shell.shell(cmds) },
+  smoke: -> { Verify.smoke_test(cmds) },
   start: -> { Lifecycle.start(cmds) },
   stop: -> { Lifecycle.stop },
   tag: -> { DockerHub.tag_latest_with_semver },

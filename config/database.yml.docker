@@ -4,7 +4,7 @@ development:
   encoding: unicode
   password: automation-calculator-password
   pool: 5
-  url: <%= ENV['DB_URL'] %>
+  url: <%= ENV['DATABASE_URL'] || ENV['DB_URL'] %>
   username: <%= ENV['USER'] %>
 
   # Connect on a TCP socket. Omitted by default since the client uses a
@@ -31,7 +31,7 @@ test:
   encoding: unicode
   password: automation-calculator-password
   pool: 5
-  url: <%= ENV['DB_URL'] %>
+  url: <%= ENV['DATABASE_URL'] || ENV['DB_URL'] %>
   username: <%= ENV['USER'] %>
 
 production:
@@ -40,5 +40,5 @@ production:
   encoding: unicode
   password: automation-calculator-password
   pool: 5
-  url: <%= ENV['DB_URL'] %>
+  url: <%= ENV['DATABASE_URL'] || ENV['DB_URL'] %>
   username: <%= ENV['USER'] %>

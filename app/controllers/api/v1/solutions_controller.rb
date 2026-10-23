@@ -13,7 +13,7 @@ module API
         solution =
           @automation_scenario.solutions.create! permitted_params
 
-        render json: solution
+        render json: solution, status: :created
       end
 
       def show

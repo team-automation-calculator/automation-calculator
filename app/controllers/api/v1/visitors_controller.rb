@@ -8,7 +8,7 @@ module API
 
         token = JwtTokenService.encode_token(visitor_id: visitor.id)
         response.set_header('Access-Token', token)
-        render json: visitor
+        render json: visitor, status: :created
       end
     end
   end

@@ -1,0 +1,133 @@
+// Source for docs/app-structure.svg
+// Render with:
+//   docker run --rm -v "$PWD/docs":/work -w /work nshine/dot \
+//     dot -Tsvg app-structure.dot -o app-structure.svg
+//
+// Shows the core structure of the Rails app in this repo: the two
+// parallel HTML + JSON-API stacks, the shared ActiveRecord domain
+// (with polymorphic owner), the SolutionPair break-even service, and
+// the server-rendered chart-data handoff to Plotly.js.
+
+digraph app_structure {
+  rankdir=TB;
+  bgcolor="white";
+  compound=true;
+  splines=true;
+  nodesep=0.35;
+  ranksep=0.55;
+  node [fontname="Helvetica", fontsize=10, shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  edge [fontname="Helvetica", fontsize=9, color="#555555"];
+
+  // ── Clients ────────────────────────────────────────────────
+  browser   [label="Web browser",
+             shape=oval, fillcolor="#f3f3f3"];
+  apiclient [label="API client\n(HTTP_ACCESS_TOKEN header)",
+             shape=oval, fillcolor="#f3f3f3"];
+
+  // ── HTML stack ─────────────────────────────────────────────
+  subgraph cluster_html {
+    label="HTML interface (Devise session auth)";
+    labeljust="l";
+    style="rounded,filled";
+    fillcolor="#eef5ff";
+    color="#88aadd";
+    fontname="Helvetica";
+    fontsize=11;
+
+    html_ctrl [label="AutomationScenariosController\nVisitorsController\nLandingPageController"];
+    haml      [label="Haml views\napp/views/"];
+    graph_ser [label="AutomationScenarioForGraph\nSerializer\n(precomputes intersections)"];
+    coffee    [label="automation_scenarios.coffee\n→ Plotly.js → #solutionsChart"];
+  }
+
+  // ── API stack ──────────────────────────────────────────────
+  subgraph cluster_api {
+    label="JSON API v1 (JWT auth)";
+    labeljust="l";
+    style="rounded,filled";
+    fillcolor="#fbeaea";
+    color="#cc7777";
+    fontname="Helvetica";
+    fontsize=11;
+
+    api_ctrl    [label="api/v1/\nAutomationScenariosController\nSolutionsController\nIterationsController\nUsersController\nUserSessionsController"];
+    jwt         [label="JwtTokenService\n(encode/decode HS256)"];
+    serializers [label="ActiveModel Serializers\napp/serializers/"];
+  }
+
+  // ── Shared concern ─────────────────────────────────────────
+  visitable [label="Visitable concern\ncurrent_visitor /\ncurrent_user_or_visitor",
+             fillcolor="#fff4cc", color="#cc9900"];
+
+  // ── Services ───────────────────────────────────────────────
+  subgraph cluster_services {
+    label="Services";
+    labeljust="l";
+    style="rounded,filled";
+    fillcolor="#eefbe9";
+    color="#77aa55";
+    fontname="Helvetica";
+    fontsize=11;
+
+    solution_pair  [label="SolutionPair\nintersection_iteration =\n(c1.init − c2.init) /\n(c2.iter − c1.iter)"];
+    solution_tuple [label="SolutionTuple\nsorts solutions by\ntotal cost at N"];
+  }
+
+  // ── Domain models ──────────────────────────────────────────
+  subgraph cluster_models {
+    label="ActiveRecord domain";
+    labeljust="l";
+    style="rounded,filled";
+    fillcolor="#f4ecf9";
+    color="#9977bb";
+    fontname="Helvetica";
+    fontsize=11;
+
+    user      [label="User\n(Devise + OmniAuth\nGoogle / GitHub)"];
+    visitor   [label="Visitor\n(anonymous,\nsession-scoped UUID)"];
+    scenario  [label="AutomationScenario\nbelongs_to :owner,\npolymorphic"];
+    solution  [label="Solution\ninitial_cost,\niteration_cost"];
+    iteration [label="Iteration"];
+  }
+
+  db [label="PostgreSQL", shape=cylinder, fillcolor="#f3f3f3"];
+
+  // ── Edges: clients into controllers ────────────────────────
+  browser   -> html_ctrl [label="HTTP"];
+  apiclient -> api_ctrl  [label="HTTP + JWT"];
+
+  // ── Auth + visitor resolution ──────────────────────────────
+  html_ctrl -> visitable [label="includes"];
+  api_ctrl  -> visitable [label="includes"];
+  api_ctrl  -> jwt       [label="decode token →\nuser_id or visitor_id"];
+
+  // ── HTML render path ───────────────────────────────────────
+  html_ctrl -> haml      [label="renders"];
+  html_ctrl -> graph_ser [label="builds JSON"];
+  haml      -> coffee    [label="#scenarioData →\nturbolinks:load"];
+
+  // ── API render path ────────────────────────────────────────
+  api_ctrl -> serializers [label="render json:"];
+
+  // ── Domain associations ────────────────────────────────────
+  user     -> scenario  [label="has_many (owner)"];
+  visitor  -> scenario  [label="has_many (owner)"];
+  scenario -> solution  [label="has_many"];
+  scenario -> iteration [label="has_many"];
+
+  // ── Controllers / serializers reach into models ────────────
+  html_ctrl -> scenario [lhead=cluster_models, style=dashed];
+  api_ctrl  -> scenario [lhead=cluster_models, style=dashed];
+
+  // ── Break-even math ────────────────────────────────────────
+  scenario      -> solution_pair  [label=".solutions.combination(2)"];
+  solution_pair -> graph_ser      [label="intersection_point"];
+  solution      -> solution_tuple [style=dashed];
+
+  // ── Persistence ────────────────────────────────────────────
+  scenario  -> db [style=dashed, color="#aaaaaa"];
+  solution  -> db [style=dashed, color="#aaaaaa"];
+  iteration -> db [style=dashed, color="#aaaaaa"];
+  user      -> db [style=dashed, color="#aaaaaa"];
+  visitor   -> db [style=dashed, color="#aaaaaa"];
+}

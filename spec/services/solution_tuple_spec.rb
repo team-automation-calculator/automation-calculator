@@ -11,7 +11,7 @@ RSpec.describe SolutionTuple, type: :class do
   describe '#list' do
     it 'returns solutions in ascending order by its cost' do
       solutions = Solution.includes(:automation_scenario)
-      ordered_solutions = SolutionTuple.new(solutions).list
+      ordered_solutions = described_class.new(solutions).list
       expect(ordered_solutions.first).to eq solution_two
     end
   end

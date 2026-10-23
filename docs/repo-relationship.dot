@@ -1,0 +1,76 @@
+// Source for docs/repo-relationship.svg
+// Render with:
+//   docker run --rm -v "$PWD/docs":/work -w /work nshine/dot \
+//     dot -Tsvg repo-relationship.dot -o repo-relationship.svg
+//
+// Shows how this repo (automation-calculator) relates to the sibling
+// core-iac repo to produce the live site at automation-calculations.io.
+
+digraph repo_relationship {
+  rankdir=LR;
+  bgcolor="white";
+  node [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled"];
+  edge [fontname="Helvetica", fontsize=10];
+
+  subgraph cluster_app {
+    label="automation-calculator (this repo)";
+    labeljust="l";
+    style="rounded,filled";
+    fillcolor="#eef5ff";
+    color="#88aadd";
+    fontname="Helvetica";
+    fontsize=12;
+
+    app_code  [label="Rails app code\n(app/, db/, config/)", fillcolor="#ffffff"];
+    dockerfile[label="Dockerfile.production", fillcolor="#ffffff"];
+    go_push   [label="./go push prod\n(build + tag + push)", fillcolor="#ffffff"];
+  }
+
+  hub [label="Docker Hub\nautomationcalculationsci/\nautomation-calculator:<tag>",
+       shape=cylinder, fillcolor="#fff4cc", color="#cc9900"];
+
+  subgraph cluster_iac {
+    label="core-iac (sibling repo)";
+    labeljust="l";
+    style="rounded,filled";
+    fillcolor="#eefbe9";
+    color="#77aa55";
+    fontname="Helvetica";
+    fontsize=12;
+
+    bump      [label="scripts/\nbump_app_docker_image_\nversion.sh", fillcolor="#ffffff"];
+    tfvars    [label="terraform/env/<env>/\napp_version variable", fillcolor="#ffffff"];
+    tf_module [label="terraform/modules/aws/\nmain_rails_app\n(helm_release)", fillcolor="#ffffff"];
+    chart     [label="helm/automation-calculator/\n(values.yaml, templates)", fillcolor="#ffffff"];
+  }
+
+  subgraph cluster_runtime {
+    label="AWS (provisioned by core-iac)";
+    labeljust="l";
+    style="rounded,filled";
+    fillcolor="#fbeaea";
+    color="#cc7777";
+    fontname="Helvetica";
+    fontsize=12;
+
+    eks  [label="EKS Deployment\n(pulls image)", fillcolor="#ffffff"];
+    rds  [label="RDS PostgreSQL", fillcolor="#ffffff"];
+    alb  [label="ALB Ingress\n+ Route 53", fillcolor="#ffffff"];
+  }
+
+  site [label="automation-calculations.io", shape=note, fillcolor="#ffffff"];
+
+  app_code   -> dockerfile [label="built into"];
+  dockerfile -> go_push    [label="produces image"];
+  go_push    -> hub        [label="pushes :semver + :latest"];
+
+  bump      -> tfvars     [label="bumps"];
+  tfvars    -> tf_module  [label="app_version"];
+  tf_module -> chart      [label="renders with\nimage.tag = app_version"];
+  chart     -> eks        [label="helm install/upgrade"];
+
+  hub -> eks [label="image pull", style=dashed, color="#cc9900"];
+  eks -> rds [label="DATABASE_URL"];
+  eks -> alb [label="Service\n(NodePort)"];
+  alb -> site [label="HTTPS"];
+}

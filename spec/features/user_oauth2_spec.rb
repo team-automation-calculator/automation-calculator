@@ -8,7 +8,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
     def oauth2_sign_in
       link_title = "Sign in with #{provider_link_name}"
 
-      visit root_path
+      visit new_user_session_path
       expect(page).to have_link(link_title)
       click_link link_title
     end
@@ -22,8 +22,8 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
             email: user.email
           },
           credentials: {
-            token: Faker::Lorem.characters(10),
-            refresh_token: Faker::Lorem.characters(10),
+            token: Faker::Lorem.characters(number: 10),
+            refresh_token: Faker::Lorem.characters(number: 10),
             expires_at: Time.current
           }
         )
@@ -46,6 +46,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
 
         context 'when a user is signed in' do
           before { oauth2_sign_in }
+
           let(:registered_user) { User.find_by email: user.email }
 
           it 'signs in the user and displays a scenario' do
@@ -89,8 +90,8 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
         oauth2_sign_in
       end
 
-      it 'redirects to the sign in form' do
-        expect(page).to have_current_path(new_user_session_path)
+      it 'redirects to the root path' do
+        expect(page).to have_current_path(root_path)
       end
 
       it 'does not display the protected content' do

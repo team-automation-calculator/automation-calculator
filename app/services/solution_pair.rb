@@ -1,4 +1,6 @@
 class SolutionPair
+  extend ActiveModel::Naming
+
   attr_reader :solution1, :solution2
   alias read_attribute_for_serialization send
 
@@ -47,7 +49,7 @@ class SolutionPair
 
     return 'No intersection' if point.blank?
 
-    format '[%.2f, %.2f]', point.first, point.second
+    format '[%<x>.2f, %<y>.2f]', x: point.first, y: point.second
   end
 
   protected
