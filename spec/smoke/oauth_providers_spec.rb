@@ -32,11 +32,11 @@ RSpec.describe 'OAuth providers', :smoke do
       [form, smoke_cookie(response)]
     end
 
-    def start_oauth(authorize_path)
+    def start_oauth(authorize_path, headers: {})
       form, cookie = sign_in_form(authorize_path)
       token = form.at_css("input[name='authenticity_token']")&.[]('value')
       smoke_post_form(authorize_path, { 'authenticity_token' => token.to_s },
-                      cookie: cookie)
+                      cookie: cookie, headers: headers)
     end
 
     describe 'GET /users/sign_in' do
@@ -66,6 +66,7 @@ RSpec.describe 'OAuth providers', :smoke do
       let(:response) { start_oauth(authorize_path) }
       let(:location) { response['Location'].to_s }
       let(:params) { smoke_query(location) }
+      let(:forged_host) { 'attacker.example' }
 
       it 'fails to the failure redirect without credentials (dev only)' do
         skip 'deployed targets have credentials' if smoke_deployed_target?
@@ -104,6 +105,38 @@ RSpec.describe 'OAuth providers', :smoke do
           unless smoke_deployed_target?
         expect(params['client_id'].to_s).not_to be_empty,
                                                 'OAuth app id env var unset'
+      end
+
+      # A forged Host or X-Forwarded-Host must not become the callback
+      # host. With OmniAuth.config.allowed_hosts set (see
+      # config/initializers/omniauth.rb) omniauth 2.3 answers an unlisted
+      # host with its failure redirect (302 to /) before it builds the
+      # authorize URL; the ALB may also refuse an unknown Host outright
+      # with a 4xx. Either is fine. A 5xx, or a redirect_uri on the forged
+      # host, is not. On dev without credentials every POST already fails
+      # to /, so this only discriminates on deployed targets; the request
+      # spec in spec/requests/omniauth_allowed_hosts_spec.rb covers the
+      # rejection itself.
+      %w[X-Forwarded-Host Host].each do |header|
+        it "does not build redirect_uri from a forged #{header}" do
+          forged = start_oauth(authorize_path,
+                               headers: { header => forged_host })
+          forged_location = forged['Location'].to_s
+          msg = "#{header}: #{forged_host} gave " \
+                "#{forged.code} #{forged_location}"
+          expect(forged.code.to_i).to be < 500, msg
+
+          redirect_uri = smoke_query(forged_location)['redirect_uri']
+          if redirect_uri
+            expect(URI(redirect_uri).host)
+              .to eq(URI(SmokeHttp::BASE_URL).host), msg
+          else
+            rejected = forged.code.to_i.between?(400, 499) ||
+                       (forged.code.to_i == 302 &&
+                        URI(forged_location).path == '/')
+            expect(rejected).to be(true), msg
+          end
+        end
       end
     end
 
