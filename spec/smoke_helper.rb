@@ -11,9 +11,44 @@ module SmokeHttp
     'Accept' => 'application/json; version=1'
   }.freeze
 
-  def smoke_get(path)
+  # Plain GET. Redirects are not followed, so callers can assert on
+  # the Location header. Pass `cookie:` to replay a session captured
+  # with `smoke_cookie` on an earlier response.
+  def smoke_get(path, cookie: nil)
     uri = URI("#{BASE_URL}#{path}")
-    smoke_http(uri).request(Net::HTTP::Get.new(uri.request_uri))
+    req = Net::HTTP::Get.new(uri.request_uri)
+    req['Cookie'] = cookie if cookie
+    smoke_http(uri).request(req)
+  end
+
+  # HTML form submission (application/x-www-form-urlencoded), as a
+  # browser sends a button_to form. omniauth 2 only starts an OAuth
+  # flow from such a POST, so pass the Rails authenticity token in
+  # `fields` and the session cookie it was issued under.
+  def smoke_post_form(path, fields, cookie: nil)
+    uri = URI("#{BASE_URL}#{path}")
+    req = Net::HTTP::Post.new(uri.request_uri)
+    req['Cookie'] = cookie if cookie
+    req.set_form_data(fields)
+    smoke_http(uri).request(req)
+  end
+
+  # Net::HTTP has no cookie jar. Collapse a response's Set-Cookie
+  # headers into a single Cookie header value for the next request.
+  def smoke_cookie(response)
+    fields = response.get_fields('set-cookie') || []
+    fields.map { |c| c.split(';', 2).first }.join('; ')
+  end
+
+  # Parse the query string of a URL into a Hash.
+  def smoke_query(url)
+    URI.decode_www_form(URI(url).query.to_s).to_h
+  end
+
+  # True when smoking a deployed environment (staging or prod), where
+  # OAuth credentials are expected to be configured.
+  def smoke_deployed_target?
+    URI(BASE_URL).host.to_s.end_with?('automation-calculations.io')
   end
 
   def smoke_v1_get(path, token: nil)
