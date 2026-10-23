@@ -45,7 +45,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspe
 The app exposes the same domain through two completely separate stacks:
 
 1. **HTML web interface** — Haml views, Bootstrap 4, Rails form submissions, Devise session authentication. Entry point: `AutomationScenariosController` (`app/controllers/automation_scenarios_controller.rb`).
-2. **JSON API** — `app/controllers/api/v1/`, JWT token authentication via `HTTP_ACCESS_TOKEN` header, ActiveModel Serializers for responses. Routes are version-gated by a `Constraint` class.
+2. **JSON API** — `app/controllers/api/v1/`, JWT token authentication via `HTTP_ACCESS_TOKEN` header, ActiveModel Serializers for responses. Routes are version-gated by a `Constraint` class (`app/lib/constraint.rb`): the version lives in the `Accept` header (`application/json; version=1`), not the path. Paths have no `/v1` segment — e.g. `GET /api` (root), `POST /api/visitor`, `GET /api/automation_scenarios/:id/intersections`. A request without that header (or to `/api/v1/...`) gets a 404.
 
 These are not coupled — changing one doesn't affect the other.
 
