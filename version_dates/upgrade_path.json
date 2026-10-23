@@ -55,7 +55,7 @@
     {
       "phase": 4,
       "name": "omniauth 1 → 2",
-      "rationale": "omniauth 2.x drops GET-based OAuth request phases (CSRF fix), so sign-in links become POST buttons and a Rails CSRF adapter gem is required. Doing this separately from the Rails bump keeps the change small and makes any OAuth regression attributable to this phase rather than to Rails.",
+      "rationale": "omniauth 2.x drops GET-based OAuth authorize requests (CSRF fix) and, with Rails/Devise, requires the omniauth-rails_csrf_protection adapter. Shipping it separately from the Rails bump keeps an OAuth regression attributable to this change alone — it is the highest-risk piece of the path, so it ships and gets verified on staging by itself.",
       "ruby_version": "3.1.x (unchanged)",
       "rails_version": "6.1.x (unchanged)",
       "changes": {
@@ -65,8 +65,8 @@
         "omniauth_rails_csrf_protection": "add ~> 1.0 (required adapter for omniauth 2 + Rails)"
       },
       "known_risks": [
-        "omniauth 2.x rejects GET /auth/:provider — the request phase must be a POST; Devise's omniauth_authorize_path links need method: :post (a button, not a plain link)",
-        "Verify Google and GitHub sign-in manually on staging — the provider round-trip cannot be exercised by the test suite"
+        "omniauth 2.x rejects GET /auth/:provider — the sign-in links must become POST buttons (button_to) carrying the Rails authenticity token",
+        "The smoke suite can only cover the authorize redirect, not the provider callback — verify Google and GitHub sign-in manually on staging before promoting"
       ]
     },
     {

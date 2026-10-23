@@ -20,9 +20,12 @@ gem 'uglifier'
 gem 'devise'
 
 # Strategy to authenticate with Google via OAuth2 in OmniAuth.
-gem 'omniauth-google-oauth2'
+gem 'omniauth-google-oauth2', '~> 1.1'
 #  GitHub strategy for OmniAuth
-gem 'omniauth-github'
+gem 'omniauth-github', '~> 2.0'
+# omniauth 2 only accepts POST /auth/:provider; this verifies the Rails
+# authenticity token on that request.
+gem 'omniauth-rails_csrf_protection', '~> 1.0'
 # Easiest way to add multi-environment yaml settings
 gem 'config'
 # brings convention over configuration to your JSON generation
