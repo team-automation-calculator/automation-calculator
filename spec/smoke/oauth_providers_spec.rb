@@ -57,18 +57,34 @@ RSpec.describe 'OAuth providers', :smoke do
       end
     end
 
+    # omniauth-oauth2 1.8+ refuses to build the authorize redirect without
+    # a client_id, so the provider redirect (and the callback round-trip
+    # that depends on it) can only be checked where the OAuth app id
+    # secrets are configured: staging and prod. On dev, where the env
+    # vars are normally unset, the POST must still fail cleanly.
     describe "POST /users/auth/#{provider}" do
       let(:response) { start_oauth(authorize_path) }
       let(:location) { response['Location'].to_s }
       let(:params) { smoke_query(location) }
 
-      it 'redirects to the provider authorize endpoint' do
+      it 'fails to the failure redirect without credentials (dev only)' do
+        skip 'deployed targets have credentials' if smoke_deployed_target?
+        msg = "Expected 302 to /, got #{response.code} #{location}"
+        expect(response.code.to_i).to eq(302), msg
+        expect(URI(location).path).to eq('/'), msg
+      end
+
+      it 'redirects to the provider authorize endpoint (deployed only)' do
+        skip 'credentials are only expected on staging/prod' \
+          unless smoke_deployed_target?
         expect(response.code.to_i).to eq(302),
                                       "Expected 302, got #{response.code}"
         expect(location).to start_with(authorize)
       end
 
-      it 'sets a redirect_uri that points back at the smoke target' do
+      it 'sets a redirect_uri back at the smoke target (deployed only)' do
+        skip 'credentials are only expected on staging/prod' \
+          unless smoke_deployed_target?
         target = URI(SmokeHttp::BASE_URL)
         redirect_uri = URI(params.fetch('redirect_uri', ''))
         expect(redirect_uri.scheme).to eq(target.scheme)
@@ -76,13 +92,15 @@ RSpec.describe 'OAuth providers', :smoke do
         expect(redirect_uri.path).to eq(callback_path)
       end
 
-      it 'includes a CSRF state' do
+      it 'includes a CSRF state (deployed only)' do
+        skip 'credentials are only expected on staging/prod' \
+          unless smoke_deployed_target?
         expect(params['state']).not_to be_nil
         expect(params['state']).not_to be_empty
       end
 
-      it 'includes a client_id (deployed targets only)' do
-        skip 'client_id is only expected on staging/prod' \
+      it 'includes a client_id (deployed only)' do
+        skip 'credentials are only expected on staging/prod' \
           unless smoke_deployed_target?
         expect(params['client_id'].to_s).not_to be_empty,
                                                 'OAuth app id env var unset'
@@ -94,6 +112,8 @@ RSpec.describe 'OAuth providers', :smoke do
       # must be replayed, or omniauth-oauth2 rejects the callback as
       # CSRF before it ever attempts the token exchange.
       it 'rejects a bogus code via the failure redirect, not a 500' do
+        skip 'credentials are only expected on staging/prod' \
+          unless smoke_deployed_target?
         start = start_oauth(authorize_path)
         state = smoke_query(start['Location'].to_s)['state']
         expect(state).not_to be_nil, 'Expected state in authorize redirect'

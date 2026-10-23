@@ -10,7 +10,7 @@
     "omniauth_github": "1.4.0 → 2.x",
     "omniauth_rails_csrf_protection": "added ~> 1.0 (verifies the Rails authenticity token on POST /users/auth/:provider)",
     "sign_in_links": "app/views/devise/shared/_links.html.haml — link_to → button_to (omniauth 2 rejects GET /auth/:provider)",
-    "smoke_tests": "spec/smoke/oauth_providers_spec.rb — omniauth-2 version of PR #214's spec: POSTs the sign-in page's authenticity token to /users/auth/:provider and expects the 302 to the provider; asserts GET no longer starts the flow; replays the callback with a bogus code"
+    "smoke_tests": "spec/smoke/oauth_providers_spec.rb — omniauth-2 version of PR #214's spec: POSTs the sign-in page's authenticity token to /users/auth/:provider and expects the 302 to the provider; asserts GET no longer starts the flow; replays the callback with a bogus code. Provider redirect and callback checks run on staging/prod only — omniauth-oauth2 1.8+ needs a client_id to build the redirect, so on dev the POST is only asserted to fail cleanly to /"
   },
   "verification": {
     "ci": "unit/feature suite plus rubocop on every push",
