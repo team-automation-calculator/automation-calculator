@@ -34,6 +34,10 @@ To help people make and communicate automation decisions quickly and effectively
 ### View available functions
 * `./go help`
 
+### Run more than one checkout at once
+* When several checkouts (e.g. git worktrees) run `./go` commands at the same time, `cp docker-compose.local.example.yml docker-compose.local.yml` in each; it drops the fixed `db` container name and host port 5434 that otherwise collide.
+* `./go` picks the file up automatically and it is gitignored.
+
 ## Relationship to `core-iac`
 
 This repo holds the Rails application code. The sibling [`core-iac`](../core-iac) repo holds the Infrastructure as Code (Terraform + Helm) that runs that code as the live site at [automation-calculations.io](https://automation-calculations.io).
