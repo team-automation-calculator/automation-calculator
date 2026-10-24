@@ -1,0 +1,37 @@
+{
+  "phase": 9,
+  "name": "sassc-rails → dartsass-sprockets (+ uglifier → terser)",
+  "status": "in_progress",
+  "ruby_version": "3.1.7 (unchanged)",
+  "rails_version": "7.0.10 (unchanged)",
+  "changes": {
+    "sass_rails": "6.0.0 removed (Gemfile entry `gem 'sass-rails'` dropped)",
+    "sassc_rails": "2.1.2 removed (transitive of sass-rails)",
+    "sassc": "2.4.0 removed (transitive; compiled libsass from C++ on every bundle install, ~26 s wall on an arm64 Mac for that one gem)",
+    "dartsass_sprockets": "added `~> 3.2`, locked 3.2.1 (Ruby >= 3.1; fork of sassc-rails, same `SassC` namespace, same Sprockets helper functions — font-url('Oswald-Regular.ttf') in _bootstrap-customization.scss still resolves to the digested /assets/ path)",
+    "sassc_embedded": "new transitive 1.80.10 (dartsass-sprockets pins ~> 1.80.1)",
+    "sass_embedded": "new transitive 1.102.0 = Dart Sass 1.102.0 (see held_back for why not 1.106.x)",
+    "google_protobuf": "new transitive 4.35.1 (sass-embedded ~> 4.31); locked with aarch64-linux-gnu and x86_64-linux-gnu variants plus the generic entry",
+    "uglifier": "4.1.11 removed",
+    "terser": "added `~> 1.2`, locked 1.2.8 (execjs 2.8.1 unchanged)",
+    "sprockets": "4.2.2 → 4.4.1 (same major; moved during `bundle install`, `bundle update sprockets --conservative` confirmed it); sprockets-rails 3.5.2 unchanged",
+    "production_rb": "config.assets.js_compressor = Uglifier.new(harmony: true) → :terser; css_compressor stays commented (dartsass-sprockets, like sassc-rails, defaults it to :sass outside development)",
+    "initializers_assets_rb": "added Rails.application.config.sass.quiet_deps = true (see notes.dart_sass_warnings)",
+    "dockerfiles": "unchanged; the `gem install nokogiri -v 1.18.10` pre-install lines stay"
+  },
+  "notes": {
+    "sass_embedded_platform_gems": "sass-embedded publishes aarch64-linux-gnu / x86_64-linux-gnu binary gems but every one of them (back to at least 1.97.0) declares required_ruby_version >= 3.2; only the generic `ruby` platform gem accepts Ruby 3.1. Bundler therefore locks the generic gem, whose ext/sass/Rakefile fetches the matching Dart Sass release at `bundle install` time (first by installing the platform gem, falling back to the GitHub release tarball; both attestation-verified). This needs network at install time, which the Docker builds already have for rubygems. Once Ruby is >= 3.2 the binary variants will be picked up with no Gemfile change.",
+    "bundle_install_time": "sassc 2.4.0 alone: ~26 s wall (gem install, arm64 dev container). sass-embedded 1.102.0 generic gem: ~5 s standalone, 0.6 s inside the image build. The whole `RUN bundle install` layer of Dockerfile.development (166 gems) now takes 19.6 s on this machine — less than the old sassc compile by itself. The before-image was fully layer-cached so no like-for-like wall time was available; CI (x86_64, slower) should show a larger absolute saving.",
+    "dart_sass_warnings": "Without quiet_deps a production assets:precompile emits 312 Dart Sass deprecation warnings (verbose count): import 92, global-builtin 100, color-functions 93, if-function 26, abs-percent 1. No slash-div warnings at all — bootstrap 4.6.2 already uses its divide() helper, so the predicted division noise did not occur. Only 5 of the 312 originate in the app (the five `@import` lines in application.scss); the other 307 are inside bootstrap 4.6.2.1's SCSS loaded through a Sprockets load path, which is exactly what quiet_deps hides. Decision: quiet_deps = true, `import` NOT added to silence_deprecations, so the 5 actionable warnings stay visible. Expected per-precompile output is now exactly 5 warnings.",
+    "assets_precompile": "RAILS_ENV=production: 50 files + 34 .gz written, exit 0, ~14 s. application.css 158,177 bytes (sass-compressed, 6 lines); application.js 2,650,722 bytes (terser; jquery, popper, bootstrap-sprockets, plotly, rails-ujs, turbolinks and the CoffeeScript output all in one bundle; rails-ujs ES6 arrow functions / const / let pass through untouched). public/assets and tmp/cache/assets were removed afterwards and are not committed.",
+    "test_results": "rubocop: 160 files, no offenses. rspec: 366 examples, 0 failures, 6 pending (pre-existing `Not yet implemented` view specs); the Capybara feature specs compile the SCSS/CoffeeScript through dartsass-sprockets in the test environment.",
+    "bootstrap": "bootstrap 4.6.2.1 depends only on autoprefixer-rails and popper_js, not on sassc-rails; removal was clean",
+    "held_back": {
+      "sass_embedded": "1.102.0, not 1.106.1 — sass-embedded >= 1.103.0 requires Ruby >= 3.2 (we are on 3.1.7)",
+      "bootstrap": "4.6.2.1 retained; Dart Sass deprecation warnings from Bootstrap 4's SCSS stay (hidden by quiet_deps) until Bootstrap 5 (standing note)",
+      "turbolinks": "5.1.1 retained (no Turbo migration)",
+      "coffee_rails": "5.0.0 retained (CoffeeScript untouched)",
+      "rubocop": "1.28.2 / rubocop-rails 2.14.2 / rubocop-rspec 2.10.0 unchanged"
+    }
+  }
+}
