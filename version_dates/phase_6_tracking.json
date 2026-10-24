@@ -1,0 +1,40 @@
+{
+  "phase": 6,
+  "name": "Node 20 → 26 LTS + CI compose cleanup",
+  "status": "in_progress",
+  "ruby_version": "3.1.7 (unchanged)",
+  "rails_version": "7.0.10 (unchanged)",
+  "changes": {
+    "nodesource": "setup_20.x → setup_26.x in Dockerfile.base, Dockerfile.development, Dockerfile.production",
+    "node_installed": "v26.12.1 (nodejs 26.12.1-1nodesource1, arm64) (resolved from the NodeSource 26.x Bookworm channel at image build on 2026-10-23; the channel published Bookworm packages, so the setup_24.x fallback was not needed)",
+    "yarn": "`npm install -g yarn` removed from all three Dockerfiles and bin/yarn deleted — no package.json, no yarn.lock, no node_modules; bin/setup only had the yarn call commented out; the config/initializers/assets.rb node_modules load path comment is left as-is",
+    "circleci": "removed the 'Install Docker Compose' step (curl of compose 1.18.0 + chmod + sudo mv) and the COMPOSE_TLS_VERSION env from .circleci/config.yml; setup_remote_docker and the main-gated publish block from #222 untouched",
+    "base_image_version": "0.7.0 → 0.8.0 in Dockerfile.ci (FROM), scripts/docker_build.rb and scripts/docker_hub.rb (BASE_VERSION)"
+  },
+  "files_touched": [
+    ".circleci/config.yml",
+    "Dockerfile.base",
+    "Dockerfile.ci",
+    "Dockerfile.development",
+    "Dockerfile.production",
+    "bin/yarn (deleted)",
+    "scripts/docker_build.rb",
+    "scripts/docker_hub.rb",
+    "version_dates/phase_6_tracking.json"
+  ],
+  "verification": {
+    "dev_image_build": "docker compose build dev on arm64 Bookworm: NodeSource setup_26.x added deb.nodesource.com/node_26.x and apt installed nodejs 26.12.1-1nodesource1; exit 0",
+    "rubocop": "159 files inspected, no offenses detected",
+    "rspec": "366 examples, 0 failures, 6 pending (pre-existing Not yet implemented view specs); 91.98% line coverage",
+    "assets_precompile": "RAILS_ENV=production SECRET_KEY_BASE=dummy rake assets:precompile in the dev container on Node v26.12.1: exit 0, 84 files written (50 assets + 34 gzip twins); public/assets and tmp/cache/assets removed afterwards, nothing committed",
+    "base_image_build": "./go build base (single-arch arm64, not pushed): Dockerfile.base built as automationcalculationsci/automation-calculator-base:0.8.0 with nodejs 26.12.1-1nodesource1, bundle complete (42 Gemfile dependencies, 165 gems); exit 0. Multi-platform push to Docker Hub still pending"
+  },
+  "notes": {
+    "ci_red_until_base_pushed": "Dockerfile.ci now pulls automation-calculator-base:0.8.0, which does not exist on Docker Hub until someone with Docker Hub login runs `./go push base --multi-platform` from this branch and re-triggers CI",
+    "held_back": {
+      "cimg_ruby_node_image": "CircleCI executor stays cimg/ruby:3.1-node; its bundled Node is only used by the CircleCI shell, not by the app images",
+      "version_dates_node_json": "not edited here — version_dates/*.json other than this tracking file belong to PR #221",
+      "coffee_rails_uglifier": "unchanged; Node is only the ExecJS runtime for them"
+    }
+  }
+}
