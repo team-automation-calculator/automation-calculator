@@ -158,10 +158,10 @@ RSpec.describe API::V1::AutomationScenariosController, type: :request do
         end
 
         let!(:solution2) do
-          create  :solution,
-                  automation_scenario: automation_scenario,
-                  initial_cost: 20,
-                  iteration_cost: 5
+          create :solution,
+                 automation_scenario: automation_scenario,
+                 initial_cost: 20,
+                 iteration_cost: 5
         end
 
         before do

@@ -18,16 +18,16 @@ RSpec.describe SolutionPair, type: :class do
       create :automation_scenario, iteration_count: 10
     end
     let(:solution1) do
-      create  :solution,
-              automation_scenario: automation_scenario,
-              initial_cost: initial_cost1,
-              iteration_cost: iteration_cost1
+      create :solution,
+             automation_scenario: automation_scenario,
+             initial_cost: initial_cost1,
+             iteration_cost: iteration_cost1
     end
     let(:solution2) do
-      create  :solution,
-              automation_scenario: automation_scenario,
-              initial_cost: initial_cost2,
-              iteration_cost: iteration_cost2
+      create :solution,
+             automation_scenario: automation_scenario,
+             initial_cost: initial_cost2,
+             iteration_cost: iteration_cost2
     end
 
     context 'when lines are parallel' do

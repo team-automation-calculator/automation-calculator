@@ -23,7 +23,7 @@ RSpec.describe 'User sessions', type: :feature do
     end
 
     it 'displays the scenario' do
-      expect(page).to have_content('Automation Scenario')
+      expect(page).to have_text('Automation Scenario')
     end
 
     context 'when a user signs in for the second time' do
@@ -34,7 +34,7 @@ RSpec.describe 'User sessions', type: :feature do
       end
 
       it 'displays the protected content' do
-        expect(page).to have_content('Sign out')
+        expect(page).to have_text('Sign out')
       end
     end
   end
@@ -47,7 +47,7 @@ RSpec.describe 'User sessions', type: :feature do
     end
 
     it 'does not display the protected content' do
-      expect(page).not_to have_content('Automation Scenario')
+      expect(page).to have_no_text('Automation Scenario')
     end
   end
 end

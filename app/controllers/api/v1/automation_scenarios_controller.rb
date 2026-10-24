@@ -35,16 +35,16 @@ module API
         solutions_combinations =
           @automation_scenario.solutions_combinations
 
-        render  json: solutions_combinations,
-                each_serializer: SolutionDifferenceSerializer
+        render json: solutions_combinations,
+               each_serializer: SolutionDifferenceSerializer
       end
 
       def intersections
         solutions_combinations =
           @automation_scenario.solutions_combinations
 
-        render  json: solutions_combinations,
-                each_serializer: SolutionIntersectionSerializer
+        render json: solutions_combinations,
+               each_serializer: SolutionIntersectionSerializer
       end
 
       protected

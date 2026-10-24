@@ -32,7 +32,7 @@ RSpec.describe 'User registrations', type: :feature do
     end
 
     it 'lists the validation message' do
-      expect(page).to have_content("Password confirmation doesn't match Password")
+      expect(page).to have_text("Password confirmation doesn't match Password")
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe 'User registrations', type: :feature do
     end
 
     it 'displays the protected content' do
-      expect(page).to have_content('Automation Scenario')
+      expect(page).to have_text('Automation Scenario')
     end
 
     context 'when the user signs in' do
@@ -58,7 +58,7 @@ RSpec.describe 'User registrations', type: :feature do
       end
 
       it 'sets the current user to the registered user' do
-        expect(page).to have_content('Automation Scenario')
+        expect(page).to have_text('Automation Scenario')
       end
     end
   end

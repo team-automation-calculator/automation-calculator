@@ -18,7 +18,7 @@ RSpec.describe 'New user workflow', type: :feature do
     end
 
     it "redirects visitor to automation scenario's show page" do
-      expect(page).to have_content('Automation Scenario')
+      expect(page).to have_text('Automation Scenario')
     end
 
     context 'when inspecting the automation json data' do
