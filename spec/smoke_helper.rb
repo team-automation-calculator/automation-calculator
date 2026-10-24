@@ -13,22 +13,27 @@ module SmokeHttp
 
   # Plain GET. Redirects are not followed, so callers can assert on
   # the Location header. Pass `cookie:` to replay a session captured
-  # with `smoke_cookie` on an earlier response.
-  def smoke_get(path, cookie: nil)
+  # with `smoke_cookie` on an earlier response. Extra request headers
+  # (a forged X-Forwarded-Host, say) go in `headers`.
+  def smoke_get(path, cookie: nil, headers: {})
     uri = URI("#{BASE_URL}#{path}")
     req = Net::HTTP::Get.new(uri.request_uri)
     req['Cookie'] = cookie if cookie
+    headers.each { |name, value| req[name] = value }
     smoke_http(uri).request(req)
   end
 
   # HTML form submission (application/x-www-form-urlencoded), as a
   # browser sends a button_to form. omniauth 2 only starts an OAuth
   # flow from such a POST, so pass the Rails authenticity token in
-  # `fields` and the session cookie it was issued under.
-  def smoke_post_form(path, fields, cookie: nil)
+  # `fields` and the session cookie it was issued under. Extra request
+  # headers (a forged Host, say) go in `headers`; Net::HTTP keeps a
+  # Host set here over the one it derives from the URL.
+  def smoke_post_form(path, fields, cookie: nil, headers: {})
     uri = URI("#{BASE_URL}#{path}")
     req = Net::HTTP::Post.new(uri.request_uri)
     req['Cookie'] = cookie if cookie
+    headers.each { |name, value| req[name] = value }
     req.set_form_data(fields)
     smoke_http(uri).request(req)
   end

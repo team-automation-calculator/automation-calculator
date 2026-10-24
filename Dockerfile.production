@@ -42,8 +42,9 @@ RUN RAILS_ENV=production \
     bundle exec rails assets:precompile \
     && rm -rf tmp/cache/assets
 
-#Set this var to a reasonable default value, to be overridden per environment
-ENV APP_HOSTNAME="automation-calculations.net"
+#Default for runs outside Helm (docker-compose.production_http.yml); the
+# core-iac Helm chart overrides it per environment from the ingress host
+ENV APP_HOSTNAME="automation-calculations.io"
 
 ARG GIT_COMMIT=unknown
 LABEL org.opencontainers.image.revision=$GIT_COMMIT
