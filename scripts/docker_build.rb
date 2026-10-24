@@ -21,7 +21,7 @@ class DockerBuild
 
     def build_base_image(no_cache: false, multi_platform: false)
       build_image(
-        "#{DOCKER_ORG}/automation-calculator-base:0.7.0",
+        "#{DOCKER_ORG}/automation-calculator-base:0.8.0",
         'Dockerfile.base',
         'circleci',
         additional_build_arg: "--build-arg GIT_COMMIT=#{GitShortSha.read}",

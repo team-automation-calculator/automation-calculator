@@ -1,5 +1,6 @@
 # Main commands to run a container
 require './scripts/utils/clear_rails_pid'
+require './scripts/utils/compose_files'
 require './scripts/utils/get_uid'
 
 class Lifecycle
@@ -8,14 +9,13 @@ class Lifecycle
     dev: lambda do
       ClearRailsPid.clear_pid_file_if_it_exists
       system(
-        "UID=#{GetUID.read_uid} docker compose -f docker-compose.yml " \
-        '-f docker-compose.dev.yml up -d dev'
+        "UID=#{GetUID.read_uid} docker compose #{ComposeFiles.flags('dev')} " \
+        'up -d dev'
       )
     end,
     production: lambda do
       system(
-        'docker compose -f docker-compose.yml ' \
-        '-f docker-compose.production_http.yml up -d'
+        "docker compose #{ComposeFiles.flags('production_http')} up -d"
       )
     end
   }.freeze
@@ -29,8 +29,8 @@ class Lifecycle
       DockerBuild.build(['base'])
       DockerBuild.build(cmds)
       exec(
-        "UID=#{GetUID.read_uid} docker compose -f docker-compose.yml " \
-        '-f docker-compose.dev.yml run dev "/usr/src/app/bin/setup"'
+        "UID=#{GetUID.read_uid} docker compose #{ComposeFiles.flags('dev')} " \
+        'run dev "/usr/src/app/bin/setup"'
       )
     end
 
@@ -64,8 +64,8 @@ class Lifecycle
     def start_debug_production
       EnvironmentVariables.set_mock_production_vars
       system(
-        'docker compose -f docker-compose.yml ' \
-        '-f docker-compose.production_http.yml up -d production'
+        "docker compose #{ComposeFiles.flags('production_http')} " \
+        'up -d production'
       )
     end
 
