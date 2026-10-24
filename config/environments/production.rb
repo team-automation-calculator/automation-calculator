@@ -31,7 +31,10 @@ Rails.application.configure do
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = true
+  # Assets are precompiled into public/assets at image build time
+  # (Dockerfile.production); compiling on demand made the first request
+  # for an asset on a fresh pod take seconds and starved health probes.
+  config.assets.compile = false
 
   # `config.assets.precompile` and `config.assets.version`
   # have moved to config/initializers/assets.rb
