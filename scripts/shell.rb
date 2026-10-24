@@ -1,4 +1,5 @@
 # Using a shell in docker containers
+require './scripts/utils/compose_files'
 require './scripts/utils/get_uid'
 
 class Shell
@@ -24,24 +25,22 @@ class Shell
     def ci_shell
       exec(
         "USER=#{ENV.fetch('USER', 'circleci')} " \
-        'docker compose -f docker-compose.yml' \
-        ' -f docker-compose.ci.yml' \
+        "docker compose #{ComposeFiles.flags('ci')}" \
         ' run --entrypoint /bin/bash ci'
       )
     end
 
     def dev_shell
       exec(
-        "UID=#{GetUID.read_uid} docker compose -f docker-compose.yml" \
-        ' -f docker-compose.dev.yml' \
+        "UID=#{GetUID.read_uid} docker compose #{ComposeFiles.flags('dev')}" \
         ' run dev /bin/bash'
       )
     end
 
     def production_shell
       exec(
-        'docker compose -f docker-compose.yml ' \
-        '-f docker-compose.production_http.yml run production /bin/bash'
+        "docker compose #{ComposeFiles.flags('production_http')} " \
+        'run production /bin/bash'
       )
     end
   end
