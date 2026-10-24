@@ -1,4 +1,6 @@
 # Spec and lint commands for docker containers
+require './scripts/utils/compose_files'
+
 class Verify
   class << self
     def rspec_test(cmds)
@@ -10,8 +12,7 @@ class Verify
       end
 
       system(
-        "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml " \
-        "run --rm #{env} rspec",
+        "docker compose #{ComposeFiles.flags(env)} run --rm #{env} rspec",
         exception: true
       )
     end
@@ -29,8 +30,7 @@ class Verify
       docker_env = arg == 'ci' ? 'ci' : 'dev'
       return unless setup_smoke_url(arg)
 
-      cmd = 'docker compose -f docker-compose.yml' \
-            " -f docker-compose.#{docker_env}.yml run --rm" \
+      cmd = "docker compose #{ComposeFiles.flags(docker_env)} run --rm" \
             " -e SMOKE_TARGET_URL #{docker_env}" \
             ' rspec spec/smoke/ --tag smoke'
       system(cmd, exception: true)
@@ -40,7 +40,7 @@ class Verify
       env = cmds.shift.to_s == 'ci' ? 'ci' : 'dev'
 
       system(
-        "docker compose -f docker-compose.yml -f docker-compose.#{env}.yml "\
+        "docker compose #{ComposeFiles.flags(env)} " \
         "run --no-deps --rm #{env} rubocop",
         exception: true
       )

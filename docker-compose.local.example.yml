@@ -1,0 +1,29 @@
+# Local, untracked docker compose override for running several checkouts
+# (for example git worktrees under .claude/worktrees/) at the same time.
+#
+# docker-compose.yml gives the db service a fixed container_name ("db") and
+# a fixed host port (5434), and docker-compose.dev.yml does the same for the
+# db_client helper ("db_client"). Compose already namespaces images, networks
+# and volumes by project (directory) name, so two checkouts only collide on
+# those fixed names and that host port. This file removes the collision.
+#
+# To enable it:
+#
+#   cp docker-compose.local.example.yml docker-compose.local.yml
+#
+# Every `./go` command appends `-f docker-compose.local.yml` automatically
+# when the file exists (see scripts/utils/compose_files.rb). The copy is
+# gitignored, so it never affects CI or other developers. Nothing else in
+# the rendered config changes; `./go start` still serves on port 3001.
+#
+# ${COMPOSE_PROJECT_NAME} interpolates to the compose project name, which
+# defaults to the checkout's directory name, so the copy needs no editing.
+# `!override` (Compose v2.24+) replaces the ports list instead of merging
+# with it. Without a host port, reach the database through `./go db` or
+# `docker compose exec db psql` rather than psql on localhost:5434.
+services:
+  db:
+    container_name: db-${COMPOSE_PROJECT_NAME}
+    ports: !override []
+  db_client:
+    container_name: db_client-${COMPOSE_PROJECT_NAME}

@@ -8,10 +8,9 @@ RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev lib
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 
-#Install npm/yarn
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
+#Install Node.js (ExecJS runtime for CoffeeScript and uglifier)
+RUN curl -sL https://deb.nodesource.com/setup_26.x | bash -
 RUN apt-get install -y nodejs
-RUN npm install -g yarn
 
 #Setup user
 RUN useradd -ms /bin/bash automation-calculator-production
