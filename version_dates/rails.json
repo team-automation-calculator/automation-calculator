@@ -1,9 +1,10 @@
 {
   "rails": {
-    "version": "5.2.8.1",
-    "release_date": "2022-09-13",
-    "source": "Gemfile.lock",
-    "end_of_life": "2022-06-01",
-    "notes": "5.2.x EOL; 5.2.8.1 was a security patch release after the branch went unsupported"
+    "version": "7.0.10",
+    "release_date": "2025-04-01",
+    "source": "Gemfile.lock (gem 'rails', '~> 7.0.0')",
+    "end_of_life": "2025-04-01",
+    "load_defaults": "6.1 (config/application.rb)",
+    "notes": "7.0.10 was the final 7.0 release, issued the day the branch went EOL. Current lines on 2026-10-23: 8.1.4 (security fixes until 2027-10-10), 8.0.5.1 (security fixes until 2026-11-07), 7.2.4 (EOL 2026-08-09). 8.2.0.alpha on main, unreleased."
   }
 }

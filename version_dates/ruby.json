@@ -1,14 +1,15 @@
 {
   "ruby": {
-    "version": "2.7.7",
-    "release_date": "2022-11-24",
-    "source": ".ruby-version, Dockerfile.base FROM ruby:2.7.7-slim-bullseye",
-    "end_of_life": "2023-03-31",
-    "notes": "Security-only maintenance ended; EOL as of 2023-03-31"
+    "version": "3.1.7",
+    "release_date": "2025-03-26",
+    "source": ".ruby-version, Dockerfile.base / Dockerfile.development / Dockerfile.production FROM ruby:3.1.7-slim-bookworm",
+    "end_of_life": "2025-03-26",
+    "notes": "3.1.7 was the final 3.1 release. Current lines on 2026-10-23: 4.0.9 (EOL 2029-03-31), 3.4.12 (EOL 2028-03-31), 3.3.13 (security-only, EOL 2027-03-31); 3.2 went EOL 2026-03-31. Ruby 4.0 ships RubyGems 4 / Bundler 4."
   },
   "bundler": {
-    "version": "2.3.26",
-    "release_date": "2022-09-28",
-    "source": "Gemfile.lock BUNDLED WITH, Dockerfiles gem install bundler -v 2.3.26"
+    "version": "2.4.22",
+    "release_date": "2023-11-09",
+    "source": "Gemfile.lock BUNDLED WITH, Dockerfiles gem install bundler -v 2.4.22",
+    "notes": "Latest 2.x is 2.7.x; Bundler 4.0.23 (2026-10-14) requires Ruby >= 3.2 and changes lockfile defaults (CHECKSUMS section, no patch level in BUNDLED WITH)"
   }
 }

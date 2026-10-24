@@ -1,0 +1,416 @@
+{
+  "fetched_on": "2026-10-23",
+  "gems": {
+    "rails": {
+      "version": "8.1.4",
+      "released": "2026-09-24",
+      "ruby_version": ">= 3.2.0"
+    },
+    "puma": {
+      "version": "8.0.2",
+      "released": "2026-05-26",
+      "ruby_version": ">= 3.0"
+    },
+    "pg": {
+      "version": "1.7.0",
+      "released": "2026-10-02",
+      "ruby_version": ">= 3.1"
+    },
+    "devise": {
+      "version": "5.0.4",
+      "released": "2026-05-08",
+      "ruby_version": ">= 2.7.0"
+    },
+    "omniauth": {
+      "version": "2.3.1",
+      "released": "2026-10-22",
+      "ruby_version": ">= 2.5"
+    },
+    "omniauth-google-oauth2": {
+      "version": "1.2.3",
+      "released": "2026-08-31",
+      "ruby_version": ">= 2.5"
+    },
+    "omniauth-github": {
+      "version": "2.0.1",
+      "released": "2022-09-23",
+      "ruby_version": ">= 0"
+    },
+    "omniauth-rails_csrf_protection": {
+      "version": "2.0.1",
+      "released": "2025-12-10",
+      "ruby_version": ">= 0"
+    },
+    "jwt": {
+      "version": "3.3.0",
+      "released": "2026-09-11",
+      "ruby_version": ">= 2.5"
+    },
+    "bootstrap": {
+      "version": "5.3.8",
+      "released": "2026-01-11",
+      "ruby_version": ">= 2.3.3"
+    },
+    "haml": {
+      "version": "7.5.1",
+      "released": "2026-09-01",
+      "ruby_version": ">= 3.2.0"
+    },
+    "haml-rails": {
+      "version": "3.1.0",
+      "released": "2026-07-09",
+      "ruby_version": ">= 2.3.0"
+    },
+    "sass-rails": {
+      "version": "6.0.0",
+      "released": "2019-08-16",
+      "ruby_version": ">= 0"
+    },
+    "sassc-rails": {
+      "version": "2.1.2",
+      "released": "2019-06-18",
+      "ruby_version": ">= 0"
+    },
+    "sassc": {
+      "version": "2.4.0",
+      "released": "2020-06-02",
+      "ruby_version": ">= 2.0.0"
+    },
+    "dartsass-rails": {
+      "version": "0.5.1",
+      "released": "2024-07-30",
+      "ruby_version": ">= 0"
+    },
+    "dartsass-sprockets": {
+      "version": "3.2.1",
+      "released": "2025-04-08",
+      "ruby_version": ">= 3.1"
+    },
+    "sassc-embedded": {
+      "version": "1.80.10",
+      "released": "2026-09-23",
+      "ruby_version": ">= 3.1"
+    },
+    "sass-embedded": {
+      "version": "1.106.1",
+      "released": "2026-10-21",
+      "ruby_version": ">= 3.2"
+    },
+    "sprockets": {
+      "version": "4.4.1",
+      "released": "2026-08-25",
+      "ruby_version": ">= 2.5.0"
+    },
+    "sprockets-rails": {
+      "version": "3.5.2",
+      "released": "2024-07-31",
+      "ruby_version": ">= 2.5"
+    },
+    "propshaft": {
+      "version": "1.3.2",
+      "released": "2026-04-17",
+      "ruby_version": ">= 2.7.0"
+    },
+    "turbolinks": {
+      "version": "5.2.1",
+      "released": "2019-09-18",
+      "ruby_version": ">= 0"
+    },
+    "turbo-rails": {
+      "version": "2.0.23",
+      "released": "2026-01-29",
+      "ruby_version": ">= 3.1"
+    },
+    "coffee-rails": {
+      "version": "5.0.0",
+      "released": "2019-04-23",
+      "ruby_version": ">= 0"
+    },
+    "uglifier": {
+      "version": "4.2.1",
+      "released": "2024-09-22",
+      "ruby_version": ">= 2.4.0"
+    },
+    "terser": {
+      "version": "1.2.8",
+      "released": "2026-07-08",
+      "ruby_version": ">= 2.3.0"
+    },
+    "jquery-rails": {
+      "version": "4.6.1",
+      "released": "2025-10-21",
+      "ruby_version": ">= 1.9.3"
+    },
+    "config": {
+      "version": "5.6.1",
+      "released": "2025-07-11",
+      "ruby_version": ">= 2.6.0"
+    },
+    "active_model_serializers": {
+      "version": "0.10.16",
+      "released": "2025-12-08",
+      "ruby_version": ">= 2.1"
+    },
+    "rspec-rails": {
+      "version": "8.0.4",
+      "released": "2026-03-11",
+      "ruby_version": ">= 3.0.0"
+    },
+    "capybara": {
+      "version": "3.40.0",
+      "released": "2024-01-27",
+      "ruby_version": ">= 3.0.0"
+    },
+    "selenium-webdriver": {
+      "version": "4.51.0",
+      "released": "2026-10-09",
+      "ruby_version": ">= 3.3"
+    },
+    "rubocop": {
+      "version": "1.92.1",
+      "released": "2026-10-22",
+      "ruby_version": ">= 2.7.0"
+    },
+    "rubocop-rails": {
+      "version": "2.38.0",
+      "released": "2026-09-20",
+      "ruby_version": ">= 2.7.0"
+    },
+    "rubocop-rspec": {
+      "version": "3.10.2",
+      "released": "2026-06-06",
+      "ruby_version": ">= 2.7.0"
+    },
+    "rubocop-capybara": {
+      "version": "3.1.0",
+      "released": "2026-10-16",
+      "ruby_version": ">= 2.7.0"
+    },
+    "rubocop-factory_bot": {
+      "version": "2.28.0",
+      "released": "2025-11-12",
+      "ruby_version": ">= 2.7.0"
+    },
+    "nokogiri": {
+      "version": "1.19.4",
+      "released": "2026-06-18",
+      "ruby_version": ">= 3.2"
+    },
+    "factory_bot_rails": {
+      "version": "6.5.1",
+      "released": "2025-09-05",
+      "ruby_version": ">= 3.1.0"
+    },
+    "faker": {
+      "version": "3.8.0",
+      "released": "2026-04-16",
+      "ruby_version": ">= 3.2"
+    },
+    "shoulda-matchers": {
+      "version": "8.0.1",
+      "released": "2026-06-12",
+      "ruby_version": ">= 3.3"
+    },
+    "simplecov": {
+      "version": "1.3.2",
+      "released": "2026-09-30",
+      "ruby_version": ">= 3.3"
+    },
+    "database_cleaner": {
+      "version": "2.1.0",
+      "released": "2024-10-25",
+      "ruby_version": ">= 0"
+    },
+    "database_cleaner-active_record": {
+      "version": "2.2.2",
+      "released": "2025-07-30",
+      "ruby_version": ">= 0"
+    },
+    "json_matchers": {
+      "version": "0.11.1",
+      "released": "2019-07-19",
+      "ruby_version": ">= 0"
+    },
+    "listen": {
+      "version": "3.10.1",
+      "released": "2026-10-01",
+      "ruby_version": ">= 2.4.0"
+    },
+    "web-console": {
+      "version": "4.3.0",
+      "released": "2026-02-23",
+      "ruby_version": ">= 3.2"
+    },
+    "guard": {
+      "version": "2.20.2",
+      "released": "2026-07-16",
+      "ruby_version": ">= 1.9.3"
+    },
+    "guard-rspec": {
+      "version": "4.7.3",
+      "released": "2016-07-29",
+      "ruby_version": ">= 0"
+    },
+    "guard-rubocop": {
+      "version": "1.5.0",
+      "released": "2021-08-28",
+      "ruby_version": ">= 2.5"
+    },
+    "annotate": {
+      "version": "3.2.0",
+      "released": "2022-02-10",
+      "ruby_version": ">= 2.4.0"
+    },
+    "annotaterb": {
+      "version": "4.25.0",
+      "released": "2026-09-17",
+      "ruby_version": ">= 3.0.0"
+    },
+    "letter_opener": {
+      "version": "1.10.0",
+      "released": "2024-03-30",
+      "ruby_version": ">= 0"
+    },
+    "jbuilder": {
+      "version": "2.15.1",
+      "released": "2026-05-26",
+      "ruby_version": ">= 3.0.0"
+    },
+    "bundler": {
+      "version": "4.0.23",
+      "released": "2026-10-14",
+      "ruby_version": ">= 3.2.0"
+    },
+    "importmap-rails": {
+      "version": "2.2.3",
+      "released": "2026-01-07",
+      "ruby_version": ">= 3.1.0"
+    },
+    "execjs": {
+      "version": "2.10.2",
+      "released": "2026-08-12",
+      "ruby_version": ">= 2.5.0"
+    },
+    "byebug": {
+      "version": "13.0.0",
+      "released": "2026-01-15",
+      "ruby_version": ">= 3.2.0"
+    },
+    "pry": {
+      "version": "0.16.1",
+      "released": "2026-10-20",
+      "ruby_version": ">= 2.6"
+    },
+    "rspec-its": {
+      "version": "2.0.0",
+      "released": "2024-11-04",
+      "ruby_version": "> 3.0.0"
+    },
+    "rake": {
+      "version": "13.4.2",
+      "released": "2026-04-16",
+      "ruby_version": ">= 2.3"
+    },
+    "rack": {
+      "version": "3.2.7",
+      "released": "2026-08-13",
+      "ruby_version": ">= 2.4.0"
+    },
+    "zeitwerk": {
+      "version": "2.8.3",
+      "released": "2026-08-01",
+      "ruby_version": ">= 3.2"
+    },
+    "concurrent-ruby": {
+      "version": "1.3.8",
+      "released": "2026-07-19",
+      "ruby_version": ">= 2.3"
+    }
+  },
+  "docker_tags": {
+    "library/ruby": [
+      "3.2.9-slim-trixie",
+      "3.2.10-slim-trixie",
+      "3.2.11-slim-trixie",
+      "3.3.9-slim-trixie",
+      "3.3.10-slim-trixie",
+      "3.3.11-slim-trixie",
+      "3.3.12-slim-trixie",
+      "3.3.13-slim-trixie",
+      "3.4.5-slim-trixie",
+      "3.4.6-slim-trixie",
+      "3.4.7-slim-trixie",
+      "3.4.8-slim-trixie",
+      "3.4.9-slim-trixie",
+      "3.4.10-slim-trixie",
+      "3.4.11-slim-trixie",
+      "3.4.12-slim-trixie",
+      "4.0.0-slim-trixie",
+      "4.0.1-slim-trixie",
+      "4.0.2-slim-trixie",
+      "4.0.3-slim-trixie",
+      "4.0.4-slim-trixie",
+      "4.0.5-slim-trixie",
+      "4.0.6-slim-trixie",
+      "4.0.7-slim-trixie",
+      "4.0.8-slim-trixie",
+      "4.0.9-slim-trixie"
+    ],
+    "library/postgres": [
+      "9-alpine",
+      "10-alpine",
+      "11-alpine",
+      "12-alpine",
+      "13-alpine",
+      "14-alpine",
+      "14beta2-alpine",
+      "14beta3-alpine",
+      "14rc1-alpine",
+      "15-alpine",
+      "15beta1-alpine",
+      "15beta2-alpine",
+      "15beta3-alpine",
+      "15beta4-alpine",
+      "15rc1-alpine",
+      "15rc2-alpine",
+      "16-alpine",
+      "16beta1-alpine",
+      "16beta2-alpine",
+      "16beta3-alpine",
+      "16rc1-alpine",
+      "17-alpine",
+      "17beta1-alpine",
+      "17beta2-alpine",
+      "17beta3-alpine",
+      "17rc1-alpine",
+      "18-alpine",
+      "18beta1-alpine",
+      "18beta2-alpine",
+      "18beta3-alpine",
+      "18rc1-alpine",
+      "19beta1-alpine",
+      "19beta2-alpine",
+      "19beta3-alpine",
+      "19beta4-alpine",
+      "19rc1-alpine"
+    ],
+    "cimg/ruby": [
+      "2.4-node",
+      "2.5-node",
+      "2.6-node",
+      "2.7-node",
+      "3.0-node",
+      "3.1-node",
+      "3.2-node",
+      "3.3-node",
+      "3.4-node",
+      "4.0-node"
+    ]
+  },
+  "nodesource_setup_channels_http_status": {
+    "20": 200,
+    "22": 200,
+    "24": 200,
+    "26": 200
+  }
+}
