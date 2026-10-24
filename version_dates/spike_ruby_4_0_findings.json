@@ -1,0 +1,208 @@
+{
+  "spike": "Ruby 3.1.7 → 4.0.9 directly on main (Rails 7.0.10), time-boxed; findings only, not a phase",
+  "run_on": "2026-10-23",
+  "branch": "upgrade/spike-ruby-4-0",
+  "base_commit": "636918b (main: CI: publish Docker images only from main (#222))",
+  "why_a_spike": "upgrade_path.json (PR #221) schedules Ruby 3.1 → 3.4 as Phase 13 (after Rails 7.2) and Ruby 3.4 → 4.0 as Phase 18 (after Rails 8.1 and haml 7). Rails 7.0.10 is not a supported Rails release on Ruby 4.0, there is no ruby:4.0-slim-bookworm image (Ruby 4.0 images are Trixie only), and Ruby 4.0 ships RubyGems 4 / Bundler 4. This spike does the mechanical jump anyway to see what actually breaks. Nothing here is meant to merge.",
+  "environment_observed_in_ruby_4_0_9_slim_trixie": {
+    "ruby": "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +PRISM [aarch64-linux]",
+    "rubygems": "4.0.20",
+    "bundler_shipped_with_ruby": "4.0.20 (default gem). The brief assumed 4.0.23; 4.0.23 is the newest on rubygems.org (2026-10-14) but the image ships 4.0.20, so 4.0.20 is what the Dockerfiles pin",
+    "debian": "13.7 (Trixie), gcc 14.2.0-19",
+    "bundled_gems_present": "ostruct 0.6.3, logger 1.7.0, benchmark 0.5.0, pstore 0.2.1, rdoc 7.0.4, irb 1.16.0, bigdecimal 4.0.1, base64 0.3.0, drb 2.2.3, mutex_m 0.3.0, csv 3.3.5, racc 1.8.1, reline 0.6.3, debug 1.11.1, minitest 6.0.0; json 2.18.0 / psych 5.3.1 / date 3.5.1 / stringio 3.2.0 / strscan 3.1.6 / erb 6.0.7 remain default gems",
+    "local_arch": "arm64 (aarch64-linux); CI (x86_64) was not exercised locally"
+  },
+  "changes_made": {
+    ".ruby-version": "3.1.7 → 4.0.9",
+    "Dockerfile.base / Dockerfile.development / Dockerfile.production": {
+      "from": "ruby:3.1.7-slim-bookworm → ruby:4.0.9-slim-trixie (forced: no 4.0 Bookworm tag; this collapses plan Phases 13, 14 and 18 into one FROM change, which is exactly why the plan keeps them apart)",
+      "apt": "dropped ruby-dev (installs Debian's own Ruby headers, not the image's); build-essential patch zlib1g-dev liblzma-dev libpq-dev curl unchanged and all exist on Trixie",
+      "nodesource": "setup_20.x → setup_26.x. The 26.x channel publishes a single `nodistro` suite, so it installs on Trixie without a Trixie-specific repo; nodejs 26.12.1-1nodesource1 was installed. setup_24.x fallback was not needed. Phase 6 does the same bump on Bookworm separately",
+      "nokogiri_preinstall": "gem install nokogiri -v 1.18.10 → 1.19.4 (newest 1.19; precompiled aarch64-linux-gnu and x86_64-linux-gnu gems exist; 1.18.x precompiled gems declare ruby >= 3.1, < 3.5.dev). NOTE: this line only matches the bundle if Gemfile.lock also says 1.19.4 — see forced_gem_moves.nokogiri",
+      "bundler_preinstall": "gem install bundler -v 2.4.22 → 4.0.20"
+    },
+    ".circleci/config.yml": "cimg/ruby:3.1-node → cimg/ruby:4.0-node (tag existence taken from the brief, not verified locally; CI will tell)",
+    "Dockerfile.ci / scripts/docker_build.rb / scripts/docker_hub.rb": "UNTOUCHED on purpose. Dockerfile.ci is FROM automationcalculationsci/automation-calculator-base:0.7.0, a Ruby 3.1.7 / Bookworm image. CI's `./go build ci` will therefore run `bundle install --frozen` with this Bundler 4 lockfile on Ruby 3.1.7 and fail (bundler 4.0.20, nokogiri 1.19.4 and minitest 6.0.6 all require Ruby >= 3.2). A real version of this change needs a new base image tag built from the new Dockerfile.base and pushed to Docker Hub for both arches — that is Phase 6/13 territory and was deliberately not done in a spike",
+    ".rubocop.yml": "LEFT at TargetRubyVersion 3.1. rubocop 1.28.2 rejects 4.0 in the project config: `Error: RuboCop found unknown Ruby version 4.0 in TargetRubyVersion parameter (in .rubocop.yml). Supported versions: 2.5, 2.6, 2.7, 3.0, 3.1, 3.2`. (Quirk worth knowing: the same config passed via `rubocop -c <path>` skips that validation and lints 160 files 'cleanly' — do not trust a `-c` run as proof.) Phase 10 (rubocop 1.9x) is the prerequisite for any TargetRubyVersion above 3.2, including Phase 13's 3.4",
+    "Gemfile": "gem 'pg', '~> 1.5.0' → '~> 1.7' (the only Gemfile change). No `gem 'ostruct'` was needed: config 5.6.1 already declares ostruct as a runtime dependency and ostruct 0.6.3 is in the lock. No `gem 'tsort'` needed yet (warning only, see warnings). `platforms: %w[mri mingw x64_mingw]` on byebug left as-is but Bundler 4 now prints `[DEPRECATED] Platform :mingw, :x64_mingw will be removed in the future. Please use platform :windows instead.` on every bundler command",
+    "Gemfile.lock": "regenerated with Bundler 4.0.20 using targeted `bundle lock --update <gem>` runs only (no blanket update). 33 changed lines. PLATFORMS still aarch64-linux, ruby, x86_64-linux. BUNDLED WITH 2.4.22 → 4.0.20 (full patch level kept; indentation changed from three spaces to two). No CHECKSUMS section was added — Bundler 4 only writes one for brand-new lockfiles or after `bundle lock --add-checksums`; an existing lockfile is left alone"
+  },
+  "build_attempts": [
+    {
+      "attempt": 1,
+      "what": "Dockerfile.development on ruby:4.0.9-slim-trixie with main's Gemfile + Gemfile.lock (BUNDLED WITH 2.4.22)",
+      "apt_nodesource_nokogiri_bundler_steps": "all succeeded (apt on Trixie, NodeSource 26.x, nokogiri 1.19.4 precompiled in 0.6s, bundler 4.0.20)",
+      "bundle_install": "FAILED",
+      "first_thing_seen": "`Bundler 4.0.20 is running, but your lockfile was generated with 2.4.22. Installing Bundler 2.4.22 and restarting using that version.` — Bundler's self-management downgraded to the lockfile's version, so the install actually ran under bundler 2.4.22 on Ruby 4.0. Bumping BUNDLED WITH (or running `bundle lock` first) is required before Bundler 4 is really in play",
+      "failure": "byebug 10.0.2: `context.c:190:20: error: passing argument 1 of 'rb_ensure' from incompatible pointer type [-Wincompatible-pointer-types]` (and arg 3, and anyargs.h rb_define_singleton_method_01) → `make failed, exit code 2` → `An error occurred while installing byebug (10.0.2), and Bundler cannot continue.` GCC 14 (Trixie) promotes -Wincompatible-pointer-types to an error; this would also hit a Ruby 3.4-on-Trixie build (Phase 14) if byebug 10 were still locked then — Phase 13 moves it to 13 first, so the plan order is right",
+      "note": "Bundler's parallel installer aborts on the first failure, so this log says nothing about the other native gems; see native_gem_probe"
+    },
+    {
+      "attempt": 2,
+      "what": "after `bundle lock --update pg byebug` under Bundler 4.0.20 (BUNDLED WITH bumped by hand first)",
+      "result": "image built; `bundle install` printed `Resolving dependencies...` and `Bundle complete! 42 Gemfile dependencies, 167 gems`",
+      "hidden_problem": "the lockfile baked into the image differed from the host's: minitest 5.17.0 → 6.0.6 (+ drb ~> 2.0, prism ~> 1.5). minitest 5.17.0 declares required_ruby_version `>= 2.6, < 4.0`, so Bundler 4 silently auto-unlocked it at install time on Ruby 4.0 (a throwaway `bundle lock` run does not materialise against the running Ruby and had kept 5.17.0). Consequence: anything that then used the host lockfile failed with `Could not find minitest-5.17.0 in locally installed gems (Bundler::GemNotFound)` at `require 'bundler/setup'`, and a `bundle install --frozen` (Dockerfile.ci / Dockerfile.production) would refuse outright"
+    },
+    {
+      "attempt": 3,
+      "what": "after `bundle lock --update pry minitest`",
+      "result": "image built, no re-resolution; `rspec` loaded and ran green (see suite_results)"
+    },
+    {
+      "attempt": 4,
+      "what": "after `bundle lock --update nokogiri` (1.18.10 → 1.19.4) so the lock matches the Dockerfile pre-install",
+      "result": "image built; 166 gems; nokogiri 1.19.4 reused from the pre-install step instead of compiling libxml2 from source as 1.18.10 had been doing (its precompiled gem is gated `< 3.5.dev`)"
+    }
+  ],
+  "native_gem_probe": {
+    "method": "`gem install <name> -v <locked version> --platform ruby` for every native gem in main's lockfile, one at a time, in a fresh ruby:4.0.9-slim-trixie container with build-essential libpq-dev libyaml-dev zlib1g-dev",
+    "compile_ok_at_locked_version": [
+      "pg 1.5.9 (compiles; runtime on 4.0 not tested because it was moved anyway)",
+      "ffi 1.15.5",
+      "sassc 2.4.0 (libsass builds with GCC 14)",
+      "bigdecimal 3.3.1",
+      "json 2.20.0",
+      "puma 5.6.9",
+      "nio4r 2.7.5",
+      "websocket-driver 0.8.2",
+      "date 3.6.0",
+      "bcrypt 3.1.18",
+      "bindex 0.5.0",
+      "prism 1.9.0",
+      "racc 1.8.1",
+      "nokogiri 1.18.10 (from source, ~34s with -j15; the precompiled gem is rejected on 4.0)"
+    ],
+    "compile_failed_at_locked_version": [
+      "byebug 10.0.2 (GCC 14 incompatible-pointer-types errors, see attempt 1); byebug 13.0.0 compiles"
+    ]
+  },
+  "forced_gem_moves": {
+    "pg": {
+      "from": "1.5.9",
+      "to": "1.7.0 (+ 1.7.0-aarch64-linux and 1.7.0-x86_64-linux platform gems now in the lock)",
+      "why": "Gemfile constraint bumped per the brief; 1.7.0 declares ruby >= 3.1, < 4.1 and ships precompiled linux gems, so it no longer links against the image's libpq at build time at all (Phase 14's libpq-17 note becomes moot for pg; libpq-dev is still needed only for a source fallback). 1.5.9 did in fact compile on 4.0.9 in the probe, so this was a chosen move, not a resolver-forced one"
+    },
+    "byebug": {
+      "from": "10.0.2",
+      "to": "13.0.0 (pulls new transitive reline 0.7.0 and io-console 0.9.4)",
+      "why": "10.0.2 fails to compile under GCC 14 (see attempt 1). 13.0.0 requires ruby >= 3.2 and compiled and loaded fine; the plan's Phase 18 fallback to `debug` was not needed"
+    },
+    "pry": {
+      "from": "0.12.2",
+      "to": "0.16.1 (+ method_source 0.9.2 → 1.1.0)",
+      "why": "0.12.2 raises at load: `NameError: undefined method '=~' for class 'Pry::Code'` (pry/code.rb:338 undef_method :=~; Object#=~ was removed in Ruby 3.2). spec_helper.rb requires pry first, so the whole suite died with `0 examples, 1 error occurred outside of examples`. This is a Ruby >= 3.2 break, i.e. it belongs on Phase 13's list, not just Phase 10's 'patch/minor bumps'"
+    },
+    "minitest": {
+      "from": "5.17.0",
+      "to": "6.0.6 (deps drb ~> 2.0, prism ~> 1.5 were already locked)",
+      "why": "5.17.0 declares `< 4.0`. Bundler auto-unlocks it in a non-frozen install (attempt 2) but a frozen one fails; locked explicitly so host and image agree. Rails 7.0.10 (activesupport minitest >= 5.1) accepted 6.0.6 and rspec-rails' minitest adapters loaded"
+    },
+    "nokogiri": {
+      "from": "1.18.10",
+      "to": "1.19.4",
+      "why": "1.18.10's precompiled gems are `>= 3.1, < 3.5.dev`; on 4.0 Bundler falls back to a source build of libxml2 even though the Dockerfile pre-installs 1.19.4. 1.19 requires ruby >= 3.2 (Phase 13 already planned this move)"
+    },
+    "not_moved_and_fine": "ffi 1.15.5, sassc 2.4.0, json 2.20.0, bigdecimal 3.3.1, racc 1.8.1, puma 5.6.9, nio4r 2.7.5, websocket-driver 0.8.2, haml 5.2.2, coffee-script 2.4.1, uglifier 4.1.11, sass-rails 6.0.0 / sprockets 4.2.2, devise 4.9.4, omniauth 2.x, rubocop 1.28.2 / parser 3.3.11.1 / rubocop-ast 1.50.0, rspec-rails 6.1.5, capybara 3.40.0, selenium-webdriver 4.9.0, shoulda-matchers 5.3.0, simplecov 0.17.1, factory_bot_rails 6.4.3, faker 3.4.2, database_cleaner 1.7.0, annotate 3.2.0, web-console 4.2.1, config 5.6.1 — all unchanged, all loaded"
+  },
+  "suite_results": {
+    "rubocop": "rubocop 1.28.2 loads and runs on Ruby 4.0.9: `160 files inspected, no offenses detected` (uncached, TargetRubyVersion 3.1). It cannot be told the target is 4.0 (see .rubocop.yml above)",
+    "rspec": "366 examples, 0 failures, 6 pending (the 6 pre-existing 'Not yet implemented' view/helper specs). Coverage 434/472 LOC (91.95%). Same counts with RUBYOPT=-W:deprecated. Distinct error classes in the final run: none. Before the pry move: NameError at load (see forced_gem_moves.pry); before the minitest move: Bundler::GemNotFound at boot",
+    "assets_precompile": "`RAILS_ENV=production SECRET_KEY_BASE=dummy rake assets:precompile` succeeded on Node 26.12.1 as the ExecJS runtime (84 writes, 57 entries in public/assets, matching Phase 5's count; output removed afterwards)",
+    "boot": "`ruby -W:deprecated -e 'require \"./config/environment\"'` boots Rails 7.0.10 on Ruby 4.0.9 in the test env; Settings.api_session_duration reads 60 via Config::Options (OpenStruct subclass) with no ostruct warning",
+    "smoke_and_server": "not run (no server on a host port in a shared-worktree session)"
+  },
+  "warnings_observed": {
+    "ruby_W_deprecated_during_full_suite": {
+      "literal string will be frozen in the future (chilled strings)": {
+        "count": 8,
+        "source": "shoulda-matchers-5.3.0/lib/shoulda/matchers/active_model/validate_numericality_of_matcher.rb:491 — all 8",
+        "note": "none from app/, haml 5.2.2, coffee-script or any other gem during the suite; Phase 13's expectation that haml/coffee-script would spam the log did not materialise in the test suite (production rendering was not exercised beyond precompile)"
+      },
+      "bundled gem in a future Ruby": {
+        "count": 1,
+        "text": "railties-7.0.10/lib/rails/initializable.rb:3: warning: tsort was loaded from the standard library, but will no longer be part of the default gems starting from Ruby 4.1.0",
+        "note": "a `gem 'tsort'` Gemfile line will be needed at Ruby 4.1 unless the Rails in use declares it"
+      },
+      "Set": "no warnings, no failures (Set is a core class in 4.0; nothing in the lock monkey-patches it)",
+      "Hash#inspect": "no spec asserted on the new `{key: value}` format; no diffs",
+      "ostruct / logger / benchmark / bigdecimal / base64": "no warnings — all are either in the lock via Rails 7.0.10 / config 5.6.1 or still shipped with 4.0.9"
+    },
+    "ruby_w_verbose_at_boot_only": {
+      "URI::RFC3986_PARSER.escape/unescape/make_regexp is obsolete. Use URI::RFC2396_PARSER explicitly": 119,
+      "sources": "actionpack-7.0.10 routing/mapper.rb (104), activerecord-7.0.10 (15), capybara-3.40.0 (1); fixed in Rails 7.1+",
+      "CGI library is removed from Ruby 4.0. Please use cgi/escape instead": {
+        "count": 1,
+        "source": "i18n-1.12.0/lib/i18n/exceptions.rb:3 (i18n is held at 1.12.0 by Rails 7.0; newer i18n uses cgi/escape)"
+      },
+      "method redefined": "7 pairs, all pre-existing gem-vs-gem redefinitions (sassc-rails/sprockets, devise/warden, activesupport) — not Ruby 4.0 related"
+    },
+    "rubygems_and_bundler": {
+      "bundler_platform_deprecation": "`[DEPRECATED] Platform :mingw, :x64_mingw will be removed in the future. Please use platform :windows instead.` on every bundler command, from the byebug line in the Gemfile",
+      "rubygems_ambiguous_spec": "`WARN: Unresolved or ambiguous specs during Gem::Specification.reset: reline (>= 0.6.0) — Available/installed versions: 0.7.0, 0.6.3` printed once per `rspec` invocation: byebug 13 depends on reline >= 0.6.0, Ruby 4.0.9 ships reline 0.6.3 as a bundled gem and the lock installs 0.7.0. Harmless, noisy",
+      "bundler_self_downgrade": "Bundler 4 restarts itself as the lockfile's BUNDLED WITH version (2.4.22) until the lockfile is bumped — easy to misread a 'Bundler 4' build log that was really Bundler 2.4"
+    }
+  },
+  "plan_risk_list_review": {
+    "phase_13_ruby_3_1_to_3_4": {
+      "confirmed": [
+        "nokogiri must move to 1.19 and the Dockerfile `gem install nokogiri -v` lines must match the lockfile, otherwise the pre-install is a no-op and libxml2 is compiled from source",
+        "ruby-dev apt package is pointless and can go",
+        "base64/bigdecimal/drb/mutex_m already in the lock via Rails 7.x; no csv needed",
+        "shoulda-matchers 5.3.0 emits chilled-string warnings (8) — already slated to move"
+      ],
+      "missing": [
+        "pry 0.12.2 hard-fails at load on Ruby >= 3.2 (Object#=~ removed) and takes the whole suite with it via spec_helper's `require 'pry'`; Phase 10 lists pry only under 'patch/minor bumps to latest' — it must be called out as a Ruby >= 3.2 blocker (0.14+ is fine)",
+        "minitest 5.17.0 is gated `< 4.0` (not relevant to 3.4, but it is the one lockfile entry that will bite Phase 18's frozen installs — see below)",
+        "haml 5.2.2 / coffee-script did NOT warn in the test suite under -W:deprecated; the 'spam' risk is unproven on this suite (may still show on real page renders)"
+      ]
+    },
+    "phase_14_bookworm_to_trixie": {
+      "confirmed": [
+        "all six apt package names exist on Trixie",
+        "NodeSource 26.x installs on Trixie (single `nodistro` suite, so no Trixie-specific channel was ever needed)",
+        "useradd --uid pattern works for the dev user"
+      ],
+      "missing": [
+        "Trixie's GCC 14 turns -Wincompatible-pointer-types into an error; any C-extension gem still at a 2018-era version fails to build (byebug 10 here). Phase 13 happens to fix byebug first, but this is a Trixie risk, not a Ruby risk, and belongs on Phase 14's list",
+        "pg 1.6+/1.7 installs as a precompiled `aarch64-linux`/`x86_64-linux` gem with its own libpq, so the 'links against Trixie's libpq 17 at build time' statement no longer describes what happens; libpq-dev is only the source-build fallback"
+      ]
+    },
+    "phase_18_ruby_3_4_to_4_0": {
+      "confirmed": [
+        "Ruby 4.0 images are Trixie only",
+        "Bundler 4 is the real content: lockfile rewrite, platform deprecation, self-downgrade until BUNDLED WITH is bumped",
+        "pg 1.7.0 is fine on 4.0",
+        "nokogiri 1.19.4, byebug 13 and web-console 4.2.1 all work on 4.0.9"
+      ],
+      "wrong": [
+        "`gem 'ostruct'` is NOT needed: config 5.6.1 declares ostruct as a dependency and it is locked (0.6.3)",
+        "CHECKSUMS is not added 'by default' to an existing lockfile — only to new lockfiles or via `bundle lock --add-checksums`",
+        "BUNDLED WITH does not drop the patch level; 4.0.20 was written in full (only the indentation changed)",
+        "byebug 13 compiles and loads on 4.0.9; the `debug` fallback is not required"
+      ],
+      "missing": [
+        "minitest 5.17.0 (`< 4.0`) is silently auto-unlocked to 6.x by a non-frozen `bundle install` on Ruby 4.0 but breaks `bundle install --frozen` (Dockerfile.ci, Dockerfile.production) and anything using a lockfile that still says 5.17.0 — lock it deliberately. By Phase 18 Rails 8.1 will have moved minitest anyway, but it should be on the list",
+        "pry < 0.14 (if still present) and any other gem that `undef`s Object#=~",
+        "tsort becomes a bundled gem in Ruby 4.1 — Rails 7.0 railties requires it; note it for the 4.1 bump",
+        "RubyGems 4 'Unresolved or ambiguous specs: reline' warning from byebug 13 + Ruby's bundled reline",
+        "rubocop 1.28 accepts TargetRubyVersion up to 3.2 only (it raises on 3.3, 3.4 and 4.0) — Phase 13's `TargetRubyVersion 3.4` and Phase 18's `4.0` both depend on Phase 10 having landed, which the dependency graph already guarantees via 12 → 11 → 10, but worth saying explicitly",
+        "the Bundler shipped with 4.0.9 is 4.0.20, not the newest 4.0.x on rubygems (4.0.23); pin what the image ships"
+      ]
+    }
+  },
+  "conclusion": {
+    "summary": "Mechanically, Ruby 4.0.9 + Rails 7.0.10 is green on this codebase on arm64: image builds, rubocop clean (at TargetRubyVersion 3.1), rspec 366/0/6, assets:precompile OK, app boots, with five lockfile moves (pg, byebug, pry, minitest, nokogiri) and one Gemfile constraint change. The 'red' is structural rather than in the suite: CI cannot pass because Dockerfile.ci builds FROM the Ruby 3.1.7 base image 0.7.0 and the Bundler 4 lockfile cannot be installed there; rubocop 1.28 cannot target 4.0; and Rails 7.0.10 on Ruby 4.0 is unsupported upstream (it works here because this app touches little of Rails, not because Rails 7.0 is 4.0-safe — Rails only shipped 4.0 fixes in 8.0.4.1+/8.1.3+ and 7.0 receives no patches of any kind).",
+    "must_land_first": [
+      "Phase 6 — Node 26 and the base-image bump workflow (new automation-calculator-base tag, Dockerfile.ci / docker_build.rb / docker_hub.rb)",
+      "Phase 10 — rubocop 1.9x (TargetRubyVersion > 3.2), pry/byebug/annotate/database_cleaner/shoulda-matchers/simplecov catch-up; pry must be explicitly bumped here or in 13",
+      "Phase 11 — Rails 7.1 (removes the 119 URI::RFC3986_PARSER warnings, secrets → secret_key_base)",
+      "Phase 12 — Rails 7.2",
+      "Phase 13 — Ruby 3.4 with its own base image tag (nokogiri 1.19, bundler 2.7, Ruby-gated test gems; the only step on this spike's list that is 'free' because 3.4 keeps Bookworm)",
+      "Phase 14 — Trixie, with its own base image tag (GCC 14 C-extension exposure is isolated here)",
+      "Phase 15 and 16 — Rails 8.0 → 8.1.3+ (the first Rails lines that are actually tested on Ruby 4.0)",
+      "Phase 17 — haml 7 is not required by Ruby 4.0 on this evidence (haml 5.2.2 ran the whole suite without a single warning), but it remains the right time to do it before 18 so regressions stay attributable"
+    ],
+    "then_phase_18": "Ruby 4.0.x + Bundler 4: bump BUNDLED WITH first (or run `bundle lock` under Bundler 4) so Bundler does not downgrade itself; expect only the Bundler 4 lockfile mechanics plus whatever Ruby-4.0-gated gems remain at that point; keep `bundle install --frozen` builds in the loop because a non-frozen install hides Ruby-version-gated lock entries (minitest here)",
+    "reusable_from_this_spike": "the Dockerfile diff (FROM, ruby-dev removal, setup_26.x, nokogiri/bundler pins) is exactly Phase 14 + 18's Dockerfile content; the lockfile moves for pry and nokogiri are Phase 13's; pg ~> 1.7 can be taken any time"
+  }
+}
