@@ -253,7 +253,9 @@
       "phase": 11,
       "name": "Rails 7.0 → 7.1 (+ load_defaults 7.0, secrets → secret_key_base)",
       "status": "planned",
-      "depends_on": [10],
+      "depends_on": [
+        10
+      ],
       "rationale": "Second Rails step on Ruby 3.1. Rails 7.1 deprecates Rails.application.secrets (removed in 7.2) and rspec-rails deprecates config.fixture_path (→ fixture_paths). With 7.0 on production since 0.9.6-871, this PR also flips config.load_defaults 6.1 → 7.0 and deletes new_framework_defaults_7_0.rb. Depends on Phase 10 only because annotate 3.2 and rubocop-rails 2.14 do not understand Rails 7.1+ and the lint job would fail.",
       "ruby_version": "3.1.7 (unchanged)",
       "changes": {
@@ -275,7 +277,9 @@
       "phase": 12,
       "name": "Rails 7.1 → 7.2 (+ load_defaults 7.1)",
       "status": "planned",
-      "depends_on": [11],
+      "depends_on": [
+        11
+      ],
       "rationale": "Last Rails step on Ruby 3.1 (7.2 requires >= 3.1, 8.0 requires >= 3.2). Rails 7.2 is past security support (ended 2026-08-09) so this is a transit stop, not a destination — ship it, promote it, and move on. Flips load_defaults to 7.1 now that 7.1 is on production.",
       "ruby_version": "3.1.7 (unchanged)",
       "changes": {
@@ -293,7 +297,9 @@
       "phase": 13,
       "name": "Ruby 3.1 → 3.4 (+ bundler 2.7, nokogiri 1.19, Ruby-gated test gems)",
       "status": "planned",
-      "depends_on": [12],
+      "depends_on": [
+        12
+      ],
       "rationale": "Ruby 3.1 has been EOL since 2025-03-26. Ruby 3.4 (EOL 2028-03-31) is the right intermediate target: Rails 7.2 supports it and Rails 8.0/8.1 require >= 3.2. Ruby 4.0 is deliberately not taken here because Rails 7.2 is not tested on it. Going 3.1 → 3.4 in one step is fine for this codebase: the 3.2 (`rb_cData` C-API removal) and 3.3 changes are transparent to a pure-Ruby app with precompiled nokogiri/pg, and the 3.4 changes (frozen-string 'chilled' warnings, `it` block parameter, new Hash#inspect format) surface as warnings or spec diffs, not crashes. This is a Docker base image change, kept separate from the Rails steps so any regression is attributable to the runtime.",
       "rails_version": "7.2.x (unchanged)",
       "changes": {
@@ -311,14 +317,18 @@
         "Ruby 3.4 changed Hash#inspect to `{key: value}` / `{\"k\" => v}`; any spec asserting on inspected output (error messages included) will need updating",
         "Ruby 3.3/3.4 moved base64, bigdecimal, csv, drb, mutex_m, nkf, syslog to bundled gems; the lockfile already carries base64, bigdecimal, drb and mutex_m via Rails 7.x, so expect at most a Gemfile line for csv if anything requires it",
         "Local arm64 vs CI x86_64: `./go build` on a Mac produces the aarch64 base image; CI builds x86_64. Both must succeed before the base image version is tagged",
-        "The `ruby-dev` apt package in the Dockerfiles installs Debian's own Ruby headers, not the image's — it has been harmless so far but is pointless; drop it here or in Phase 14"
+        "The `ruby-dev` apt package in the Dockerfiles installs Debian's own Ruby headers, not the image's — it has been harmless so far but is pointless; drop it here or in Phase 14",
+        "SPIKE (PR #229, Ruby 4.0.9 on main): pry 0.12.2 fails at load on Ruby >= 3.2 (Object#=~ removed) and byebug 10.0.2 fails to compile under GCC 14 — both are moved by Phase 10, which must land first. minitest 5.17 (a Rails 7.0 transitive) declares `< 4.0` only; bundler will unlock it to 6.x, so lock it on the host before a `--frozen` build",
+        "SPIKE: the `gem install nokogiri -v` pin in the Dockerfiles must match the lockfile exactly, or the image compiles a second nokogiri from source; nokogiri 1.18's precompiled gem is gated `< 3.5`, so 1.19.x is required from Ruby 3.5 on"
       ]
     },
     {
       "phase": 14,
       "name": "Linux Bookworm → Trixie (OpenSSL 3.0 → 3.5 LTS)",
       "status": "planned",
-      "depends_on": [13],
+      "depends_on": [
+        13
+      ],
       "rationale": "Debian 12 Bookworm left regular security support on 2026-07-11 (LTS to 2028-06-30) and its OpenSSL 3.0 passed upstream EOL on 2026-09-07. Debian 13 Trixie (released 2025-08-09, security support to 2028-08-09, LTS to 2030-06-30) ships OpenSSL 3.5 LTS (EOL 2030-04-08). The official ruby image publishes slim-trixie tags for 3.2+ only, hence the dependency on Phase 13. Same shape as Phase 3: one FROM line change per Dockerfile, verified by bisecting separately from the Ruby bump.",
       "ruby_version": "3.4.x (unchanged)",
       "rails_version": "7.2.x (unchanged)",
@@ -334,14 +344,19 @@
       "known_risks": [
         "OpenSSL 3.5 keeps the 3.0 provider model, so the Phase 3 legacy-algorithm check already covers it; TLS 1.3 to Google/GitHub OAuth endpoints and RDS is unaffected",
         "Trixie uses the merged-/usr layout and `apt` 3.x; the Dockerfiles use plain `apt-get install -y` so nothing changes, but any future apt-key usage would break",
-        "Trixie's default `useradd` and `/etc/subuid` behaviour is unchanged for the `--uid` dev-user pattern in Dockerfile.development — ./go start with a bind-mounted tree is the local check"
+        "Trixie's default `useradd` and `/etc/subuid` behaviour is unchanged for the `--uid` dev-user pattern in Dockerfile.development — ./go start with a bind-mounted tree is the local check",
+        "SPIKE (PR #229): Trixie ships GCC 14, which turns -Wincompatible-pointer-types into an error; any C extension still at a 2018-era release fails to compile (byebug 10 did). Run a per-gem `gem install` probe of every native gem in the lockfile before the image bump",
+        "SPIKE: with pg 1.6+/1.7 the precompiled gem bundles its own libpq and OpenSSL, so Trixie's libpq-dev is no longer what the app links against (Phase 7 already made this switch on Bookworm)"
       ]
     },
     {
       "phase": 15,
       "name": "Rails 7.2 → 8.0 (+ load_defaults 7.2)",
       "status": "planned",
-      "depends_on": [13, 11],
+      "depends_on": [
+        13,
+        11
+      ],
       "rationale": "First supported-again Rails target (8.0 security fixes until 2026-11-07, so promote straight on to 8.1). Requires Ruby >= 3.2 (Phase 13). Rails 8.0 removes `config.read_encrypted_secrets` (already gone in Phase 11), `Rails::ConsoleMethods`, `ActiveSupport::ProxyObject`, enum defined with keyword args, and several deprecated Active Record options — none used here. Propshaft becomes the default asset pipeline for *new* apps only; sprockets-rails 3.5.2 remains supported and stays. Flips load_defaults to 7.2.",
       "ruby_version": "3.4.x (unchanged)",
       "changes": {
@@ -362,7 +377,9 @@
       "phase": 16,
       "name": "Rails 8.0 → 8.1 (+ load_defaults 8.0)",
       "status": "planned",
-      "depends_on": [15],
+      "depends_on": [
+        15
+      ],
       "rationale": "Rails 8.1 (2025-10-22; 8.1.4 current, security fixes until 2027-10-10) is the latest release line; 8.2 is still 8.2.0.alpha on main. The upgrade guide lists only one app-facing change (schema.rb column ordering, which 8.1.4 reverted) plus deprecations worth fixing now: order-dependent finders (`.first` without `order` — four call sites in app/), `String#mb_chars`, `ActiveSupport::Configurable`, `to_time_preserves_timezone`. Flips load_defaults to 8.0.",
       "ruby_version": "3.4.x (unchanged)",
       "changes": {
@@ -380,7 +397,9 @@
       "phase": 17,
       "name": "haml 5 → 7",
       "status": "planned",
-      "depends_on": [13],
+      "depends_on": [
+        13
+      ],
       "rationale": "haml 5.2.2 (2021) predates Ruby 3.2 and is the gem most likely to break under Ruby 4.0's string and Set changes. haml 6 replaced the implementation with Hamlit (much faster) and removed every Haml helper except `preserve`; haml 7 (7.5.1 current, requires Ruby >= 3.2) changed the default attribute quote from ' to \". Done after the Ruby 3.4 bump and before the Ruby 4.0 bump so each regression is attributable.",
       "ruby_version": "3.4.x (unchanged)",
       "rails_version": "8.1.x (unchanged)",
@@ -400,23 +419,28 @@
       "phase": 18,
       "name": "Ruby 3.4 → 4.0 (+ Bundler 4 / RubyGems 4)",
       "status": "planned",
-      "depends_on": [16, 17, 14],
-      "rationale": "Ruby 4.0 (2025-12-25; 4.0.9 current, EOL 2029-03-31) is the final runtime target. It needs Rails 8.0.4.1+/8.1.3+ (Phase 16), haml 7 (Phase 17) and a Trixie image (Phase 14; ruby:4.0.x-slim-trixie exists, there is no Bookworm tag for 4.0). Ruby 4.0 ships RubyGems 4 and Bundler 4, which change lockfile defaults — that is the real content of this phase.",
+      "depends_on": [
+        16,
+        17,
+        14
+      ],
+      "rationale": "Ruby 4.0 (2025-12-25; 4.0.9 current, EOL 2029-03-31) is the final runtime target. It needs Rails 8.0.4.1+/8.1.3+ (Phase 16), haml 7 (Phase 17) and a Trixie image (Phase 14; ruby:4.0.x-slim-trixie exists, there is no Bookworm tag for 4.0). Ruby 4.0 ships RubyGems 4 and Bundler 4, which change lockfile defaults — that is the real content of this phase. The spike in PR #229 proved the mechanical part on today's main; this phase remains last only because Rails 7.x is unsupported on Ruby 4.0 and the toolchain (rubocop, base image) has to move first.",
       "rails_version": "8.1.x (unchanged)",
       "changes": {
         "ruby": "3.4.12 → 4.0.9 (.ruby-version, Gemfile.lock)",
         "docker_base_image": "ruby:3.4.12-slim-trixie → ruby:4.0.9-slim-trixie",
-        "bundler": "2.7.x → 4.0.x: lockfile gains a CHECKSUMS section by default, BUNDLED WITH drops the patch level, multiple global `source` lines are rejected, `bundle install --binstubs` errors; update the `gem install bundler -v` lines in all three Dockerfiles and `bundle install --frozen` in Dockerfile.ci / Dockerfile.production",
-        "bundled_gems": "ostruct, logger, benchmark, pstore, rdoc, irb are bundled (not default) gems in 4.0 — the `config` gem's Settings objects subclass OpenStruct, so `gem 'ostruct'` almost certainly needs to be in the Gemfile; logger is already locked via Rails",
+        "bundler": "2.7.x → 4.0.x (Ruby 4.0.9 ships Bundler 4.0.20, not the newest 4.0.x): BUNDLED WITH keeps the full patch level and the lockfile gains NO CHECKSUMS section unless created fresh or with `--add-checksums`; Bundler 4 deprecates the Gemfile's `:mingw`/`:x64_mingw` platform symbols (drop them from the byebug line); multiple global `source` lines are rejected; `bundle install --binstubs` errors. Bundler also self-downgrades to the lockfile's BUNDLED WITH version inside the image until the lockfile is regenerated. Update the `gem install bundler -v` lines in all three Dockerfiles",
+        "bundled_gems": "ostruct, logger, benchmark, pstore, rdoc, irb are bundled gems in 4.0 — config 5.6.1 already depends on ostruct and Rails on logger, so no Gemfile change was needed in the spike; tsort becomes a bundled gem in 4.1 and railties 7.0 already warns about it",
         "ci_executor": "cimg/ruby:3.4-node → cimg/ruby:4.0-node",
         "base_image_version": "0.10.0 → 0.11.0",
         "rubocop_target": "TargetRubyVersion 3.4 → 4.0 (rubocop 1.9x understands it)",
         "pg": "1.7.0 declares `< 4.1.dev`, so it is fine; re-check nokogiri, byebug and web-console release notes for 4.0"
       },
       "known_risks": [
-        "Bundler 4's CHECKSUMS section means the first `bundle install` rewrites Gemfile.lock substantially; do it on the arm64 Mac and in CI (x86_64) and confirm the two agree before tagging the base image",
-        "Ruby 4.0 makes `Set` a core class and removes several long-deprecated methods; the suite is the net, but gems that monkey-patch Set (none known in this lockfile) would fail at load",
-        "byebug 13 (2026-01-15) requires Ruby >= 3.2 and does not advertise 4.0 — if it fails to compile, replace with `debug` (a bundled gem) in the development group",
+        "SPIKE (PR #229) ran Ruby 4.0.9 + Trixie + Node 26 directly on today's main (Rails 7.0.10): after moving pg, byebug, pry, minitest and nokogiri the full suite was green on arm64 (366 examples, 0 failures), assets precompiled and the app booted. The blockers are structural, not runtime: Rails 7.0 is unsupported upstream on 4.0 (8.0.4.1+/8.1.3+ carry the fixes), rubocop 1.28 rejects TargetRubyVersion above 3.2, and CI's base image must be rebuilt first",
+        "Only 8 chilled-string warnings appeared, all from shoulda-matchers 5.3 (moved in Phase 10); haml 5.2.2 and coffee-script 2.4.1 emitted none, so Phase 17 is ordering hygiene rather than a hard prerequisite",
+        "byebug 13 compiles and runs on 4.0.9 (the earlier `debug` fallback note was unnecessary); RubyGems 4 prints an 'ambiguous specs: reline' warning per run because byebug 13 and Ruby's bundled reline both provide it",
+        "Bundler 4's CHECKSUMS section does not appear on an upgraded lockfile, so the first `bundle install` rewrite is small (33 lines in the spike); do it on the arm64 Mac and in CI (x86_64) and confirm the two agree before tagging the base image",
         "Ruby 4.0 stable patch releases ship every two months — pin the full patch version in the FROM line as the repo already does"
       ]
     },
@@ -424,7 +448,9 @@
       "phase": 19,
       "name": "PostgreSQL 16 → 18 (docker-compose + RDS)",
       "status": "planned",
-      "depends_on": [7],
+      "depends_on": [
+        7
+      ],
       "rationale": "PostgreSQL 16 is supported until 2028-11-09, so this is not urgent, but 18 (2025-09-25, EOL 2030-11-14) is the newest line RDS offers today (RDS announced 18.x minors through 18.6 in August 2026) and 19 (community GA planned 2026-11-19) will take months to reach RDS. Depends on Phase 7 because pg 1.7 is the client built against the newer libpq. The app side is a one-line docker-compose change; the real work is the RDS major-version upgrade in core-iac (db_engine_version 16.13 in all three terraform.tfvars) and its test plan.",
       "changes": {
         "docker_compose": "postgres:16-alpine → postgres:18-alpine (dev + CI)",
@@ -441,7 +467,9 @@
       "phase": 20,
       "name": "Horizon: Rails 8.2 + load_defaults 8.1, Node 27",
       "status": "planned",
-      "depends_on": [18],
+      "depends_on": [
+        18
+      ],
       "rationale": "Items that are not available yet or whose timing depends on upstream. Rails 8.2 is 8.2.0.alpha on main (no release date announced); once it ships, take it within its first bug-fix quarter and flip load_defaults to 8.1 in the same style as Phases 11–16. Node 27 (2027-04) is the first release under the new one-major-per-year cadence and becomes LTS in 2027-10; Node 26 (Phase 6) is supported until 2029-04-30, so this is optional.",
       "changes": {
         "rails": "8.1.x → 8.2.x when released; load_defaults 8.0 → 8.1",
@@ -453,12 +481,33 @@
     }
   ],
   "parallel_tracks": {
-    "track_a_can_start_today": [6, 7, 8, 9, 10],
-    "track_b_rails_on_ruby_3_1": [11, 12],
-    "track_c_runtime": [13, 14],
-    "track_d_rails_8": [15, 16],
-    "track_e_final": [17, 18],
-    "track_f_independent": [19, 20],
+    "track_a_can_start_today": [
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "track_b_rails_on_ruby_3_1": [
+      11,
+      12
+    ],
+    "track_c_runtime": [
+      13,
+      14
+    ],
+    "track_d_rails_8": [
+      15,
+      16
+    ],
+    "track_e_final": [
+      17,
+      18
+    ],
+    "track_f_independent": [
+      19,
+      20
+    ],
     "note": "Track A phases touch disjoint files (Dockerfiles/CI, Gemfile runtime gems, auth gems, asset gems, dev/test gems) and can be opened as parallel PRs; merge order within the track does not matter beyond Gemfile.lock rebases. Phase 11 waits for Phase 10's lint tooling. Everything from 13 onward is strictly sequential."
   },
   "standing_notes": [
@@ -466,6 +515,15 @@
     "Bootstrap 4.6.2.1 → 5.3.x is a separate, design-breaking migration (grid and utility class renames, jQuery removal) and is not included in this path. It should be scoped as a standalone UI project; it would also silence the Dart Sass division warnings from Phase 9.",
     "turbolinks 5.1.1 → 5.2.1 is a safe patch bump to take opportunistically in any phase; the Hotwire/Turbo migration is out of scope.",
     "Each phase should run ./go lint and ./go test, and update the matching phase_N_tracking.json with what actually moved (as Phases 1–5 did), plus a version_dates/*.json refresh for any component it changed.",
-    "Re-run `python3 -I version_dates/fetch_latest_versions.py` before starting each phase; pins above are the versions current on 2026-10-23 and will drift."
-  ]
+    "Re-run `python3 -I version_dates/fetch_latest_versions.py` before starting each phase; pins above are the versions current on 2026-10-23 and will drift.",
+    "PR #229 is a spike, not a phase: Ruby 4.0.9 on today's main, expected red in CI. Its findings file version_dates/spike_ruby_4_0_findings.json corrected Phases 13, 14 and 18 above; do not merge #229, cherry-pick its Dockerfile/lockfile moves into Phases 13/14/18 when their turn comes."
+  ],
+  "track_a_status_2026_10_23": {
+    "6": "PR #223 (needs base 0.8.0 pushed to Docker Hub before CI is green)",
+    "7": "PR #225",
+    "8": "PR #228",
+    "9": "PR #226",
+    "10": "PR #227",
+    "tooling": "PR #224 adds the docker-compose.local.yml override ./go now honours"
+  }
 }
