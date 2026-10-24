@@ -1,7 +1,7 @@
 {
   "phase": 5,
   "name": "Rails 6.1 → 7.0",
-  "status": "in_progress",
+  "status": "completed",
   "ruby_version": "3.1.7 (unchanged, applied in Phase 2)",
   "changes": {
     "rails": "6.1.7.10 → 7.0.10",

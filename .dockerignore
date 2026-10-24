@@ -1,0 +1,10 @@
+# Keep local, gitignored build artifacts out of the Docker build context so a
+# local image build matches CI (which builds from a clean checkout).
+# public/assets is excluded from the context only: Dockerfile.production
+# regenerates it with `rails assets:precompile`, so the final image has it.
+.claude/
+public/assets/
+tmp/
+node_modules/
+coverage/
+log/*.log

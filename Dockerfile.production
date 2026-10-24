@@ -27,11 +27,20 @@ RUN gem install bundler -v 2.4.22
 # and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
 RUN bundle install --frozen
 
-#precompile static assets, set dummy SECRET_KEY_BASE to avoid this issue: https://github.com/heartcombo/devise/issues/4879
-#note this var gets set on prod in a different way
-ENV SECRET_KEY_BASE="dummy"
-RUN rake assets:precompile
-ENV SECRET_KEY_BASE=""
+#Precompile static assets with the production asset pipeline config (digests,
+# Uglifier minification) so production serves them straight from public/assets;
+# production.rb sets config.assets.compile = false, so nothing compiles at runtime.
+# Without RAILS_ENV=production this would run as development (unminified bundles).
+# Build-time-only dummy values are set inline so they are not persisted in the image:
+# - SECRET_KEY_BASE: Devise needs one at boot (https://github.com/heartcombo/devise/issues/4879).
+#   The real value is set per environment at runtime.
+# - DATABASE_URL: points at an unreachable host; precompile never connects to the DB.
+# The sprockets cache is removed afterwards: it is not needed at runtime once compile is off.
+RUN RAILS_ENV=production \
+    SECRET_KEY_BASE=dummy-build-time-only \
+    DATABASE_URL=postgresql://build@127.0.0.1:1/no-db-at-build-time \
+    bundle exec rails assets:precompile \
+    && rm -rf tmp/cache/assets
 
 #Default for runs outside Helm (docker-compose.production_http.yml); the
 # core-iac Helm chart overrides it per environment from the ingress host
