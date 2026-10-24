@@ -37,6 +37,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspe
 **Troubleshooting:**
 - After updating the Gemfile, run `./go build` before `./go test` or `./go start`.
 - If `./go start` exits with "A server is already running", run `./go shell` then `rm /usr/src/app/tmp/pids/server.pid`.
+- When running more than one checkout (e.g. several git worktrees) at once, `cp docker-compose.local.example.yml docker-compose.local.yml` in each; it drops the fixed `db` container name and host port 5434 that make the second checkout's `docker compose run` fail. `./go` picks the file up automatically and it is gitignored.
 
 ## Architecture
 
