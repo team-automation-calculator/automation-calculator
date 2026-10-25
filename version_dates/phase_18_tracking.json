@@ -2,7 +2,7 @@
   "phase": 18,
   "name": "Ruby 3.4 → 4.0 (+ Bundler 4 / RubyGems 4), base image 0.11.0",
   "status": "in_progress",
-  "pr": null,
+  "pr": 240,
   "branch": "upgrade/phase-18-ruby-4-0",
   "base_branch": "upgrade/phase-16-rails-8-1 (PR #239, head e203818; stacked on Phase 15 #238 → Phase 13 #235 → main 10e5c5f). Phase 18 also depends on Phase 14 (Trixie, PR #236) and Phase 17 (haml 7, PR #237), which are parallel branches from Phase 13, so both were merged into this branch first: d7f935f merges origin/upgrade/phase-14-trixie (head 3c4bcdd) and 31be44c merges origin/upgrade/phase-17-haml-7 (head 3b6d65e) — no conflicts, not even in Gemfile.lock (Phase 14 does not touch the lock and Phase 17 only moves haml / haml-rails). Until #236 and #237 land, the PR diff against #239 therefore shows their changes too; after the planned merge order (#235 → #236 / #237 / #238 → #239 → this) only Phase 18 remains",
   "merged": null,
@@ -61,7 +61,7 @@
     "2649d51": "Ruby 3.4.12 → 4.0.9, bundler 4.0.20, base image 0.11.0, cimg/ruby:4.0-node, TargetRubyVersion 4.0, BUNDLE_FROZEN=true in Dockerfile.ci / Dockerfile.production",
     "28758e2": "Gemfile byebug platforms → %w[mri windows]; Gemfile.lock under Bundler 4.0.20 (BUNDLED WITH, erb 6.0.7, cgi gone)",
     "6b10ea8": "bin/setup, bin/update: drop require 'pathname'",
-    "tracking": "this file + ruby.json / linux.json / node.json / key_gems.json refresh, upgrade_path.json status flip"
+    "ad5ea78": "this file + ruby.json / linux.json / node.json / key_gems.json refresh, upgrade_path.json status flip; followed by a one-line commit recording PR #240"
   },
   "lock_method": "Gemfile edited first (platforms), then in a plain ruby:4.0.9-slim-trixie container with the worktree mounted: `bundle lock` (BUNDLED WITH only) → `bundle lock --add-platform x86_64-linux` → `bundle lock --add-platform ruby`; dev image built; the erb Gem::LoadError surfaced in the first ./go test; `bundle lock --update erb --conservative` → the two --add-platform calls again → dev image rebuilt. The image's /usr/src/app/Gemfile.lock was diffed against the host's after each build: identical both times (so nothing was auto-unlocked at install time, the failure mode PR #229 hit with minitest 5.17)",
   "native_gem_probe": {
