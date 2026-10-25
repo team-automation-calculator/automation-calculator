@@ -6,7 +6,7 @@
     "release_date": "2023-09-14",
     "end_of_life": "2028-11-09",
     "source": "docker-compose.yml",
-    "notes": "Used for local dev and CI; exact patch version resolved at image pull time. Current lines on 2026-10-23: 18 (2025-09-25, EOL 2030-11-14), 17 (EOL 2029-11-08); 19 is at RC1 with community GA planned 2026-11-19."
+    "notes": "Used for local dev and CI; exact patch version resolved at image pull time. Current lines on 2026-10-25: 18 (2025-09-25, EOL 2030-11-14), 17 (EOL 2029-11-08); 19rc1-alpine is on Docker Hub with community GA planned 2026-11-19. Phase 19a (compose → 18-alpine) is unblocked since Phase 7 (pg 1.7, bundled libpq 18.6) merged on 2026-10-25."
   },
   "rds": {
     "engine_version": "16.13",

@@ -1,7 +1,11 @@
 {
   "phase": 6,
   "name": "Node 20 → 26 LTS + CI compose cleanup",
-  "status": "in_progress",
+  "status": "completed",
+  "pr": 223,
+  "merged": "squash 935e2cb on 2026-10-24 08:29 UTC",
+  "image": "0.9.6-901 (CircleCI build 901), the first production image on Node 26 and base image 0.8.0",
+  "deployed": "staging and production 2026-10-25 via core-iac #342; base image 0.8.0 was pushed multi-arch to Docker Hub before merge, so notes.ci_red_until_base_pushed below is resolved",
   "ruby_version": "3.1.7 (unchanged)",
   "rails_version": "7.0.10 (unchanged)",
   "changes": {

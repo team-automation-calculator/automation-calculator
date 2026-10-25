@@ -1,7 +1,11 @@
 {
   "phase": 10,
   "name": "development/test tooling catch-up on Ruby 3.1 (rubocop 1.28 → 1.92, annotate → annotaterb, database_cleaner 2)",
-  "status": "in_progress",
+  "status": "completed",
+  "pr": 227,
+  "merged": "squash 2ea3478 on 2026-10-25 17:55 UTC (main merged in first; Gemfile.lock conflicts resolved by hand — development/test gems from this PR, runtime gems from main — and a follow-up `bundle lock` left the file unchanged)",
+  "image": "CircleCI build 911 green on 2ea3478 (0.9.6-911)",
+  "deployed": "not deployed on its own: no runtime gem, HTTP contract or UI change, so it rides with the next image that is promoted (Phase 11)",
   "ruby_version": "3.1.7 (unchanged)",
   "rails_version": "7.0.10 (unchanged)",
   "changes": {

@@ -1,7 +1,11 @@
 {
   "phase": 7,
   "name": "puma 5 → 8, pg 1.5 → 1.7",
-  "status": "in_progress",
+  "status": "completed",
+  "pr": 225,
+  "merged": "squash fea6299 on 2026-10-25 16:48 UTC",
+  "image": "0.9.6-906 (CircleCI build 906)",
+  "deployed": "core-iac #345 bumped development, staging and production in one PR; staging applied ~17:05 UTC, production ~17:08 UTC after the Terraform Cloud confirm. Smoke suite 49 examples / 0 failures / 2 pending against both environments before (-901) and after (-906). -906 is the baseline for attributing any puma 8 / pg 1.7 regression",
   "ruby_version": "3.1.7 (unchanged)",
   "rails_version": "7.0.10 (unchanged)",
   "changes": {

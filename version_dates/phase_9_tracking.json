@@ -1,7 +1,11 @@
 {
   "phase": 9,
   "name": "sassc-rails → dartsass-sprockets (+ uglifier → terser)",
-  "status": "in_progress",
+  "status": "completed",
+  "pr": 226,
+  "merged": "squash 26acbeb on 2026-10-25 17:37 UTC",
+  "image": "0.9.6-909 (CircleCI build 909)",
+  "deployed": "core-iac #347 (17:46 UTC) set -909 in development, staging and production tfvars and helm values; staging applied ~17:50 UTC with smoke 49/0/2 before and after. Asset check on staging: application.css 158 KB (was 151 KB; now starts with a UTF-8 BOM from Dart Sass, Bootstrap 4.6.2 inline, font-face URLs digested), application.js 2.65 MB via terser (was 2.66 MB via uglifier), landing_page.js and logo.png digests unchanged. Production followed at ~17:55 UTC after the Terraform Cloud confirm, smoke 49/0/2 before and after. -909 is the baseline for attributing any Dart Sass / terser asset regression",
   "ruby_version": "3.1.7 (unchanged)",
   "rails_version": "7.0.10 (unchanged)",
   "changes": {
