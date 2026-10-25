@@ -2,7 +2,7 @@
   "phase": 16,
   "name": "Rails 8.0 → 8.1 (+ load_defaults 8.0, explicit scenario ordering)",
   "status": "in_progress",
-  "pr": null,
+  "pr": 239,
   "branch": "upgrade/phase-16-rails-8-1",
   "base_branch": "upgrade/phase-15-rails-8-0 (PR #238, head 0808523, itself stacked on Phase 13 #235) — stacked; this PR's diff shows only Phase 16. main is at 10e5c5f (Phases 11 and 12 merged, Rails 7.2.4). Rails 8.0's security support ends 2026-11-07, so #238 and this PR should be promoted close together. Phase 17 (haml 7) also touches Gemfile.lock from the Phase 13 base; whichever lands later needs a lockfile rebase",
   "merged": null,
