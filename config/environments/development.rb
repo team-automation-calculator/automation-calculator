@@ -79,4 +79,7 @@ Rails.application.configure do
 
   # Allow requests from any source in development
   config.web_console.whiny_requests = false
+
+  # Raise when a before_action only/except option names a missing action.
+  config.action_controller.raise_on_missing_callback_actions = true
 end

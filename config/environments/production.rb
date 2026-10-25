@@ -95,4 +95,8 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production (Rails 7.2 default for new
+  # apps); keeps attribute values out of logged #inspect output.
+  config.active_record.attributes_for_inspect = [:id]
 end
