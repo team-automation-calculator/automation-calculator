@@ -25,9 +25,9 @@ Rails.application.configure do
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Compress JavaScripts and CSS.
-  # Harmony mode is required since Rails 7.0: actionview ships rails-ujs as
-  # ES6, which the default (ES5-only) uglifier parser rejects.
-  config.assets.js_compressor = Uglifier.new(harmony: true)
+  # terser parses modern (ES6+) syntax natively, which rails-ujs needs since
+  # actionview 7.0. CSS is compressed by dartsass-sprockets (:sass) by default.
+  config.assets.js_compressor = :terser
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.

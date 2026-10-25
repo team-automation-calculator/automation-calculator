@@ -6,15 +6,18 @@ git_source(:github) do |repo_name|
 end
 
 gem 'coffee-rails'
+# Dart Sass (sass-embedded) on the Sprockets pipeline; replaces sass-rails /
+# sassc-rails, which wrapped the end-of-life libsass.
+gem 'dartsass-sprockets', '~> 3.2'
 gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 1.7'
 gem 'puma', '~> 8.0'
 gem 'rails', '~> 7.0.0'
 gem 'rake'
-gem 'sass-rails'
+# JS compressor for assets:precompile; replaces uglifier.
+gem 'terser', '~> 1.2'
 gem 'turbolinks'
-gem 'uglifier'
 
 # Flexible authentication solution for Rails with Warden
 gem 'devise', '~> 5.0'
