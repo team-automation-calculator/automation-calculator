@@ -38,6 +38,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspe
 - After updating the Gemfile, run `./go build` before `./go test` or `./go start`.
 - If `./go start` exits with "A server is already running", run `./go shell` then `rm /usr/src/app/tmp/pids/server.pid`.
 - When running more than one checkout (e.g. several git worktrees) at once, `cp docker-compose.local.example.yml docker-compose.local.yml` in each; it drops the fixed `db` container name and host port 5434 that make the second checkout's `docker compose run` fail. `./go` picks the file up automatically and it is gitignored.
+- If the `db` container exits right after `./go init` or `./go start` with `Error: in 18+, these Docker images are configured to store database data ...` (or `database files are incompatible with server`), this checkout's `postgres` volume still holds a PostgreSQL 16 data directory from before the `postgres:18-alpine` bump. Dev data is disposable and nothing is migrated: drop the volume with `docker compose down --volumes` and run `./go init` again. `./go clean` also works but removes every image as well, so the next `./go init` rebuilds from scratch. No `./go` command drops only the volume.
 
 ## Architecture
 
