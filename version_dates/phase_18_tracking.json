@@ -1,0 +1,142 @@
+{
+  "phase": 18,
+  "name": "Ruby 3.4 → 4.0 (+ Bundler 4 / RubyGems 4), base image 0.11.0",
+  "status": "in_progress",
+  "pr": null,
+  "branch": "upgrade/phase-18-ruby-4-0",
+  "base_branch": "upgrade/phase-16-rails-8-1 (PR #239, head e203818; stacked on Phase 15 #238 → Phase 13 #235 → main 10e5c5f). Phase 18 also depends on Phase 14 (Trixie, PR #236) and Phase 17 (haml 7, PR #237), which are parallel branches from Phase 13, so both were merged into this branch first: d7f935f merges origin/upgrade/phase-14-trixie (head 3c4bcdd) and 31be44c merges origin/upgrade/phase-17-haml-7 (head 3b6d65e) — no conflicts, not even in Gemfile.lock (Phase 14 does not touch the lock and Phase 17 only moves haml / haml-rails). Until #236 and #237 land, the PR diff against #239 therefore shows their changes too; after the planned merge order (#235 → #236 / #237 / #238 → #239 → this) only Phase 18 remains",
+  "merged": null,
+  "image": null,
+  "deployed": null,
+  "ruby_version": "3.4.12 → 4.0.9",
+  "rails_version": "8.1.4 (unchanged)",
+  "versions_current_on_2026_10_25": "fetch_latest_versions.py re-run first; latest_versions.json came back identical (already refreshed earlier today). Newest ruby:4.0.x-slim-trixie tag is 4.0.9 — the plan's pin, used as-is. Bundler on rubygems.org is 4.0.23; the image ships 4.0.20, which is what the Dockerfiles pin (same rule as Phase 13)",
+  "image_facts": {
+    "ruby": "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +PRISM [aarch64-linux]; +YJIT shows once Rails' config.yjit (load_defaults 8.0) enables it",
+    "rubygems": "4.0.20",
+    "bundler_shipped": "4.0.20 (default gem)",
+    "debian": "13.7 (Trixie), gcc 14.2.0-19, apt libpq-dev 17.11-0+deb13u1, OpenSSL 3.5.7 (Ruby's openssl ext 4.0.2)",
+    "node": "v26.12.1 (nodejs 26.12.1-1nodesource1 from setup_26.x, unchanged)",
+    "default_and_bundled_gems_that_overlap_the_lock": "erb 6.0.7 default (lock had 4.0.4.1 → moved, see changes.erb); io-console default 0.8.2 vs locked 0.9.4; minitest 6.0.0 bundled vs locked 5.27.0; reline 0.6.3 bundled vs locked 0.7.0; rdoc 7.0.4 bundled vs locked 8.1.0. The last pair makes the `gem` CLI print eight `warning: already initialized constant RDoc::*` lines (both versions' rubygems_plugin load); rspec, rails and bundler output is free of it"
+  },
+  "changes": {
+    "ruby": ".ruby-version 3.4.12 → 4.0.9; Gemfile has no `ruby` line; Gemfile.lock has no RUBY VERSION section (unchanged)",
+    "docker_base_image": "ruby:3.4.12-slim-trixie → ruby:4.0.9-slim-trixie in Dockerfile.base, Dockerfile.development, Dockerfile.production; the apt line, NodeSource and nokogiri 1.19.4 pre-install are unchanged",
+    "bundler": "`gem install bundler -v 2.6.9` → `-v 4.0.20` in the three Dockerfiles; Gemfile.lock BUNDLED WITH 2.6.9 → 4.0.20 (now indented two spaces). Regenerated with `bundle lock` in a plain ruby:4.0.9-slim-trixie container (Bundler 4.0.20, lock only): that run changed nothing but BUNDLED WITH. No CHECKSUMS section appeared (Bundler 4 writes one only for new lockfiles or with --add-checksums; not forced). PLATFORMS aarch64-linux / ruby / x86_64-linux unchanged, re-added with `bundle lock --add-platform x86_64-linux` then `--add-platform ruby` (one per call) after every lock change",
+    "bundler_frozen_flag": "Bundler 4 removed `bundle install --frozen` (exit 15: 'The --frozen flag has been removed because it relied on being remembered across bundler invocations, which bundler no longer does. Instead please use `bundle config set frozen true`'). Dockerfile.ci and Dockerfile.production now run `RUN BUNDLE_FROZEN=true bundle install` — the setting scoped to that RUN, nothing written to .bundle/config. Verified both ways in the dev image: with the committed lock it reports Bundle complete; on a scratch copy with an extra Gemfile line it exits 16 with 'You have added to the Gemfile: * rack-cors … Run `bundle install` elsewhere' and leaves the lock untouched; `bundle config get frozen` shows 'Set via BUNDLE_FROZEN: true'. Not in the plan (which only named `--binstubs`), found because Dockerfile.ci was exercised locally against the local base 0.11.0",
+    "gemfile_platforms": "byebug line `platforms: %w[mri mingw x64_mingw]` → `%w[mri windows]` (Bundler 4: '[DEPRECATED] Platform :mingw, :x64_mingw will be removed in the future. Please use platform :windows instead'). With :windows no deprecation is printed by any bundler command. The Gemfile has a single global `source` and no `bundle install --binstubs` is used anywhere, so the other two Bundler 4 breakages in the plan do not apply",
+    "erb": "4.0.4.1 → 6.0.7 via `bundle lock --update erb --conservative`. Not in the plan. Ruby 4.0.9 ships erb 6.0.7 as a default gem and it is activated before Bundler.setup runs, so with 4.0.4.1 locked every spec file failed to load: `Gem::LoadError: You have already activated erb 6.0.7, but your Gemfile requires erb 4.0.4.1. Since erb is a default gem, you can either remove your dependency on it or try updating to a newer version of bundler that supports erb as a default gem` (47 errors outside of examples, 0 examples run; the smoke specs' `cannot load such file -- nokogiri` in the same run was the same failure seen from outside Bundler). erb is only a transitive (rdoc 8.1.0 → erb); 6.0.7 is the newest release and the image's own version. cgi 0.5.2 left the lock with it — erb 6 no longer depends on the cgi gem (Ruby 4.0 removed the CGI library apart from cgi/escape). Gem count 182 → 180 (erb's duplicate default-gem copy is no longer installed separately, and cgi is gone)",
+    "pathname_requires": "bin/setup and bin/update: `require 'pathname'` removed. Pathname is a core class in Ruby 4.0 (`ruby -e 'p Pathname'` works on the bare image with only pathname.so in $LOADED_FEATURES), so RuboCop's Lint/RedundantRequireStatement flagged both under TargetRubyVersion 4.0 — the only two offences the new target produced. Not in the plan",
+    "ci_executor": ".circleci/config.yml cimg/ruby:3.4-node → cimg/ruby:4.0-node (tag exists per latest_versions.json docker_tags)",
+    "base_image_version": "0.10.0 → 0.11.0 in Dockerfile.ci (FROM), scripts/docker_build.rb (build_base_image tag) and scripts/docker_hub.rb (BASE_VERSION)",
+    "rubocop_target": ".rubocop.yml TargetRubyVersion 3.4 → 4.0 (rubocop 1.92.1 accepts it; see pathname_requires for the two offences it surfaced)",
+    "minitest": "5.27.0 unchanged — the standing note's `>= 5.26` check held: Bundler 4 did not re-resolve it on Ruby 4.0.9 (bundled minitest is 6.0.0), the image's baked Gemfile.lock is byte-identical to the host's, and the spike's `bundle lock --update minitest` step was not needed",
+    "compatibility_recheck": "pg 1.7.0 (declares < 4.1.dev; PG.library_version 180006 from the precompiled aarch64-linux gem), nokogiri 1.19.4 (precompiled aarch64-linux-gnu / x86_64-linux-gnu reused from the Dockerfile pre-install, no libxml2 build), byebug 13.0.0 (compiles, 6 GCC warnings, 0 errors), web-console 4.3.0 — all install and load on 4.0.9; nothing else in the lock moved",
+    "transitives_unchanged": "rails 8.1.4, rack 3.2.7, puma 8.0.2, haml 7.5.1, nokogiri 1.19.4, pg 1.7.0, rspec-rails 8.0.4, rubocop 1.92.1, minitest 5.27.0, reline 0.7.0, io-console 0.9.4, rdoc 8.1.0, rbs 4.2.0, ffi 1.15.5, i18n 1.12.0, json 2.20.0, bigdecimal 3.3.1, tsort 0.2.0 — the lock diff against the merged Phase 14 + 16 + 17 tree is exactly: cgi (0.5.2) removed, erb (4.0.4.1) + its `cgi (>= 0.3.3)` dependency → erb (6.0.7), BUNDLED WITH"
+  },
+  "files_touched": [
+    ".ruby-version",
+    "Dockerfile.base",
+    "Dockerfile.ci",
+    "Dockerfile.development",
+    "Dockerfile.production",
+    ".circleci/config.yml",
+    ".rubocop.yml",
+    "scripts/docker_build.rb",
+    "scripts/docker_hub.rb",
+    "Gemfile",
+    "Gemfile.lock",
+    "bin/setup",
+    "bin/update",
+    "version_dates/phase_18_tracking.json",
+    "version_dates/upgrade_path.json (Phase 18 status → in_progress only)",
+    "version_dates/ruby.json",
+    "version_dates/linux.json (image source lines only)",
+    "version_dates/node.json (installed_at_last_image_build line only)",
+    "version_dates/key_gems.json (rubocop, minitest, byebug notes)"
+  ],
+  "commits": {
+    "d7f935f": "Merge origin/upgrade/phase-14-trixie (3c4bcdd) into the Phase 16 tip e203818",
+    "31be44c": "Merge origin/upgrade/phase-17-haml-7 (3b6d65e)",
+    "2649d51": "Ruby 3.4.12 → 4.0.9, bundler 4.0.20, base image 0.11.0, cimg/ruby:4.0-node, TargetRubyVersion 4.0, BUNDLE_FROZEN=true in Dockerfile.ci / Dockerfile.production",
+    "28758e2": "Gemfile byebug platforms → %w[mri windows]; Gemfile.lock under Bundler 4.0.20 (BUNDLED WITH, erb 6.0.7, cgi gone)",
+    "6b10ea8": "bin/setup, bin/update: drop require 'pathname'",
+    "tracking": "this file + ruby.json / linux.json / node.json / key_gems.json refresh, upgrade_path.json status flip"
+  },
+  "lock_method": "Gemfile edited first (platforms), then in a plain ruby:4.0.9-slim-trixie container with the worktree mounted: `bundle lock` (BUNDLED WITH only) → `bundle lock --add-platform x86_64-linux` → `bundle lock --add-platform ruby`; dev image built; the erb Gem::LoadError surfaced in the first ./go test; `bundle lock --update erb --conservative` → the two --add-platform calls again → dev image rebuilt. The image's /usr/src/app/Gemfile.lock was diffed against the host's after each build: identical both times (so nothing was auto-unlocked at install time, the failure mode PR #229 hit with minitest 5.17)",
+  "native_gem_probe": {
+    "method": "real builds with --progress=plain output captured (docker compose build dev on arm64; ./go build base on arm64; ./go build base --multi-platform for linux/amd64 + linux/arm64 under buildx; ./go build ci from the local base), then /usr/local/bundle/extensions/aarch64-linux/4.0.0/*/gem_make.out grepped for error: / warning:",
+    "compiled_on_ruby_4_0_9_both_arches": [
+      "bcrypt 3.1.22 (5 warnings)",
+      "bigdecimal 3.3.1 (3)",
+      "bindex 0.5.0 (0)",
+      "byebug 13.0.0 (6)",
+      "date 3.6.0 (0)",
+      "erb 6.0.7 (0; 4.0.4.1 also compiled before it was moved)",
+      "ffi 1.15.5 (388, all the Ruby 3.4+/4.0 TypedData `rb_data_object_get_warning is deprecated` plus four libffi deprecations — same count as Phase 14)",
+      "io-console 0.9.4 (3)",
+      "json 2.20.0 (3)",
+      "nio4r 2.7.5 (82, vendored libev -Wundef etc.)",
+      "prism 1.9.0 (0)",
+      "puma 8.0.2 (11)",
+      "rbs 4.2.0 (3)",
+      "websocket-driver 0.8.2 (4)"
+    ],
+    "precompiled_not_compiled": [
+      "pg 1.7.0 (aarch64-linux / x86_64-linux; PG.library_version 180006)",
+      "nokogiri 1.19.4 (aarch64-linux-gnu / x86_64-linux-gnu, reused from the Dockerfile pre-install)",
+      "sass-embedded 1.106.1 and google-protobuf 4.35.1 (aarch64-linux-gnu / x86_64-linux-gnu)"
+    ],
+    "errors": "none — zero `error:` lines in any gem_make.out; cgi 0.5.2 compiled on the first build and then left the lock"
+  },
+  "verification": {
+    "dev_image_build": "docker compose build dev (Dockerfile.development on ruby:4.0.9-slim-trixie, arm64): apt OK, NodeSource → nodejs 26.12.1, useradd --uid=501 (the usual UID_MIN warning), nokogiri-1.19.4-aarch64-linux-gnu, bundler-4.0.20, `Bundle complete! 44 Gemfile dependencies, 180 gems now installed` (181 on the first build with erb 4.0.4.1 + cgi); exit 0. Inside: ruby 4.0.9, Bundler 4.0.20, gem 4.0.20, node v26.12.1, Debian 13.7, `bundle check` satisfied, image lock == host lock",
+    "base_image_build_native": "./go build base (arm64, not pushed): automationcalculationsci/automation-calculator-base:0.11.0 built, nokogiri 1.19.4 precompiled, bundler 4.0.20, Bundle complete 180 gems; 1.59 GB",
+    "base_image_build_multi_platform": "./go build base --multi-platform (buildx docker-container builder `multiplatform`, linux/amd64 + linux/arm64, no --push / --load): both platforms completed; amd64 installed nokogiri-1.19.4-x86_64-linux-gnu, pg 1.7.0 (x86_64-linux), sass-embedded 1.106.1 and google-protobuf 4.35.1 (x86_64-linux-gnu) and reached Bundle complete 180 gems in 44.6 s under emulation; arm64 the same in 11 s. Nothing pushed — Docker Hub has 0.9.0 (pushed 2026-10-25 19:51 UTC) and 0.10.0 (20:16 UTC) but no 0.11.0",
+    "ci_image_build_local": "./go build ci against the locally built base:0.11.0 (the exact Dockerfile.ci CI will run): `RUN BUNDLE_FROZEN=true bundle install` → Bundle complete 180 gems (0.2 s, everything already in the base), `rake assets:precompile` → manifest + assets written, only the five Dart Sass @import deprecations; exit 0. This is the step the old `--frozen` line would have failed",
+    "ci_image_test_and_lint": "rspec in that CI image (docker compose … ci rspec): 393 examples, 0 failures, 6 pending, Line coverage 435 / 462 (94.15%), zero `warning:` lines; rubocop in it: 162 files inspected, no offenses detected. Run with a scratch compose override because the tracked docker-compose.local.yml also overrides db_client, which docker-compose.ci.yml does not define ('service db_client has neither an image nor a build context') — a pre-existing limitation of the local override for `./go test ci` / `./go lint ci`, not touched here",
+    "rubocop": "./go lint: 162 files inspected, no offenses detected under TargetRubyVersion 4.0 (after removing the two pathname requires; the first run reported exactly those two Lint/RedundantRequireStatement offences)",
+    "rspec": "./go test: 393 examples, 0 failures, 6 pending (the pre-existing 'Not yet implemented' view/helper specs); Line coverage 435 / 462 (94.15%) — identical to Phases 13–16. Second full run with `-e RUBYOPT=-W:deprecated`: 393 / 0 / 6, zero `warning:` lines (the flag reaches the process: a `s << 'y'` probe in the same container printed the chilled-string warning). The first run, before the erb move, was 0 examples / 47 load errors (see changes.erb)",
+    "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples, 0 failures (loading only). `config.filter_run_excluding :smoke` unchanged (`Run options: exclude {smoke: true}` on every full run)",
+    "assets_precompile": "RAILS_ENV=production SECRET_KEY_BASE=dummy bundle exec rails assets:precompile in the dev container: exit 0, 86 files under public/assets, only the five expected Dart Sass @import deprecations; public/assets and tmp/cache/assets removed afterwards",
+    "production_boot": "RAILS_ENV=production bundle exec rails runner (eager_load true) on the dev image: ruby 4.0.9 +YJIT +PRISM, Rails 8.1.4, loaded_config_version 8.0, RubyVM::YJIT.enabled? true, Bundler 4.0.20 / RubyGems 4.0.20, erb 6.0.7, haml 7.5.1, nokogiri 1.19.4, rack 3.2.7, pg 1.7.0 (libpq 180006), Settings.api_session_duration 60 (config's OpenStruct path, no ostruct warning), AutomationScenario / Solution / Iteration / User / Visitor eager-loaded",
+    "go_start_health": "the dev image run detached with `docker compose run -d -p 3012:3000 dev rails s` against this worktree's db container (host port 3001 belongs to the main checkout): Puma 8.0.2 on `ruby 4.0.9 … +YJIT +PRISM`, `GET /health` → HTTP 200 `{\"current_time_in_unix\":…,\"short_commit_hash\":\"4ba60c3\",\"database\":\"ok\"}`; container stopped and removed afterwards",
+    "ruby_4_0_core_probes": "in the container: Pathname available without require; Set is core (`Set.ancestors` → [Set, Enumerable], no set.rb); `Hash#inspect` → `{a: 1, \"b\" => 2}` (unchanged from 3.4, no spec asserts on it); `s << 'y'` on a literal warns under -W:deprecated (chilled strings still warn, not raise, in 4.0 — and the suite emits none)"
+  },
+  "warnings_observed": {
+    "ruby_W_deprecated": "none (0 lines) across 393 examples; no tsort / bundled-gem warning from rails 8.1.4 (the railties 7.0 tsort warning PR #229 saw is gone)",
+    "rails_deprecation": "none",
+    "bundler": "none — no `[DEPRECATED] Platform` line with %w[mri windows]; the only Bundler 4 messages were the removed `--frozen` flag (fixed) and the erb Gem::LoadError (fixed)",
+    "rubygems": "`WARN: Unresolved or ambiguous specs during Gem::Specification.reset: reline (>= 0.6.0) — Available/installed versions: 0.7.0, 0.6.3` + `Clearing out unresolved specs` once per rspec boot (byebug 13 wants reline >= 0.6.0; Ruby 4.0.9 bundles 0.6.3, the lock has 0.7.0). Same message as Phases 13–17 with 0.6.3 instead of 0.6.0, exactly as the plan's risk list said. Harmless",
+    "gem_cli_rdoc": "`gem -v` / `gem list` print eight `warning: already initialized constant RDoc::VERSION / VISIBILITIES / DOT_DOC_FILENAME / …_MODIFIERS` pairs because rdoc 8.1.0 (lock) and rdoc 7.0.4 (Ruby 4.0.9 bundled gem) both register a rubygems_plugin. Only the `gem` command; bundler, rspec and rails are silent. New in this phase (Ruby 3.4.12 bundled rdoc 6.x, which did not clash)",
+    "dart_sass": "5 × `DEPRECATION WARNING [import]` from application.scss on a cold sprockets cache and in assets:precompile — pre-existing since Phase 9",
+    "rubyzip": "rubyzip 2.4.1's post-install note about the 3.x API during image build — pre-existing since Phase 13",
+    "docker_build": "Trixie apt's `debconf: Can't locate Term/ReadLine.pm` line under buildx emulation and the usual update-alternatives man-page notes — noise"
+  },
+  "notes": {
+    "departures_from_plan": {
+      "erb_6_0_7": "not in the plan; forced by Ruby 4.0.9's default erb being newer than the locked 4.0.4.1 (see changes.erb). cgi 0.5.2 left the lock as a consequence",
+      "bundle_install_frozen_removed": "the plan listed `bundle install --binstubs` as the Bundler 4 breakage; the one this repo actually hits is `--frozen` in Dockerfile.ci and Dockerfile.production. Replaced with BUNDLE_FROZEN=true (same guarantee, verified negatively)",
+      "pathname_requires": "not in the plan; a Ruby 4.0 core-class change surfaced by the RuboCop target bump",
+      "windows_not_dropped": "the plan said to drop :mingw / :x64_mingw; they were replaced with :windows, the symbol Bundler's own deprecation message names, so the byebug line still means 'MRI, incl. Windows builds'",
+      "bundler_4_0_20": "as planned (what the image ships), not 4.0.23"
+    },
+    "held_back": {
+      "checksums": "no `bundle lock --add-checksums`; the lock stays without a CHECKSUMS section until it is created fresh (plan)",
+      "bundler_4_0_23": "see above",
+      "ffi_1_17": "ffi 1.15.5 still compiles (388 TypedData deprecation warnings, as in Phase 14); not moved — no lockfile change beyond erb in this phase",
+      "docker_compose_local_ci": "the db_client override problem that stops `./go test ci` from working with docker-compose.local.yml is noted, not fixed (out of scope)"
+    },
+    "ci_red_until_base_pushed": "Dockerfile.ci pulls automationcalculationsci/automation-calculator-base:0.11.0, which does not exist on Docker Hub until someone with Docker Hub login runs `docker login && ./go push base --multi-platform` from this branch (builds Dockerfile.base for linux/amd64,linux/arm64 and pushes :0.11.0), then `git commit --allow-empty -m 'Re-trigger CI now that base 0.11.0 is on Docker Hub' && git push`. 0.9.0 and 0.10.0 are already on Docker Hub (pushed 2026-10-25 19:51 and 20:16 UTC), so only 0.11.0 is missing. This PR pushes no image",
+    "spec_semantics": "no spec expectation changed; no HTTP status code, response body, URL path, header or UI text changed. spec/smoke and spec/support/api_schemas untouched",
+    "staging_checklist": [
+      "after base 0.11.0 is on Docker Hub: CI green on x86_64 (`./go build ci` → `BUNDLE_FROZEN=true bundle install` on the Ruby 4.0.9 base, `./go build prod` → assets:precompile on amd64 under Bundler 4)",
+      "/health 200 with database: ok (pg 1.7.0 precompiled gem on Ruby 4.0.9 against RDS)",
+      "GitHub and Google sign-in round trips (omniauth 2.3.1 / rack-protection 4.2.1 / OpenSSL 3.5.7, new Ruby)",
+      "scenario chart page renders (haml 7.5.1 on Ruby 4.0.9 with YJIT in production mode)",
+      "./go smoke staging 49/0/2 before and after",
+      "first minutes of puma logs free of Ruby `warning:` lines; the one-off `ambiguous specs: reline` WARN at boot is expected"
+    ],
+    "after_merge": "close the spike PR #229 (its Dockerfile / lockfile moves are now all in: Trixie via Phase 14, nokogiri 1.19.4 / byebug 13 / pry 0.16 / minitest 5.27 via Phases 10 and 13, Ruby 4.0.9 + Bundler 4.0.20 here). Phase 19b (RDS) and Phase 20 remain; Ruby 4.1 (2026-12-25) will need a `gem 'tsort'` line unless Rails declares it"
+  }
+}
