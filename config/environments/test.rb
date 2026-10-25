@@ -51,7 +51,10 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  config.secret_key = ENV['SECRET_KEY_BASE']
+  # Rails 7.1 ignores ENV['SECRET_KEY_BASE'] outside production (it would
+  # generate tmp/local_secret.txt instead). Read it here so Rails, Devise
+  # (config/initializers/devise.rb) and JwtTokenService share one secret.
+  config.secret_key_base = ENV['SECRET_KEY_BASE']
 
   # Debug logging
   # logger           = ActiveSupport::Logger.new(STDOUT)

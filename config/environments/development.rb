@@ -10,6 +10,11 @@ Rails.application.configure do
   # Do not eager load code on boot.
   config.eager_load = false
 
+  # Rails 7.1 ignores ENV['SECRET_KEY_BASE'] outside production (it would
+  # generate tmp/local_secret.txt instead). Read it here so Rails, Devise
+  # (config/initializers/devise.rb) and JwtTokenService share one secret.
+  config.secret_key_base = ENV['SECRET_KEY_BASE']
+
   # Show full error reports.
   config.consider_all_requests_local = true
 
