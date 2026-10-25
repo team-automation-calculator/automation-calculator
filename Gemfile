@@ -85,9 +85,9 @@ group :test do
   gem 'selenium-webdriver'
   # Rspec cops for rubocop
   gem 'rubocop-rspec', '~> 3.10', require: false
-  gem 'shoulda-matchers', '~> 6.0'
-  # Code coverage for Ruby (1.x needs Ruby 3.3; rides with the Ruby phase)
-  gem 'simplecov', '~> 0.22', require: false
+  gem 'shoulda-matchers', '~> 8.0'
+  # Code coverage for Ruby
+  gem 'simplecov', '~> 1.3', require: false
   # Validate the JSON returned by your Rails JSON APIs
   gem 'json_matchers'
 end
