@@ -2,7 +2,7 @@
   "phase": 11,
   "name": "Rails 7.0 → 7.1 (+ load_defaults 7.0, cookie rotator, secrets → secret_key_base)",
   "status": "in_progress",
-  "pr": null,
+  "pr": 232,
   "branch": "upgrade/phase-11-rails-7-1",
   "merged": null,
   "image": null,
