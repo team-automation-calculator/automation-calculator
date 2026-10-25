@@ -6,26 +6,29 @@ git_source(:github) do |repo_name|
 end
 
 gem 'coffee-rails'
+# Dart Sass (sass-embedded) on the Sprockets pipeline; replaces sass-rails /
+# sassc-rails, which wrapped the end-of-life libsass.
+gem 'dartsass-sprockets', '~> 3.2'
 gem 'jbuilder'
 gem 'jquery-rails'
-gem 'pg', '~> 1.5.0'
-gem 'puma', '~> 5.6'
+gem 'pg', '~> 1.7'
+gem 'puma', '~> 8.0'
 gem 'rails', '~> 7.0.0'
 gem 'rake'
-gem 'sass-rails'
+# JS compressor for assets:precompile; replaces uglifier.
+gem 'terser', '~> 1.2'
 gem 'turbolinks'
-gem 'uglifier'
 
 # Flexible authentication solution for Rails with Warden
-gem 'devise'
+gem 'devise', '~> 5.0'
 
 # Strategy to authenticate with Google via OAuth2 in OmniAuth.
-gem 'omniauth-google-oauth2', '~> 1.1'
+gem 'omniauth-google-oauth2', '~> 1.2'
 #  GitHub strategy for OmniAuth
 gem 'omniauth-github', '~> 2.0'
 # omniauth 2 only accepts POST /auth/:provider; this verifies the Rails
 # authenticity token on that request.
-gem 'omniauth-rails_csrf_protection', '~> 1.0'
+gem 'omniauth-rails_csrf_protection', '~> 2.0'
 # Easiest way to add multi-environment yaml settings
 gem 'config'
 # brings convention over configuration to your JSON generation
@@ -37,7 +40,7 @@ gem 'haml-rails', '~> 2.0'
 gem 'bootstrap'
 # A pure ruby implementation of
 # the RFC 7519 OAuth JSON Web Token (JWT) standard
-gem 'jwt'
+gem 'jwt', '~> 3.3'
 
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
