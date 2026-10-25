@@ -34,7 +34,7 @@ RSpec.describe HealthCheckController, type: :controller do
 
     context 'when the database is unreachable' do
       before do
-        allow(ActiveRecord::Base.connection).to receive(:execute)
+        allow(ActiveRecord::Base.lease_connection).to receive(:execute)
           .and_raise(PG::ConnectionBad)
       end
 
