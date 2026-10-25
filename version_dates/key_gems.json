@@ -66,10 +66,16 @@
     "notes": "latest; low-maintenance gem; declares support through Rails 8. Verified under Rails 8.1.4 (Phase 16): rspec spec/requests green against spec/support/api_schemas/*.json"
   },
   "haml": {
-    "version": "5.2.2",
-    "release_date": "2021-05-29",
-    "source": "Gemfile.lock (gem 'haml', '~> 5.1'; haml-rails 2.1.0)",
-    "notes": "6.0 replaced the implementation with Hamlit and removed helpers (surround/succeed used in show.html.haml); 7.5.1 requires Ruby >= 3.2 (Phase 17). 5.2.2 renders every template under Rails 7.2 on Ruby 3.4.12 (Phase 13) and emitted no chilled-string warning in the suite under -W:deprecated — the 'haml 5 spams the log on 3.4' risk did not materialise, as in the Ruby 4.0 spike."
+    "version": "7.5.1",
+    "release_date": "2026-09-01",
+    "source": "Gemfile.lock (gem 'haml', '~> 7.5'; haml-rails 3.1.0); Phase 17",
+    "notes": "Latest (gem_lines.py 2026-10-25: 7.5.1 is the newest 7.x, Ruby >= 3.2). Was 5.2.2 (2021-05-29) until Phase 17. 6.0 replaced the implementation with Hamlit and removed every helper except preserve — surround/succeed in automation_scenarios/show.html.haml were rewritten as `= \"...#{}...\"` interpolation with byte-identical output; 7.0 switched the default attribute quote from ' to \" (accepted, no attr_quote override). Rendered HTML of 21 pages/mailers was identical to haml 5.2.2 apart from the quote change. Runtime deps prism (>= 1.1.0), temple (>= 0.8.2), thor, tilt — all already in the lock (temple 0.10.4, tilt 2.0.8 unchanged)."
+  },
+  "haml_rails": {
+    "version": "3.1.0",
+    "release_date": "2026-07-09",
+    "source": "Gemfile.lock (gem 'haml-rails', '~> 3.1'); Phase 17",
+    "notes": "Latest. Was 2.1.0 until Phase 17. Runtime deps actionpack / activesupport / railties >= 5.1 and haml >= 4.0.6, so it admits Rails 7.2 today and Rails 8.x later; only its generators and the Haml::RailsTemplate handler registration (via haml itself) matter to this app."
   },
   "dartsass_sprockets": {
     "version": "3.2.1",

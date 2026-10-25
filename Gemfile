@@ -34,8 +34,8 @@ gem 'config'
 # brings convention over configuration to your JSON generation
 gem 'active_model_serializers'
 # provides Haml generators for Rails
-gem 'haml', '~> 5.1'
-gem 'haml-rails', '~> 2.0'
+gem 'haml', '~> 7.5'
+gem 'haml-rails', '~> 3.1'
 # Bootstrap 4 Ruby Gem for Rails / Sprockets and Compass
 gem 'bootstrap'
 # A pure ruby implementation of
