@@ -1,0 +1,99 @@
+{
+  "phase": 17,
+  "name": "haml 5 → 7 (haml 5.2.2 → 7.5.1, haml-rails 2.1.0 → 3.1.0; surround/succeed rewritten)",
+  "status": "in_progress",
+  "pr": null,
+  "branch": "upgrade/phase-17-haml-7",
+  "base_branch": "upgrade/phase-13-ruby-3-4 (PR #235, head 845d5e5) — stacked PR; Phases 14 (Trixie) and 15 (Rails 8.0) run in parallel from the same base. Whichever of this PR and Phase 15 merges second needs a Gemfile.lock rebase (both touch the lock; this one moves only the haml and haml-rails lines)",
+  "merged": null,
+  "image": null,
+  "deployed": null,
+  "ruby_version": "3.4.12 (unchanged)",
+  "rails_version": "7.2.4 (unchanged) — the plan lists this phase after Rails 8.1, but its only dependency is Phase 13; haml-rails 3.1.0 requires railties >= 5.1 and haml 7.5.1 requires Ruby >= 3.2, so it runs on Rails 7.2.4 without waiting",
+  "changes": {
+    "haml": "~> 5.1 (5.2.2, 2021-05-29) → ~> 7.5 (7.5.1, 2026-09-01). Newest 7.x per `gem_lines.py haml --min 7` on 2026-10-25 (7.0.2, 7.1.0, 7.2.2, 7.3.1, 7.4.1, 7.5.1; all Ruby >= 3.2.0). New runtime dependencies prism (>= 1.1.0) and thor — both already locked (prism 1.9.0 via rdoc/rbs, thor 1.5.0 via railties); temple (>= 0.8.2) and tilt unchanged at 0.10.4 / 2.0.8",
+    "haml_rails": "~> 2.0 (2.1.0) → ~> 3.1 (3.1.0, 2026-07-09; 3.0.0 was 2025-09-29). Runtime deps actionpack / activesupport / railties >= 5.1, haml >= 4.0.6",
+    "removed_helpers": "app/views/automation_scenarios/show.html.haml: `= surround '\"', '\"' do / = @automation_scenario.name` → `= \"\\\"#{@automation_scenario.name}\\\"\"`; `= succeed ':' do / = s.object.display_name` → `= \"#{s.object.display_name}:\"`. Output is byte-identical: haml 5's XSS-aware surround/succeed escaped the front/back strings and html_safe'd the already-escaped block, giving `&quot;Tom&#39;s &quot;big&quot; &lt;scenario&gt; &amp; co&quot;`; haml 7 escaping the interpolated string once gives exactly the same bytes. Grep of app/ lib/ config/ spec/ for precede / succeed / surround / capture_haml / haml_tag / haml_concat / page_class / list_of / find_and_preserve / init_haml_helpers / is_haml? / Haml::Helpers found only those two call sites",
+    "options": "no initializer set Haml::Template.options (grep of config/ for haml: nothing), so nothing to move to Haml::RailsTemplate.set_options. Effective Haml::RailsTemplate.options in production boot: {generator: Temple::Generators::RailsOutputBuffer, use_html_safe: true, streaming: true, buffer_class: \"ActionView::OutputBuffer\", disable_capture: true} — escape_html stays on, attr_quote is the haml 7 default (\")",
+    "attribute_quotes": "accepted the haml 7 default double quote; no `Haml::RailsTemplate.set_options(attr_quote: \"'\")`. Reason: no spec, smoke spec or JSON schema asserts on raw HTML strings (feature specs use Capybara matchers, smoke specs parse with Nokogiri), the plan expects the change, and keeping the override would make every future haml upgrade diff against a non-default output",
+    "views_unchanged": "the other 18 .haml files under app/views (layouts application/auth/mailer, devise sessions/registrations/passwords/shared links, devise mailer ×5, about, privacy, landing_page, automation_scenarios/index, users/profiles/show) render identically on haml 7 without edits — see verification.baseline_diff",
+    "specs": "no spec changed. spec/smoke, spec/support/api_schemas untouched (no contract changed)"
+  },
+  "files_touched": [
+    "Gemfile",
+    "Gemfile.lock",
+    "app/views/automation_scenarios/show.html.haml",
+    "version_dates/phase_17_tracking.json",
+    "version_dates/key_gems.json"
+  ],
+  "commits": {
+    "d677ac5": "Phase 17: haml 5.2.2 → 7.5.1, haml-rails 2.1.0 → 3.1.0 (Gemfile + lock)",
+    "fc2e86c": "Rewrite surround/succeed (removed in haml 6) as string interpolation",
+    "tracking": "this file + key_gems.json haml / haml_rails entries; `fetch_latest_versions.py` re-run first and latest_versions.json came back identical (already refreshed on 2026-10-25 by Phase 13), so there is no version_dates refresh commit"
+  },
+  "lock_method": "Gemfile edited first, then inside the Phase 13 dev image (ruby 3.4.12, bundler 2.6.9): `bundle lock --update haml haml-rails --conservative`, `bundle lock --add-platform x86_64-linux`, `bundle lock --add-platform ruby`. Resolver demanded no transitive moves. Dev image rebuilt from the new lock (`Bundle complete! 44 Gemfile dependencies, 182 gems`, exit 0) and `bundle list` showed haml 7.5.1 / haml-rails 3.1.0 before any result below was trusted",
+  "verification": {
+    "baseline_diff": {
+      "method": "a scratch feature spec (tmp/baseline_capture_spec.rb, not committed) truncated the DB (sequences reset, so IDs are deterministic) and dumped Capybara `page.html` for 18 pages plus `mail.body.decoded` for 3 Devise mailers, first on the Phase 13 image (haml 5.2.2) into tmp/baseline, then on the rebuilt image (haml 7.5.1) into tmp/after. Two baseline runs were byte-identical, so the capture is deterministic (CSRF is off in test, so no token noise). tmp/html_diff.py rewrote attr='v' → attr=\"v\" (with \" → &quot; inside values) on the baseline side and unified-diffed the rest",
+      "pages": [
+        "01 GET / (landing, anonymous)",
+        "02 GET /about (anonymous)",
+        "03 GET /privacy",
+        "04 GET /users/sign_in (auth layout + devise/shared/_links)",
+        "05 GET /users/sign_up",
+        "06 GET /users/password/new",
+        "07 GET /users/password/edit?reset_password_token=TOKEN (devise's own ERB inside the auth layout)",
+        "08 POST sign up with blank fields → registrations/new re-render with the devise error_messages partial and field_with_errors wrappers",
+        "09 POST sign in with a wrong password → sessions/new re-render",
+        "10 visitor flow: Continue as Guest → automation_scenarios/show with 0 solutions (#scenarioData with empty arrays)",
+        "11 same after submitting one solution (hidden ids, #scenarioData with one solution)",
+        "12 GET /automation_scenarios as the visitor",
+        "13 signed-in user, scenario named `Tom's \"big\" <scenario> & co` with three solutions (one named `Automated <b>bold</b> & \"quoted\"`, one unnamed) and three intersections — exercises surround, succeed, table rows, escaping and the JSON handoff",
+        "14 GET /automation_scenarios signed in (two scenarios, display_name fallback)",
+        "15 GET /users/profile",
+        "16 PATCH profile with an invalid email → show re-render",
+        "17 GET / signed in (nav with Profile / Sign out)",
+        "18 GET /about signed in",
+        "21 Devise::Mailer.reset_password_instructions",
+        "23 Devise::Mailer.email_changed",
+        "24 Devise::Mailer.password_change"
+      ],
+      "result": "21 of 21 dumps identical after quote normalisation; 0 remaining differences. Raw diff: 491 changed lines, every one of them an attribute quote change; attribute tally of the baseline side: class 419, id 26, scope 24, type 18, http-equiv 18, data-target 18, content 18, aria-label 18, aria-expanded 18, aria-controls 18, 0data-toggle 18 (18 = once per layout render). Attributes that Rails helpers emit (form_for, link_to, *_field, submit, image_tag, stylesheet/javascript tags) were already double-quoted and did not change",
+      "explained_differences": "none left to explain. Specifically unchanged: attribute order (haml 7 emits the same alphabetical order haml 5 did for the hash-attribute button in the navbar), boolean `hidden` on #scenarioData (`<div hidden id=\"scenarioData\">`), the `%meta/` and `%br/` void tags (`<meta …>` / `<br>`), `.collapse.navbar-collapse#navbarNavDropdown` class/id emission, `data: { turbolinks: false }` flattening inside link_to (Rails, not haml), symbol attribute values (`scope: :col` → `scope=\"col\"`), whitespace/newlines between nested tags, the blank line between the trailing `= javascript_include_tag` and `</body>`, and entity escaping of text (`&lt; &gt; &amp; &quot; &#39;`)",
+      "scenario_data": "the #scenarioData element text in the haml 5 and haml 7 dumps is byte-identical (`&quot;`-escaped JSON with ActiveSupport's \\u003c \\u003e \\u0026 escapes); tmp/check_scenario_data.py html-unescaped the element text of dumps 10, 11 and 13 and json.loads'ed it back to the serializer output ({iteration_count, display_name, intersections, solutions})",
+      "not_covered": "devise/mailer/confirmation_instructions.html.haml and unlock_instructions.html.haml cannot render (User is not :confirmable / :lockable, so confirmation_url / unlock_url are undefined — pre-existing dead templates); both were compiled by Haml::Engine under haml 7.5.1 and the generated Ruby parses. layouts/_google_analytics.html.erb (production only) and layouts/mailer.text.haml are not reached by any mailer in use"
+    },
+    "rubocop": "./go lint: 162 files inspected, no offenses detected (scratch tmp/*.rb parked as .rb.txt first, since .rubocop.yml's AllCops/Exclude replaces the default tmp/ exclusion)",
+    "rspec": "./go test: 393 examples, 0 failures, 6 pending (the pre-existing 'Not yet implemented' view/helper specs); Line coverage: 435 / 462 (94.15%), unchanged from Phase 13. The :smoke exclusion is unchanged (`Run options: exclude {smoke: true}`)",
+    "rspec_W_deprecated": "second full run with `-e RUBYOPT=-W:deprecated`: 393 / 0 / 6, zero `warning:` lines from haml, temple, tilt or anything else",
+    "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples, 0 failures (loading only)",
+    "production_boot": "RAILS_ENV=production bundle exec rails runner tmp/prod_boot_check.rb in the dev container (eager_load=true): ActionView::Template.registered_template_handler(:haml) is a Haml::RailsTemplate, Haml::VERSION 7.5.1, Temple 0.10.4, Tilt 2.0.8; ApplicationController.render(template: 'about/index', layout: false) rendered 488 bytes starting `<h1>About</h1>`; the two unreachable mailer templates compiled",
+    "assets_precompile": "not re-run: haml does not take part in the asset pipeline and the Gemfile.lock change is two gem lines; Phase 13's precompile result stands"
+  },
+  "warnings_observed": {
+    "ruby_W_deprecated": "none (0 lines) across 393 examples",
+    "haml_temple": "none — no 'Haml::Template.options' deprecation, no helper deprecation (the removed helpers raise NoMethodError rather than warn, which is why the view was rewritten before the first haml 7 run)",
+    "rails_deprecation": "none",
+    "rubygems": "the pre-existing `WARN: Unresolved or ambiguous specs during Gem::Specification.reset: reline (>= 0.6.0)` + `Clearing out unresolved specs` once per rspec boot (byebug 13 / Ruby 3.4.12 default reline 0.6.0 vs locked 0.7.0; Phase 13 notes). Unchanged",
+    "image_build": "haml 7.5.1 and haml-rails 3.1.0 were the only two gems fetched; no post-install messages"
+  },
+  "notes": {
+    "departures_from_plan": {
+      "ordering": "run on Rails 7.2.4 straight after Phase 13 instead of after Rails 8.1 (Phase 16); the plan's `depends_on: [13]` allows it and haml-rails 3.1.0's railties >= 5.1 admits 7.2",
+      "no_option_override": "the brief offered `Haml::RailsTemplate.set_options(attr_quote: \"'\")` to minimise the diff; not taken (see changes.attribute_quotes)"
+    },
+    "held_back": {
+      "temple_tilt": "temple 0.10.7 and tilt 2.9.0 exist (latest_versions.json) but --conservative kept 0.10.4 / 2.0.8; neither is required by haml 7.5.1 (>= 0.8.2 / unbounded), so they stay attributable to a later catch-up phase",
+      "html2haml": "not added; haml-rails lists it only as a development dependency"
+    },
+    "spec_semantics": "no spec expectation changed; no HTTP status code, response body, URL path, header or UI text changed. The only visible change in production responses is attribute quoting in the HTML emitted by Haml tags",
+    "staging_checklist": [
+      "eyeball every page: /, /about, /privacy, /users/sign_in, /users/sign_up, /users/password/new, /visitor → scenario show (empty, then with solutions and a named scenario containing quotes), /automation_scenarios, /users/profile — Bootstrap 4 markup is the regression surface the plan names",
+      "scenario show: the Plotly chart renders and intersection markers appear (the CoffeeScript parses #scenarioData on turbolinks:load — RackTest never executed it)",
+      "./go smoke staging 49/0/2 before and after (the smoke suite parses HTML with Nokogiri, so it is quote-agnostic)",
+      "GitHub / Google sign-in buttons (button_to forms in devise/shared/_links) still post",
+      "a Devise password-reset email renders (devise/mailer/reset_password_instructions.html.haml)"
+    ],
+    "next": "rebase onto main once #235 merges; whichever of this PR and Phase 15 (Rails 8.0) merges second re-resolves Gemfile.lock (expected trivial: disjoint gem lines)"
+  }
+}
