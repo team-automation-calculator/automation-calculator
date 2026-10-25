@@ -13,8 +13,8 @@ gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 1.7'
 gem 'puma', '~> 8.0'
-gem 'rails', '~> 7.1.0'
-# railties 7.1 depends on irb, whose current release pulls in rdoc 7 and the
+gem 'rails', '~> 7.2.0'
+# railties (7.1 onward) depends on irb, whose current release pulls in rdoc 7 and the
 # psych gem. Ruby 3.1.7 ships psych 4.0.4 as a default gem; any other version
 # compiles against libyaml headers, which the slim images do not carry.
 # Re-pin or drop when the Ruby image changes (Ruby 3.4 ships psych 5.2).
