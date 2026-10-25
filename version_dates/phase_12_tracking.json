@@ -1,0 +1,131 @@
+{
+  "phase": 12,
+  "name": "Rails 7.1 → 7.2 (+ load_defaults 7.1, rack 3, cookie rotator removed, health check with_connection)",
+  "status": "in_progress",
+  "pr": null,
+  "branch": "upgrade/phase-12-rails-7-2",
+  "base_branch": "upgrade/phase-11-rails-7-1 (PR #232, stacked; retarget to main / rebase after #232 merges)",
+  "merged": null,
+  "image": null,
+  "deployed": null,
+  "ruby_version": "3.1.7 (unchanged)",
+  "rails_version": "7.1.6 → 7.2.4",
+  "changes": {
+    "rails": "~> 7.1.0 → ~> 7.2.0; 7.1.6 → 7.2.4 (all eleven frameworks; the last 7.2 release, 2026-09-24, line out of security support since 2026-08-09)",
+    "rack": "2.2.23 → 3.2.7 via `bundle update rack rack-session rackup rack-protection --conservative` (rack-protection 3.2.0, omniauth's dependency, pinned rack ~> 2.2 and had to be in the update set); rack-session 1.0.2 → 2.1.2, rackup 1.0.1 → 2.3.1, rack-protection 3.2.0 → 4.2.1; webrick 1.9.2 dropped (rackup 2 no longer depends on it)",
+    "psych": "pin `gem 'psych', '4.0.4'` kept — railties 7.2.4 still depends on irb (~> 1.13) → rdoc 7.2.0 → psych (>= 4.0.0); the resolver still needs the gem, and the base image still has no libyaml-dev (no Dockerfile change in this phase). Gemfile comment now says 'railties (7.1 onward)'",
+    "transitives_moved": "concurrent-ruby 1.2.0 → 1.3.8 (activesupport 7.2 requires >= 1.3.1)",
+    "transitives_new": "useragent 0.16.11 (actionpack 7.2's allow_browser)",
+    "transitives_removed": "mutex_m 0.3.0 (activesupport 7.2 dropped it), webrick 1.9.2",
+    "transitives_unchanged": "minitest 5.17.0 (still < 5.26; the standing note's Phase 18 check is still open), zeitwerk 2.6.6, i18n 1.12.0, nokogiri 1.18.10, rack-test 2.2.0, capybara 3.40.0, rspec-rails 7.1.1, devise 5.0.4, puma 8.0.2, pg 1.7.0, omniauth 2.3.1, haml 5.2.2",
+    "lockfile_platforms": "aarch64-linux, ruby, x86_64-linux (unchanged; `bundle lock --add-platform x86_64-linux` then `--add-platform ruby` re-run)",
+    "bundler": "2.4.22 (unchanged)"
+  },
+  "rack_3_follow_up": {
+    "unprocessable_content": "rack 3.1 renamed the 422 symbol: `:unprocessable_entity` is kept as an obsolete alias that warns ('Status code :unprocessable_entity is deprecated ... Please use :unprocessable_content instead', printed twice per suite run through rspec-rails' have_http_status). Renamed the five uses — app/controllers/api/application_controller.rb (head), app/controllers/api/iterations_controller.rb (render status, response.status), spec/requests/api/iterations_controller_spec.rb and spec/requests/api/v1/users_controller_spec.rb (have_http_status). Both symbols map to 422; the wire status is unchanged. spec/smoke has no 422 assertion and spec/support/api_schemas describe bodies, not statuses, so neither changed",
+    "verified": "the suite passes with rack 3.2.7 before any config change (baseline run after the gem bump alone: 393 examples, 0 failures) and after; `rails runner` under RAILS_ENV=production with eager_load boots and reports Rack.release 3.2.7"
+  },
+  "load_defaults": {
+    "application_rb": "config.load_defaults 7.0 → 7.1",
+    "new_framework_defaults_7_1_rb": "deleted (every key was commented out, so each 7.1 default switches on here)",
+    "new_framework_defaults_7_2_rb": "added verbatim from `rails app:update` (7.2.4) with every key commented out — Phase 15 (Rails 8.0) flips load_defaults to 7.2: active_job.enqueue_after_transaction_commit, active_storage.web_image_content_types, active_record.validate_migration_timestamps, active_record.postgresql_adapter_decode_dates, yjit",
+    "effects_here": {
+      "add_autoload_paths_to_load_path_false": "autoload paths (app/*, lib/) are no longer pushed onto $LOAD_PATH. config/initializers/host_authorization.rb's `require 'allowed_hosts'` keeps working because Rails adds lib/ to $LOAD_PATH independently (paths.add 'lib', load_path: true) — confirmed with $LOAD_PATH in a production-mode `rails runner`",
+      "precompile_filter_parameters_true": "filter_parameters compiled once at boot; no behaviour change",
+      "dom_testing_default_html_version_html5": "rails-dom-testing / ActionView test helpers parse with Nokogiri::HTML5 instead of HTML4. The suite's view and request specs (have_http_status, response.body matching, Capybara feature specs) are unaffected — Capybara's RackTest driver parses with its own Nokogiri call governed by Capybara.use_html5_parsing (unchanged); 393 examples pass",
+      "log_file_size_100mb": "development and test log/*.log rotate at 100 MB (local only)",
+      "action_dispatch_default_headers": "X-Download-Options: noopen is no longer sent (IE-only header); the other five headers are the 7.0 set. No spec asserts on it; spec/smoke does not check headers",
+      "action_dispatch_debug_exception_log_level_error": "uncaught exceptions logged at :error instead of :fatal by DebugExceptions (test has show_exceptions :none)",
+      "cache_format_version_7_1": "new cache entries use the 7.1 format. Rails.cache is never called (grep), the cache store is :null_store in test and development, production sets none (file store default, unused) — no effect",
+      "message_serializer_json_allow_marshal": "ad-hoc MessageVerifier/MessageEncryptor instances serialize with JSON and still read Marshal. Cookies/session already use cookies_serializer :json (config/initializers/cookies_serializer.rb); Devise tokens do not go through MessageVerifier; JwtTokenService signs with the jwt gem — no effect",
+      "use_message_serializer_for_metadata_true": "same scope as above — no effect",
+      "raise_on_invalid_cache_expiration_time_true": "no Rails.cache callers — no effect",
+      "active_record_encryption_sha256_and_no_sha1_fallback": "no encrypted attributes — no effect",
+      "run_commit_callbacks_on_first_saved_instances_in_transaction_false, before_committed_on_all_records_true, run_after_transaction_callbacks_in_order_defined_true": "no after_commit / before_committed callbacks in app/models — no effect",
+      "commit_transaction_on_non_local_return_true": "no explicit transaction blocks in app/ — no effect",
+      "raise_on_assign_to_attr_readonly_true": "no attr_readonly — no effect",
+      "belongs_to_required_validates_foreign_key_false": "belongs_to presence validation checks the FK column instead of loading the parent (AutomationScenario belongs_to :owner polymorphic, Solution/Iteration belongs_to :automation_scenario, User/Visitor). Model specs (shoulda belong_to matchers, validation specs) and feature specs pass unchanged",
+      "default_column_serializer_nil": "no `serialize` columns — no effect",
+      "marshalling_format_version_7_1": "only affects Marshal.dump of AR objects (cache) — no effect",
+      "generate_secure_token_on_initialize": "no has_secure_token — no effect",
+      "sqlite3_adapter_strict_strings_by_default_true, query_log_tags_format_sqlcommenter": "PostgreSQL; query log tags not enabled — no effect",
+      "action_view_sanitizer_vendor_best_supported": "HTML5 sanitizer (Loofah/Nokogiri HTML5) for sanitize/strip_tags; neither helper is used in app/views or helpers — no effect",
+      "action_text_sanitizer_vendor": "Action Text not used",
+      "keys_in_new_framework_defaults_7_1_rb_that_7_2_4_no_longer_has": "action_controller.allow_deprecated_parameters_hash_equality, active_record.allow_deprecated_singular_associations_name and active_job.use_big_decimal_serializer are listed in the 7.1 defaults file but are absent from railties 7.2.4's `load_defaults 7.1` block — Rails 7.2 removed the deprecated behaviours outright, so the new behaviour is already in force since the gem bump. None is used here: no params == hash comparison, no singular association names in where(), no Active Job"
+    }
+  },
+  "rails_app_update": {
+    "method": "run in a scratch copy inside the dev container (`yes a | bin/rails app:update`, railties 7.2.4), diffed against the tree, applied by hand",
+    "generated_but_not_as_the_plan_expected": "7.2.4's app:update does not generate a Dockerfile, .devcontainer, .github workflows, bin/brakeman or a rubocop-rails-omakase .rubocop.yml (those come from `rails new` only). It created bin/rubocop, public/406-unsupported-browser.html, public/icon.png, public/icon.svg, rewrote public/robots.txt, and copied three Active Storage migrations — all rejected",
+    "accepted": [
+      "config/initializers/new_framework_defaults_7_2.rb (new, all commented out)",
+      "config/initializers/filter_parameter_logging.rb: `email` added to filter_parameters (the 7.2 template's one new key; Phase 11 noted 7.1.6 did not ship it). Log-only effect: email params are shown as [FILTERED] in request logs; keeps the existing %i[] style",
+      "config/environments/production.rb: config.active_record.attributes_for_inspect = [:id] (new 7.2 setting in the production template; AR #inspect in production prints only the id, so attribute values stay out of logged inspect output)",
+      "config/environments/development.rb and test.rb: config.action_controller.raise_on_missing_callback_actions = true (7.1 setting the 7.2 template puts in both local environments; Phase 11 held it back). Every before_action only:/except: list in app/controllers names real actions, so the suite is unchanged; it now guards future typos"
+    ],
+    "rejected": [
+      "quote-style rewrites in config/application.rb, config/boot.rb, config/environment.rb, bin/rails, bin/rake, bin/setup (RuboCop enforces single quotes)",
+      "`require 'active_support/core_ext/integer/time'` at the top of the three environment files — rails/all already loads it",
+      "config/environments/production.rb rewrite: force_ssl = true, STDOUT logger, log_level info / RAILS_LOG_LEVEL, report_deprecations = false (keep deprecation = :notify), public_file_server and assume_ssl comments, active_storage.service, dropping the RAILS_LOG_TO_STDOUT block and the terser/js_compressor settings",
+      "config/environments/development.rb rewrite beyond raise_on_missing_callback_actions: would drop secret_key_base, letter_opener, default_url_options, assets.debug, the evented file watcher and web_console.whiny_requests; active_job.verbose_enqueue_logs (no jobs), action_view.annotate_rendered_view_with_filenames (ERB only; the app is Haml), active_storage.service :local",
+      "config/environments/test.rb: eager_load = ENV['CI'].present? (would silently change CI), show_exceptions = :rescuable (:none is deliberate), dropping secret_key_base and public_file_server.enabled, action_mailer.default_url_options host www.example.com (would change mailer URLs in specs), active_storage.service :test",
+      "config/puma.rb rewrite — would drop the IPv4 bind, RAILS_SERVER_PORT, RAILS_ENV and the 5-thread settings (see Phase 7)",
+      "config/initializers/inflections.rb — would delete `inflect.acronym 'API'`",
+      "config/initializers/assets.rb — would drop the node_modules/fonts load paths, the precompile list and sass.quiet_deps",
+      "config/initializers/content_security_policy.rb, permissions_policy.rb — comment-only rewrites",
+      "bin/rubocop (new) — `./go lint` is the lint entry point",
+      "public/406-unsupported-browser.html, public/icon.png, public/icon.svg (allow_browser is not used), public/robots.txt rewrite (would drop `Disallow: /visitor`)",
+      "db/migrate/*active_storage* (3 migrations) — no Active Storage tables",
+      "config/initializers/cors.rb — created and removed by app:update itself"
+    ]
+  },
+  "health_check": {
+    "controller": "app/controllers/health_check_controller.rb: `ActiveRecord::Base.connection.execute('SELECT 1')` → `ActiveRecord::Base.with_connection { |connection| connection.execute('SELECT 1') }` (7.2 soft-deprecates `.connection` in favour of with_connection / lease_connection)",
+    "spec": "spec/controllers/health_check_controller_spec.rb stubs `ActiveRecord::Base.lease_connection` instead of `.connection` (inside a test the connection is already leased, so with_connection yields the same object and the PG::ConnectionBad stub still produces the 503 path)",
+    "audit": "full suite once with `config.active_record.permanent_connection_checkout = :deprecated` in test.rb (then removed): no deprecation emitted, so neither app/ nor the test-time gems (database_cleaner-active_record 2.2.2, rspec-rails 7.1.1, factory_bot_rails) call `.connection`"
+  },
+  "cookie_rotator": {
+    "removed": "config/initializers/cookie_rotator.rb (added in Phase 11 to read SHA1-derived :encrypted/:signed cookies and rewrite them with SHA256 keys). `rails runner` in production mode now reports empty cookies_rotations",
+    "consequence": "any session cookie that is still SHA1-derived when Phase 12 reaches an environment is dropped: that user/visitor is signed out once and the visitor's scenario list is no longer reachable from that browser (rows stay). Phase 12 should therefore be promoted only after Phase 11 (0.9.6-<build> with the rotator) has been live long enough for active sessions to have been rewritten; the operator can hold this PR for that reason"
+  },
+  "secrets_and_alias_attribute": "grep confirms no Rails.application.secrets / config/secrets.yml reference (only a comment in spec/smoke/oauth_providers_spec.rb uses the word 'secrets') and no alias_attribute in app/",
+  "schema_rb": "`rails db:schema:load && rails db:schema:dump` under Rails 7.2.4: header ActiveRecord::Schema[7.1] → [7.2], nothing else. No column, type, default or index change; the database is untouched",
+  "rubocop": {
+    "before": "163 files inspected, no offenses detected (Phase 11 branch, rubocop 1.92.1)",
+    "after": "162 files inspected, no offenses detected (cookie_rotator.rb removed; new_framework_defaults_*.rb are excluded by .rubocop.yml)"
+  },
+  "tests": {
+    "rspec": "393 examples, 0 failures, 6 pending (the pre-existing 'Not yet implemented' view/helper specs); line coverage 92.19% (437 / 474). Green three times: after the gem bump alone (rack 3 baseline), with load_defaults 7.1 + all config changes under RUBYOPT=-W:deprecated and permanent_connection_checkout = :deprecated, and on the final tree via ./go test",
+    "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples load, 0 failures (loading only; smoke specs need a live server). The :smoke exclusion in spec/spec_helper.rb is unchanged",
+    "deprecation_output": "no `DEPRECATION WARNING` from Rails, rack or rspec-rails in the suite's stderr (test.rb has deprecation = :stderr); no Ruby -W:deprecated warnings. The rack 3 `:unprocessable_entity` warning seen in the baseline run is gone after the rename. The five pre-existing Dart Sass @import deprecations from application.scss still print on a cold sprockets cache (Bootstrap 5 territory)",
+    "noise": "rubygems' `WARN: Unresolved or ambiguous specs during Gem::Specification.reset: io-console (~> 0.5)` once per boot (pre-existing, see Phase 11); the omniauth `Authentication failure!` ERROR lines are the OAuth failure specs doing their job"
+  },
+  "deprecations_remaining_for_phase_15": [
+    "none emitted by the suite under Rails 7.2.4 / rack 3.2.7 — the 7.2 → 8.0 items are opt-in: flip load_defaults 7.1 → 7.2 (new_framework_defaults_7_2.rb keys: enqueue_after_transaction_commit, web_image_content_types, validate_migration_timestamps, postgresql_adapter_decode_dates, yjit — yjit needs Ruby >= 3.3, i.e. after Phase 13/14)",
+    "the psych 4.0.4 pin: Ruby 3.4 (Phase 13/14) ships psych 5.2 as a default gem — re-pin or drop there, or add libyaml-dev to the Dockerfiles with the base-image bump",
+    "minitest 5.17.0 still declares < 4.0 and was not moved by --conservative; the standing note's >= 5.26 check before Phase 18 is still open",
+    "Rails 8.0 removes config.read_encrypted_secrets (already gone in Phase 11) and the 7.x `Rails.application.config.active_support.cache_format_version` option becomes a no-op once load_defaults 7.1+ is in place (nothing to do)"
+  ],
+  "notes": {
+    "departures_from_plan": {
+      "rack_3_update_set": "the plan said `bundle update rack rack-session rackup`; that alone only moved rack 2.2.23 → 2.2.24 because omniauth's rack-protection 3.2.0 pins rack ~> 2.2. Adding rack-protection to the update set resolved rack 3.2.7 cleanly; the lock after the first attempt was discarded",
+      "unprocessable_content_rename": "not in the plan; a direct consequence of rack 3.1+ (five symbol renames, same 422 status)",
+      "app_update_scope": "7.2.4's app:update generated none of the Dockerfile/.devcontainer/.github/brakeman/omakase files the plan expected to reject; only bin/rubocop and public/ additions, all rejected",
+      "adopted_beyond_the_phase_spec": "filter_parameters :email, production attributes_for_inspect = [:id], and raise_on_missing_callback_actions in development/test — each is a one-line template default with no request/response effect; see rails_app_update.accepted"
+    },
+    "held_back": {
+      "haml": "5.2.2 renders every template under ActionView 7.2 (the suite covers them); haml 6/7 needs Ruby >= 3.2 for 7.x and is not needed here",
+      "load_defaults_7_2": "Phase 15, once 7.2 is on production (ordering constraint: a defaults flip never ships with the framework bump that introduced it)",
+      "libyaml_dev": "no Dockerfile or base-image change in this phase"
+    },
+    "spec_semantics": "no spec expectation changed except the symbol rename (:unprocessable_entity → :unprocessable_content, both 422); no HTTP status code, response body, URL path or UI text changed. One header disappears from every response: X-Download-Options: noopen (IE-only), per the 7.1 default_headers",
+    "staging_checklist": [
+      "promote only after Phase 11 has been live long enough; on deploy expect no sign-outs if so — a user still carrying a SHA1-derived cookie is signed out once",
+      "GitHub and Google sign-in round trips (rack 3.2.7 under omniauth 2.3.1 / rack-protection 4.2.1 is a new combination here)",
+      "/health returns 200 with database: ok (with_connection path)",
+      "API 422 paths still answer 422 (an invalid POST to the iterations or users API) — not covered by the smoke suite, check one by hand; ./go smoke staging 49/0/2 before and after",
+      "response headers: X-Download-Options gone, the other five unchanged"
+    ],
+    "next": "Phase 13/14 (Ruby 3.1 → 3.4, Debian Trixie, haml/nokogiri/zeitwerk/bundler catch-up) branches from this branch; Rails 8.0 (Phase 15) flips load_defaults 7.2 and removes the psych pin once Ruby 3.4 is in"
+  }
+}
