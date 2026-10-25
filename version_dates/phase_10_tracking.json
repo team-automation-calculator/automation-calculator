@@ -1,0 +1,65 @@
+{
+  "phase": 10,
+  "name": "development/test tooling catch-up on Ruby 3.1 (rubocop 1.28 → 1.92, annotate → annotaterb, database_cleaner 2)",
+  "status": "in_progress",
+  "ruby_version": "3.1.7 (unchanged)",
+  "rails_version": "7.0.10 (unchanged)",
+  "changes": {
+    "rubocop": "1.28.2 → 1.92.1",
+    "rubocop_rails": "2.14.2 → 2.38.0",
+    "rubocop_rspec": "2.10.0 → 3.10.2",
+    "rubocop_capybara": "added 3.1.0 (rubocop-rspec 3 moved the Capybara cops here)",
+    "rubocop_factory_bot": "added 2.28.0 (rubocop-rspec 3 moved the FactoryBot cops here)",
+    "rubocop_transitive": "parser 3.3.11.1 → 3.3.13.0, unicode-display_width 2.6.0 → 3.3.0, new lint_roller 1.1.0, language_server-protocol 3.17.0.6, unicode-emoji 4.3.0; rubocop-ast 1.50.0 / regexp_parser 2.12.0 / parallel 1.28.0 / rainbow 3.1.1 unchanged",
+    "rubocop_yml": "`require:` → `plugins:` listing all four extensions; Metrics/BlockLength `IgnoredMethods` → `AllowedMethods` (1.9x rejects the old key as obsolete); every existing exclusion/disable kept with its comment",
+    "annotate": "3.2.0 removed (unmaintained, breaks on Rails 7.2+)",
+    "annotaterb": "added 4.25.0; `rails g annotate_rb:install` generated .annotaterb.yml and lib/tasks/annotate_rb.rake; lib/tasks/auto_annotate_models.rake deleted",
+    "annotaterb_yml": "carries over the old rake-task options: position after the class, show_indexes/show_foreign_keys false, hide_limit_column_types integer,boolean, tests/fixtures/serializers excluded, factories annotated; classified_sort false so columns stay in DB order. `annotaterb models` run against the test schema reports 'Model files unchanged' — existing annotations are byte-identical",
+    "database_cleaner": "1.7.0 removed",
+    "database_cleaner_active_record": "added 2.2.2 (+ database_cleaner-core 2.1.0); spec/support/initializers/database_cleaner.rb requires 'database_cleaner/active_record'; strategy/cleaning hooks unchanged (valid single-ORM 2.x API)",
+    "rspec_its": "1.3.1 → 2.0.0",
+    "simplecov": "0.17.1 → 0.22.0 (simplecov-html 0.10.2 → 0.13.2, docile 1.3.1 → 1.4.1, new simplecov_json_formatter 0.1.4)",
+    "shoulda_matchers": "5.3.0 → 6.5.0 (no spec needed changing: only validate_presence_of is used)",
+    "selenium_webdriver": "4.9.0 → 4.32.0 (newest 4.x allowing Ruby 3.1; effectively unused, no spec is js: true)",
+    "factory_bot_rails": "6.4.3 → 6.5.1 (factory_bot 6.4.5 → 6.6.0)",
+    "faker": "3.4.2 → 3.6.1 (plan estimated 3.5.x; 3.6.1 is the newest release whose required_ruby_version admits 3.1)",
+    "json_matchers": "0.10.0 → 0.11.1",
+    "letter_opener": "1.6.0 → 1.10.0 (launchy 2.4.3 unchanged)",
+    "listen": "3.10.0 → 3.10.1",
+    "guard": "2.14.2 → 2.17.0",
+    "jbuilder": "2.13.0 → 2.15.1",
+    "pry": "0.12.2 → 0.16.1 (method_source 0.9.2 → 1.1.0, coderay 1.1.3 unchanged)",
+    "byebug": "10.0.2 → 12.0.0 (13 needs Ruby 3.2)",
+    "already_current": "guard-rspec 4.7.3, guard-rubocop 1.5.0, capybara 3.40.0, web-console 4.2.1, rspec-rails 6.1.5",
+    "lockfile_platforms": "aarch64-linux, ruby, x86_64-linux (unchanged)"
+  },
+  "rubocop": {
+    "before": "160 files inspected, 0 offenses under rubocop 1.28.2",
+    "after_bump_before_fixes": "160 files inspected, 56 offenses in 14 files, 25 autocorrectable: RSpec/IndexedLet 22, Capybara/RSpec/HaveContent 13, Layout/ExtraSpacing 7, RSpec/NoExpectationExample 6, RSpec/ExpectInLet 3, Capybara/RSpec/NegationMatcher 2, Style/StringLiterals 2, Rails/FilePath 1",
+    "autocorrect_commit": "`rubocop -a` touched 12 files, 38 lines: spacing/alignment, have_content → have_text, not_to have_content → to have_no_text, single quotes in the generated rake file, Rails.root.join in spec/rails_helper.rb",
+    "manual_commit": "spec/rails_helper.rb fixture_path → Rails.root.join('spec/fixtures').to_s (clears the Style/RedundantInterpolation the autocorrect left behind, keeps a String)",
+    "cops_disabled_or_scoped": {
+      "RSpec/IndexedLet": "disabled — SolutionPair specs name the pair solution1/solution2 and inputs initial_cost1/iteration_cost2 (22 offences, one file); renaming is churn without behaviour benefit",
+      "RSpec/NoExpectationExample": "AllowedPatterns + ^validate_schema!$ (smoke helper raises on schema mismatch); Exclude spec/factories_lint_spec.rb (FactoryBot.lint raises; cop only pattern-matches receiver-less calls)",
+      "RSpec/ExpectInLet": "Exclude spec/smoke/**/*_spec.rb — smoke specs deliberately fail fast inside let with the HTTP response in the message",
+      "AllCops/SuggestExtensions": "false — rubocop-rake / rubocop-rspec_rails not adopted"
+    },
+    "after": "160 files inspected, no offenses detected"
+  },
+  "tests": {
+    "rspec": "366 examples, 0 failures, 6 pending (pre-existing 'Not yet implemented' view specs); line coverage 91.98%",
+    "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples load, 0 failures"
+  },
+  "notes": {
+    "held_back": {
+      "simplecov_1x": "needs Ruby 3.3 — rides with the Ruby phase",
+      "shoulda_matchers_7_8": "needs Ruby 3.3 (6.5.0 is the newest 6.x)",
+      "selenium_webdriver_4_33_plus": "needs Ruby 3.2+",
+      "faker_3_8": "needs Ruby 3.2",
+      "byebug_13": "needs Ruby 3.2",
+      "rubocop_rake_rubocop_rspec_rails": "suggested by rubocop, not adopted (not in the phase spec)"
+    },
+    "spec_semantics": "no spec expectation or app behaviour changed; all spec edits are alias/layout rewrites from rubocop -a",
+    "next": "Phase 11 (Rails 7.0 → 7.1) depends on this PR: annotate 3.2.0 would not load there, and rspec-rails will deprecate config.fixture_path in favour of fixture_paths"
+  }
+}

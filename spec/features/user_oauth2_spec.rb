@@ -52,7 +52,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
           let(:registered_user) { User.find_by email: user.email }
 
           it 'signs in the user and displays a scenario' do
-            expect(page).to have_content('Automation Scenario')
+            expect(page).to have_text('Automation Scenario')
           end
 
           it 'redirects the user to the scenario page' do
@@ -74,7 +74,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
           before { oauth2_sign_in }
 
           it 'signs in the user and displays a scenario' do
-            expect(page).to have_content('Automation Scenario')
+            expect(page).to have_text('Automation Scenario')
           end
 
           it 'redirects the user to the scenario page' do
@@ -97,7 +97,7 @@ RSpec.describe 'User oauth2 registration and sign in', type: :feature do
       end
 
       it 'does not display the protected content' do
-        expect(page).not_to have_content('Protected content')
+        expect(page).to have_no_text('Protected content')
       end
     end
   end

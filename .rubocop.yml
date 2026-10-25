@@ -1,4 +1,6 @@
-require:
+plugins:
+  - rubocop-capybara
+  - rubocop-factory_bot
   - rubocop-rails
   - rubocop-rspec
 
@@ -6,6 +8,8 @@ AllCops:
   TargetRubyVersion: 3.1
   NewCops: disable
   DisplayCopNames: true
+  # rubocop-rake / rubocop-rspec_rails are not adopted; silence the nag.
+  SuggestExtensions: false
 
   Exclude:
     - 'db/schema.rb'
@@ -16,7 +20,7 @@ AllCops:
     - 'config/initializers/new_framework_defaults_*.rb'
 
 Metrics/BlockLength:
-  IgnoredMethods:
+  AllowedMethods:
     - describe
     - context
     - shared_examples_for
@@ -56,7 +60,30 @@ Style/FrozenStringLiteralComment:
 Style/HashSyntax:
   EnforcedShorthandSyntax: either
 
+# The SolutionPair specs name the two members of a pair solution1/solution2
+# (and their initial_cost1/iteration_cost2 inputs); renaming them adds churn
+# without behavior benefit.
+RSpec/IndexedLet:
+  Enabled: false
+
+# The smoke helper `validate_schema!` and `FactoryBot.lint` raise on failure;
+# they are the expectation of their examples. (The cop only pattern-matches
+# receiver-less calls, so the FactoryBot one needs a file exclusion.)
+RSpec/NoExpectationExample:
+  AllowedPatterns:
+    - ^expect_
+    - ^assert_
+    - ^validate_schema!$
+  Exclude:
+    - spec/factories_lint_spec.rb
+
 RSpec/DescribeClass:
+  Exclude:
+    - spec/smoke/**/*_spec.rb
+
+# Smoke specs deliberately fail fast inside `let` with a message that includes
+# the HTTP response, so every example in the chain reports the same cause.
+RSpec/ExpectInLet:
   Exclude:
     - spec/smoke/**/*_spec.rb
 
