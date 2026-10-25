@@ -13,7 +13,7 @@ gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 1.7'
 gem 'puma', '~> 8.0'
-gem 'rails', '~> 8.0.0'
+gem 'rails', '~> 8.1.0'
 gem 'rake'
 # JS compressor for assets:precompile; replaces uglifier.
 gem 'terser', '~> 1.2'
