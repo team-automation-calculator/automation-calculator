@@ -1,0 +1,107 @@
+{
+  "phase": 11,
+  "name": "Rails 7.0 → 7.1 (+ load_defaults 7.0, cookie rotator, secrets → secret_key_base)",
+  "status": "in_progress",
+  "pr": 232,
+  "branch": "upgrade/phase-11-rails-7-1",
+  "merged": null,
+  "image": null,
+  "deployed": null,
+  "ruby_version": "3.1.7 (unchanged)",
+  "rails_version": "7.0.10 → 7.1.6",
+  "changes": {
+    "rails": "~> 7.0.0 → ~> 7.1.0; 7.0.10 → 7.1.6 (all eleven frameworks)",
+    "rspec_rails": "~> 6.0 → ~> 7.1; 6.1.5 → 7.1.1",
+    "turbolinks": "5.1.1 → 5.2.1 (turbolinks-source 5.1.0 → 5.2.0); the standing note's opportunistic bump, own commit",
+    "psych": "new Gemfile pin `gem 'psych', '4.0.4'` — see notes.departures_from_plan",
+    "transitives_moved": "rails-html-sanitizer 1.5.0 → 1.7.1, loofah 2.19.1 → 2.25.2, rails-dom-testing 2.0.3 → 2.3.0, thor 1.2.1 → 1.5.0",
+    "transitives_new": "rack-session 1.0.2 and rackup 1.0.1 (both pin rack < 3), irb 1.18.0 (railties 7.1 dependency) with rdoc 7.2.0, pp 0.6.4, prettyprint 0.2.1, prism 1.9.0, erb 4.0.4.1, cgi 0.5.2, tsort 0.2.0, stringio 3.2.0, webrick 1.9.2, connection_pool 2.5.5, timeout 0.6.1, psych 4.0.4",
+    "transitives_unchanged": "rack 2.2.23 (Rails 7.1 accepts rack 2 and 3; rack 3 is Phase 12's), minitest 5.17.0, zeitwerk 2.6.6, i18n 1.12.0, concurrent-ruby 1.2.0, nokogiri 1.18.10, reline 0.7.0, io-console 0.9.4 — `--conservative` left everything the resolver did not have to move; the plan's guesses that minitest/zeitwerk/i18n would move did not materialise",
+    "lockfile_platforms": "aarch64-linux, ruby, x86_64-linux (unchanged)",
+    "bundler": "2.4.22 (unchanged)"
+  },
+  "load_defaults": {
+    "application_rb": "config.load_defaults 6.1 → 7.0; config.autoload_lib(ignore: %w[assets tasks]) added (host_authorization.rb keeps its explicit require of lib/allowed_hosts.rb)",
+    "new_framework_defaults_7_0_rb": "deleted (every key was commented out, so each 7.0 default switches on here)",
+    "new_framework_defaults_7_1_rb": "added verbatim from `rails app:update` with every key commented out — Phase 12 flips load_defaults to 7.1",
+    "key_generator_hash_digest_class": "SHA1 → SHA256 is live; config/initializers/cookie_rotator.rb (Rails 7.0 upgrade guide, 'Key generator digest class changing to use SHA256') rotates :encrypted and :signed cookies from the SHA1-derived keys. Verified locally: an encrypted and a signed cookie written by a Rails 7.0.10 container running main (`Rails.application.env_config` + ActionDispatch::Request#cookie_jar) read back as the original values in the Phase 11 container, and read as nil when the same request is given an empty RotationConfiguration — the rotator is what keeps them readable. Removal is Phase 12's (standing note)",
+    "fallback_if_rotator_misbehaves": "config.active_support.key_generator_hash_digest_class = OpenSSL::Digest::SHA1 right after load_defaults 7.0, carrying the decision to Phase 12",
+    "cache_format_version": "6.1 → 7.0 via load_defaults; the `cache_format_version = 6.1 is deprecated` warning that `rails app:update` printed against the unflipped tree is gone from the suite",
+    "button_to_generates_button_tag": "the OAuth controls in app/views/devise/shared/_links.html.haml become <button> elements; spec/smoke/oauth_providers_spec.rb already accepts `input[type=submit]` or `button`, feature specs use click_on — no spec change, eyeball on staging",
+    "other_7_0_defaults": "no spec or behaviour change observed (partial_inserts false, executor_around_test_case, raise_on_open_redirects, new default headers, hash_digest_class SHA256 for ETags, use_rfc4122_namespaced_uuids, …)"
+  },
+  "rails_app_update": {
+    "method": "run in a scratch copy inside the dev container (`yes a | bin/rails app:update`), diffed against the tree, applied by hand",
+    "accepted": [
+      "config/application.rb: config.autoload_lib(ignore: %w[assets tasks])",
+      "config/environments/{development,test,production}.rb: config.enable_reloading in place of config.cache_classes (same semantics, inverted)",
+      "config/initializers/new_framework_defaults_7_1.rb (new, all commented out)"
+    ],
+    "no_change_needed": [
+      "config/initializers/filter_parameter_logging.rb — the 7.1.6 template lists `passw secret token _key crypt salt certificate otp ssn`, exactly what the file already has (the plan expected an :email key; 7.1.6 does not ship one)"
+    ],
+    "rejected": [
+      "bin/rails, bin/rake, bin/setup, config/boot.rb, config/environment.rb — quote-style rewrites (RuboCop enforces single quotes); bin/setup unused in Docker",
+      "config/initializers/inflections.rb — would delete `inflect.acronym 'API'`",
+      "config/initializers/assets.rb — would drop the node_modules/fonts load paths, the precompile list and sass.quiet_deps",
+      "config/environments/production.rb rewrite — force_ssl = true, STDOUT logger, log_level info, report_deprecations = false (keep deprecation = :notify), public_file_server/assume_ssl changes, active_storage.service",
+      "config/environments/development.rb rewrite beyond enable_reloading — would drop letter_opener, default_url_options, assets.debug, the evented file watcher and web_console.whiny_requests; raise_on_missing_callback_actions and active_storage.service not adopted",
+      "config/environments/test.rb — `eager_load = ENV['CI'].present?` (would silently change CI), `show_exceptions = :rescuable` (:none is the equivalent of the previous false), raise_on_missing_callback_actions, active_storage.service",
+      "config.silence_healthcheck_path = '/up' — the probe path is /health",
+      "config/initializers/content_security_policy.rb, permissions_policy.rb — comment-only rewrites",
+      "db/migrate/*active_storage* (3 migrations) — no Active Storage tables",
+      "config/initializers/cors.rb — created and removed by app:update itself"
+    ]
+  },
+  "secrets": {
+    "jwt_token_service": "app/services/jwt_token_service.rb private_key: Rails.application.secrets.secret_key_base.to_s → Rails.application.secret_key_base",
+    "config_secrets_yml": "deleted (only mapped ENV['SECRET_KEY_BASE'] for the three environments)",
+    "production_rb": "config.read_encrypted_secrets = true removed (gone in 8.0)",
+    "development_and_test_rb": "config.secret_key_base = ENV['SECRET_KEY_BASE'] added — Rails 7.1 ignores the ENV variable outside production and would generate tmp/local_secret.txt; test.rb's `config.secret_key = ENV['SECRET_KEY_BASE']` (never a Rails option) replaced by it",
+    "verification": "a JWT minted by a Rails 7.0.10 container running main (`rails runner`, same SECRET_KEY_BASE) decodes in the Phase 11 container to {data: {user_id: 42}}; spec/services/jwt_token_service_spec.rb '.private_key is the secret_key_base, which the test environment sets from ENV' passes"
+  },
+  "deprecation_fixes": {
+    "show_exceptions": "config/environments/test.rb: false → :none",
+    "fixture_paths": "spec/rails_helper.rb: config.fixture_path = Rails.root.join('spec/fixtures').to_s → config.fixture_paths = [Rails.root.join('spec/fixtures')]"
+  },
+  "schema_rb": "`rails db:schema:dump` after `db:schema:load`: header ActiveRecord::Schema[6.1] → [7.1], the generated header comment updated, and every datetime column gains an explicit `precision: nil` (under a [7.x] header t.datetime defaults to precision 6, so the dump records that these columns have none). No column, type, default or index change; the database itself is untouched",
+  "rubocop": {
+    "before": "160 files inspected, no offenses detected (main, rubocop 1.92.1)",
+    "after": "163 files inspected, no offenses detected (cookie_rotator.rb added; new_framework_defaults_*.rb are excluded by .rubocop.yml)",
+    "gotcha": ".rubocop.yml's AllCops/Exclude replaces RuboCop's default list, so tmp/ is inspected — scratch .rb files under tmp/ show up as offenses locally (not in CI, which has no tmp/)"
+  },
+  "tests": {
+    "rspec": "393 examples, 0 failures, 6 pending (the pre-existing 'Not yet implemented' view/helper specs); line coverage 92.19% (437 / 474); exit 0 both with and without RUBYOPT=-W:deprecated",
+    "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples load, 0 failures",
+    "deprecation_output": "no `DEPRECATION WARNING` from Rails or rspec-rails in the suite's stderr (test.rb has deprecation = :stderr); no Ruby -W:deprecated warnings. Only the five pre-existing Dart Sass @import deprecations from application.scss remain",
+    "noise": "rubygems prints `WARN: Unresolved or ambiguous specs during Gem::Specification.reset: io-console (~> 0.5)` once per run — reline 0.7.0 vs the default-gem io-console 0.5.11 and the installed 0.9.4; io-console is unchanged in the lock, so this predates the PR",
+    "pre_existing_log_noise": "the omniauth `Authentication failure!` ERROR lines are the OAuth failure specs doing their job"
+  },
+  "deprecations_remaining_for_phase_12": [
+    "none emitted by the suite under Rails 7.1 — the 7.1 → 7.2 items are opt-in: flip load_defaults 7.0 → 7.1 (new_framework_defaults_7_1.rb keys: 7.1 cache format, message_serializer :json_allow_marshal, dom_testing_default_html_version :html5, raise_on_missing_callback_actions, …)",
+    "remove config/initializers/cookie_rotator.rb once Phase 11 has been on production long enough (standing note)",
+    "app/controllers/health_check_controller.rb:14 ActiveRecord::Base.connection → with_connection / lease_connection (deprecated in 7.2)",
+    "rack 2.2.23 → 3.x (rack-session/rackup 1.x pin rack < 3; Rails 7.2 lifts that)",
+    "the psych 4.0.4 pin: either add libyaml-dev to the Dockerfiles (base image bump) or carry the pin to the Ruby 3.4 phase, where psych 5.2 is the default gem"
+  ],
+  "notes": {
+    "departures_from_plan": {
+      "psych_pin": "railties 7.1 depends on irb; the resolver takes irb 1.18.0 → rdoc 7.2.0 → the psych gem, and picks psych 5.5.0, which compiles against libyaml headers that ruby:3.1.7-slim-bookworm (and therefore base 0.8.0, used by Dockerfile.ci / Dockerfile.production) does not carry — `bundle update` failed with `yaml.h not found`. Pinned `gem 'psych', '4.0.4'` (the Ruby 3.1.7 default gem, so nothing compiles) instead of adding libyaml-dev to four Dockerfiles and bumping/pushing a new base image, which this phase must not do. Re-pin or drop when the Ruby image changes",
+      "conservative_transitives": "minitest 5.17.0, zeitwerk 2.6.6, i18n 1.12.0 and concurrent-ruby 1.2.0 stayed where they were (the plan expected them to move); the standing note's minitest >= 5.26 check is still open for Phase 18",
+      "filter_parameter_logging": "nothing to accept — 7.1.6's template has no :email key"
+    },
+    "held_back": {
+      "raise_on_missing_callback_actions": "new 7.1 development/test option offered by app:update; not in the phase spec, not adopted",
+      "haml": "5.2.2 works unchanged under ActionView 7.1 (the suite renders every Haml template); the haml 6 fallback was not needed",
+      "rack_3": "Phase 12"
+    },
+    "spec_semantics": "no spec expectation changed; no HTTP status code, response body, URL path or UI text changed. The only user-visible rendering change is the OAuth sign-in controls becoming <button> elements (same classes)",
+    "staging_checklist": [
+      "session continuity: sign in and create a scenario as a visitor on the old image, deploy, reload — still signed in, visitor's scenarios intact; confirm the first response's Set-Cookie rewrote the session cookie",
+      "GitHub and Google sign-in round trips (Devise 5 on Rails 7.1 is a new combination)",
+      "eyeball the sign-in page for the <button> OAuth controls",
+      "./go smoke staging 49/0/2 before and after"
+    ],
+    "next": "Phase 12 (Rails 7.1 → 7.2) branches from this branch: load_defaults 7.1, remove the cookie rotator, rack 3, ActiveRecord::Base.connection in the health check"
+  }
+}
