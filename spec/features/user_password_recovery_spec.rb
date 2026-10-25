@@ -12,7 +12,7 @@ RSpec.describe 'User password recovery', type: :feature do
 
   it 'displays the forgot password link' do
     visit new_user_session_path
-    expect(page).to have_content('Forgot your password?')
+    expect(page).to have_text('Forgot your password?')
   end
 
   context 'when click on forgot password link' do
@@ -36,7 +36,7 @@ RSpec.describe 'User password recovery', type: :feature do
     end
 
     it 'lists the validation message' do
-      expect(page).to have_content('Email not found')
+      expect(page).to have_text('Email not found')
     end
   end
 
@@ -44,7 +44,7 @@ RSpec.describe 'User password recovery', type: :feature do
     before { update_password }
 
     it 'updates the password and sign the user' do
-      expect(page).to have_content('Automation Scenario')
+      expect(page).to have_text('Automation Scenario')
     end
   end
 end

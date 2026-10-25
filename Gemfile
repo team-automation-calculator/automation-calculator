@@ -44,7 +44,7 @@ gem 'jwt', '~> 3.3'
 
 group :development, :test do
   gem 'byebug', platforms: %w[mri mingw x64_mingw]
-  gem 'database_cleaner'
+  gem 'database_cleaner-active_record', '~> 2.2'
   gem 'letter_opener'
   # A library for setting up Ruby objects as test data
   gem 'factory_bot_rails'
@@ -52,13 +52,15 @@ group :development, :test do
   gem 'faker'
   gem 'pry'
   # A Ruby static code analyzer
-  gem 'rubocop', '~> 1.28.0', require: false
-  gem 'rubocop-rails', '~> 2.14.0', require: false
+  gem 'rubocop', '~> 1.92', require: false
+  gem 'rubocop-capybara', '~> 3.1', require: false
+  gem 'rubocop-factory_bot', '~> 2.28', require: false
+  gem 'rubocop-rails', '~> 2.38', require: false
 end
 
 group :development do
-  # Annotate Rails classes with schema and routes info
-  gem 'annotate'
+  # Annotate Rails classes with schema and routes info (maintained fork of annotate)
+  gem 'annotaterb', '~> 4.25'
 
   gem 'listen'
   gem 'web-console'
@@ -77,10 +79,10 @@ group :test do
 
   gem 'selenium-webdriver'
   # Rspec cops for rubocop
-  gem 'rubocop-rspec', '~> 2.10.0', require: false
-  gem 'shoulda-matchers'
-  # Code coverage for Ruby
-  gem 'simplecov', require: false
+  gem 'rubocop-rspec', '~> 3.10', require: false
+  gem 'shoulda-matchers', '~> 6.0'
+  # Code coverage for Ruby (1.x needs Ruby 3.3; rides with the Ruby phase)
+  gem 'simplecov', '~> 0.22', require: false
   # Validate the JSON returned by your Rails JSON APIs
   gem 'json_matchers'
 end

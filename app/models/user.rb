@@ -6,10 +6,10 @@ class User < ApplicationRecord
          :trackable, :validatable,
          :omniauthable, omniauth_providers: %i[github google_oauth2]
 
-  has_many  :automation_scenarios,
-            as: :owner,
-            dependent: :destroy,
-            inverse_of: :owner
+  has_many :automation_scenarios,
+           as: :owner,
+           dependent: :destroy,
+           inverse_of: :owner
 
   after_create :create_automation_scenario
 
