@@ -2,7 +2,7 @@
   "phase": "19a",
   "name": "docker-compose PostgreSQL 16 → 18 (app-repo half of Phase 19; the RDS half, 19b, is a separate PR in core-iac)",
   "status": "in_progress",
-  "pr": null,
+  "pr": 231,
   "merged": null,
   "image": null,
   "deployed": "not deployable on its own: docker-compose.yml only drives local dev and the CI database; the production image and Helm chart are untouched",
