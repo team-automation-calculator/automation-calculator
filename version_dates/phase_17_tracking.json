@@ -2,9 +2,9 @@
   "phase": 17,
   "name": "haml 5 → 7 (haml 5.2.2 → 7.5.1, haml-rails 2.1.0 → 3.1.0; surround/succeed rewritten)",
   "status": "in_progress",
-  "pr": null,
+  "pr": 237,
   "branch": "upgrade/phase-17-haml-7",
-  "base_branch": "upgrade/phase-13-ruby-3-4 (PR #235, head 845d5e5) — stacked PR; Phases 14 (Trixie) and 15 (Rails 8.0) run in parallel from the same base. Whichever of this PR and Phase 15 merges second needs a Gemfile.lock rebase (both touch the lock; this one moves only the haml and haml-rails lines)",
+  "base_branch": "upgrade/phase-13-ruby-3-4 (PR #235, head 845d5e5 when this branch was cut; the base moved to 38389c2 — an empty `Retrigger CI after base image 0.9.0 push` commit, no file changes — while the PR was being opened, so the PR diff is unaffected) — stacked PR; Phases 14 (Trixie) and 15 (Rails 8.0) run in parallel from the same base. Whichever of this PR and Phase 15 merges second needs a Gemfile.lock rebase (both touch the lock; this one moves only the haml and haml-rails lines)",
   "merged": null,
   "image": null,
   "deployed": null,
@@ -29,7 +29,7 @@
   "commits": {
     "d677ac5": "Phase 17: haml 5.2.2 → 7.5.1, haml-rails 2.1.0 → 3.1.0 (Gemfile + lock)",
     "fc2e86c": "Rewrite surround/succeed (removed in haml 6) as string interpolation",
-    "tracking": "this file + key_gems.json haml / haml_rails entries; `fetch_latest_versions.py` re-run first and latest_versions.json came back identical (already refreshed on 2026-10-25 by Phase 13), so there is no version_dates refresh commit"
+    "tracking": "ee0ca5a (this file + key_gems.json haml / haml_rails entries) and a follow-up commit recording PR #237; `fetch_latest_versions.py` re-run first and latest_versions.json came back identical (already refreshed on 2026-10-25 by Phase 13), so there is no version_dates refresh commit"
   },
   "lock_method": "Gemfile edited first, then inside the Phase 13 dev image (ruby 3.4.12, bundler 2.6.9): `bundle lock --update haml haml-rails --conservative`, `bundle lock --add-platform x86_64-linux`, `bundle lock --add-platform ruby`. Resolver demanded no transitive moves. Dev image rebuilt from the new lock (`Bundle complete! 44 Gemfile dependencies, 182 gems`, exit 0) and `bundle list` showed haml 7.5.1 / haml-rails 3.1.0 before any result below was trusted",
   "verification": {
