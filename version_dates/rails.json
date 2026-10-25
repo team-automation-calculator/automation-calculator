@@ -1,10 +1,10 @@
 {
   "rails": {
-    "version": "7.1.6",
-    "release_date": "2025-10-28",
-    "source": "Gemfile.lock (gem 'rails', '~> 7.1.0'); Phase 11",
-    "end_of_life": "2025-10-28",
-    "load_defaults": "7.0 (config/application.rb); config/initializers/new_framework_defaults_7_1.rb present with every key commented out",
-    "notes": "7.1.6 is the final 7.1 release and the line is out of security support; 7.2 (Phase 12) is the next step and runs on Ruby 3.1. Current lines on 2026-10-25: 8.1.4 (security fixes until 2027-10-10), 8.0.5.1 (security fixes until 2026-11-07), 7.2.4 (EOL 2026-08-09). The SHA1 → SHA256 key-generator switch from load_defaults 7.0 ships with config/initializers/cookie_rotator.rb, to be removed in Phase 12."
+    "version": "7.2.4",
+    "release_date": "2026-09-24",
+    "source": "Gemfile.lock (gem 'rails', '~> 7.2.0'); Phase 12",
+    "end_of_life": "2026-08-09",
+    "load_defaults": "7.1 (config/application.rb); config/initializers/new_framework_defaults_7_2.rb present with every key commented out",
+    "notes": "7.2.4 is the last 7.2 release and the line is out of security support (ended 2026-08-09); it is the last Rails step on Ruby 3.1 (8.0 requires Ruby >= 3.2), so the next steps are Ruby 3.4 (Phase 13/14) and then Rails 8.0 (Phase 15). Current lines on 2026-10-25: 8.1.4 (security fixes until 2027-10-10), 8.0.5.1 (security fixes until 2026-11-07). rack is 3.2.7 since Phase 12 (rack-protection 4.2.1, rack-session 2.1.2, rackup 2.3.1). The Phase 11 cookie rotator (SHA1 → SHA256 key generator) was removed in Phase 12, so Phase 12 must only reach production after Phase 11 has been live long enough for the old cookies to have been rewritten."
   }
 }

@@ -56,6 +56,9 @@ Rails.application.configure do
   # (config/initializers/devise.rb) and JwtTokenService share one secret.
   config.secret_key_base = ENV['SECRET_KEY_BASE']
 
+  # Raise when a before_action only/except option names a missing action.
+  config.action_controller.raise_on_missing_callback_actions = true
+
   # Debug logging
   # logger           = ActiveSupport::Logger.new(STDOUT)
   # logger.formatter = config.log_formatter
