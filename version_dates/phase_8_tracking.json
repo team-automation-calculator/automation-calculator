@@ -1,7 +1,11 @@
 {
   "phase": 8,
   "name": "Devise 4.9 → 5.0, jwt 2 → 3, OmniAuth adapter bumps",
-  "status": "in_progress",
+  "status": "completed",
+  "pr": 228,
+  "merged": "squash 6c947b8 on 2026-10-25 17:10 UTC (merged main in first; the only conflict was the pg pin in Gemfile.lock)",
+  "image": "0.9.6-908 (CircleCI build 908)",
+  "deployed": "core-iac #346 bumped all environments; staging applied ~17:31 UTC, production ~17:37 UTC. Smoke 49/0/2 before and after on both. The manual check verification.staging asks for was done on production: full GitHub and Google sign-in round trips worked on -908 (user-reported 2026-10-25)",
   "ruby_version": "3.1.7 (unchanged, applied in Phase 2)",
   "rails_version": "7.0.10 (unchanged, applied in Phase 5)",
   "changes": {
