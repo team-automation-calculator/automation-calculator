@@ -2,7 +2,7 @@
   "phase": 14,
   "name": "Linux Bookworm → Trixie (OpenSSL 3.0 → 3.5 LTS), base image 0.10.0",
   "status": "in_progress",
-  "pr": null,
+  "pr": 236,
   "branch": "upgrade/phase-14-trixie",
   "base_branch": "upgrade/phase-13-ruby-3-4 (PR #235, head 845d5e5, itself a draft against main at 10e5c5f). Stacked PR: the diff against #235 is Phase 14 only. If #235 merges first, rebase onto main and retarget the PR, as Phases 12 and 13 had to",
   "merged": null,
