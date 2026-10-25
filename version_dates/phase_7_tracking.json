@@ -1,0 +1,37 @@
+{
+  "phase": 7,
+  "name": "puma 5 → 8, pg 1.5 → 1.7",
+  "status": "in_progress",
+  "ruby_version": "3.1.7 (unchanged)",
+  "rails_version": "7.0.10 (unchanged)",
+  "changes": {
+    "puma": "5.6.9 → 8.0.2 (Gemfile '~> 5.6' → '~> 8.0')",
+    "pg": "1.5.9 → 1.7.0 (Gemfile '~> 1.5.0' → '~> 1.7'); lockfile now carries pg 1.7.0, 1.7.0-aarch64-linux and 1.7.0-x86_64-linux",
+    "pg_precompiled": "pg 1.6+ ships precompiled native gems; the images (ruby:3.1.7-slim-bookworm, glibc) now install the aarch64-linux / x86_64-linux binary gems instead of compiling against Debian's libpq-dev. PG.library_version moves from 150018 (bookworm libpq 15.18) to 180006 (libpq 18.6 bundled in the gem, with its own OpenSSL). libpq-dev stays in the Dockerfiles so a source build still works if a platform gem is ever unavailable",
+    "config_puma_rb": "re-reviewed against the Rails 7.0 template and the puma 6.0 / 7.0 / 8.0 upgrade guides: added RAILS_MIN_THREADS (defaults to RAILS_MAX_THREADS, as in the template); pinned the bind host to 0.0.0.0 via `port ENV.fetch('RAILS_SERVER_PORT', 3000), '0.0.0.0'` because puma 8 defaults to :: whenever any non-loopback IPv6 address exists; dropped the stale commented before_fork / on_worker_boot examples (puma 7 renamed the on_* hooks to before_*/after_*). No workers, no cluster mode, plugin :tmp_restart kept",
+    "entrypoint_and_dockerfiles": "unchanged — entrypoint.sh runs db:create db:migrate then execs the CMD; Dockerfile.production CMD `rails s` still works (Rails passes Host 0.0.0.0 / Port 3000 to puma's rack handler in non-development environments). No PUMA_/DISABLE_SSL/MAKE_WARNINGS_INTO_ERRORS env vars anywhere"
+  },
+  "transitive": {
+    "nio4r": "2.7.5 unchanged (puma 8 still requires ~> 2.0)",
+    "everything_else": "nothing else moved; rack 2.2.23, rails 7.0.10, rspec-rails 6.1.5, rubocop 1.28.2 / rubocop-rails 2.14.2 / rubocop-rspec 2.10.0 unchanged"
+  },
+  "lockfile_platforms": "aarch64-linux, ruby, x86_64-linux (unchanged; precompiled pg 1.7.0 exists for both linux platforms on Ruby >= 3.1, < 4.1)",
+  "behaviour_changes_inherited": {
+    "puma_6": "only the 8 RFC 9110 methods are accepted (others get 501); wait_for_less_busy_worker default on (cluster mode only, not applicable); env vars prefixed PUMA_ (none used here)",
+    "puma_7": "persistent_timeout default 20s → 65s and max_keep_alive 999 (65s is now above the ALB's 60s idle timeout, which is the recommended ordering); response header names lowercased on the wire (Net::HTTP lookups in spec/smoke are case-insensitive); minimum Ruby 3.0",
+    "puma_8": "default bind :: when IPv6 available (pinned to 0.0.0.0 here, see config_puma_rb); stricter http_content_length_limit / 413 handling; before_thread_start hooks take an argument (none defined)",
+    "pg_1_7": "drops Ruby < 3.1; removes :static_symbol field names; bundled libpq in the binary gem; fixes around GC guards and set_client_encoding"
+  },
+  "notes": {
+    "held_back": {
+      "rails": "7.0.10 — Rails 7.1 is a later phase",
+      "ruby": "3.1.7 — pg 1.7 is the version carried through the Ruby 4.0 step",
+      "rubocop": "1.28.2 / rubocop-rails 2.14.2 / rubocop-rspec 2.10.0 unchanged"
+    },
+    "not_changed": {
+      "pidfile_worker_timeout": "the Rails 7.0 template's pidfile and development worker_timeout lines were not adopted: `rails s` already passes the pid file, and worker_timeout only applies in cluster mode",
+      "port_env_var": "RAILS_SERVER_PORT kept (docker-compose.dev.yml sets it) rather than the template's PORT"
+    },
+    "smoke_and_request_specs": "no HTTP status codes, response bodies, URL paths or UI text changed; spec/requests, spec/support/api_schemas and spec/smoke untouched"
+  }
+}
