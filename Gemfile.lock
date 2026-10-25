@@ -195,10 +195,12 @@ GEM
     guard-rubocop (1.5.0)
       guard (~> 2.0)
       rubocop (< 2.0)
-    haml (5.2.2)
-      temple (>= 0.8.0)
+    haml (7.5.1)
+      prism (>= 1.1.0)
+      temple (>= 0.8.2)
+      thor
       tilt
-    haml-rails (2.1.0)
+    haml-rails (3.1.0)
       actionpack (>= 5.1)
       activesupport (>= 5.1)
       haml (>= 4.0.6)
@@ -534,8 +536,8 @@ DEPENDENCIES
   guard
   guard-rspec
   guard-rubocop
-  haml (~> 5.1)
-  haml-rails (~> 2.0)
+  haml (~> 7.5)
+  haml-rails (~> 3.1)
   jbuilder
   jquery-rails
   json_matchers
