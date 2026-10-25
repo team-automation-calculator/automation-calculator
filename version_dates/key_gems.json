@@ -90,10 +90,10 @@
     "notes": "latest 4.x; Propshaft is for new apps only and would need the CoffeeScript migration first (standing note)"
   },
   "rspec_rails": {
-    "version": "6.1.5",
-    "release_date": "2024-10-10",
-    "source": "Gemfile.lock (gem 'rspec-rails', '~> 6.0')",
-    "notes": "7.1.1 (last 7.x) for Rails 7.1/7.2 in Phase 11, 8.0.4 (2026-03-11) for Rails 8 in Phase 15"
+    "version": "7.1.1",
+    "release_date": "2025-02-06",
+    "source": "Gemfile.lock (gem 'rspec-rails', '~> 7.1'); Phase 11",
+    "notes": "Last 7.x, carried through Rails 7.2 (Phase 12); 8.0.4 (2026-03-11) for Rails 8 in Phase 15. config.fixture_paths replaced fixture_path in spec/rails_helper.rb."
   },
   "rubocop": {
     "version": "1.92.1",
