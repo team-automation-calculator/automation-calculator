@@ -2,9 +2,9 @@
   "phase": 15,
   "name": "Rails 7.2 → 8.0 (+ load_defaults 7.2, rspec-rails 8, web-console 4.3)",
   "status": "in_progress",
-  "pr": null,
+  "pr": 238,
   "branch": "upgrade/phase-15-rails-8-0",
-  "base_branch": "upgrade/phase-13-ruby-3-4 (PR #235, head 845d5e5) — stacked; Rails 8.0 needs Ruby >= 3.2, which Phase 13 provides. main is at 10e5c5f (Phases 11 and 12 merged, Rails 7.2.4). Phase 14 (Trixie, Dockerfiles only) and Phase 17 (haml 7, Gemfile + views) were built from the same base in parallel; whichever of this PR and Phase 17 merges second needs a Gemfile.lock rebase",
+  "base_branch": "upgrade/phase-13-ruby-3-4 (PR #235; built on 845d5e5, rebased onto 38389c2 — #235's empty 'Retrigger CI after base image 0.9.0 push' commit — before the PR was opened) — stacked; Rails 8.0 needs Ruby >= 3.2, which Phase 13 provides. main is at 10e5c5f (Phases 11 and 12 merged, Rails 7.2.4). Phase 14 (Trixie, Dockerfiles only) and Phase 17 (haml 7, Gemfile + views) were built from the same base in parallel; whichever of this PR and Phase 17 merges second needs a Gemfile.lock rebase",
   "merged": null,
   "image": null,
   "deployed": null,
@@ -87,10 +87,11 @@
     "version_dates/key_gems.json"
   ],
   "commits": {
-    "cc9549e": "Rails 7.2.4 → 8.0.5.1, rspec-rails 7.1.1 → 8.0.4, web-console 4.2.1 → 4.3.0 (Gemfile + lock)",
-    "29f00e3": "load_defaults 7.2, new_framework_defaults_8_0.rb, cvv/cvc in filter_parameters",
-    "09c2a2f": "db/schema.rb: ActiveRecord::Schema[7.2] → [8.0], plpgsql dumped schema-qualified",
-    "tracking": "this file + rails.json / key_gems.json refresh; latest_versions.json was regenerated with fetch_latest_versions.py and came back identical (already refreshed on 2026-10-25)"
+    "777cce4": "Rails 7.2.4 → 8.0.5.1, rspec-rails 7.1.1 → 8.0.4, web-console 4.2.1 → 4.3.0 (Gemfile + lock)",
+    "c2f4040": "load_defaults 7.2, new_framework_defaults_8_0.rb, cvv/cvc in filter_parameters",
+    "3aca2f6": "db/schema.rb: ActiveRecord::Schema[7.2] → [8.0], plpgsql dumped schema-qualified",
+    "7555200": "this file + rails.json / key_gems.json refresh; latest_versions.json was regenerated with fetch_latest_versions.py and came back identical (already refreshed on 2026-10-25)",
+    "rebase": "SHAs above are after the rebase onto 38389c2 (originally cc9549e / 29f00e3 / 09c2a2f / bd72501 on top of 845d5e5); the trees are identical. A fifth commit records PR #238 in this file"
   },
   "verification": {
     "dev_image_build": "docker compose build dev (Dockerfile.development, arm64, ruby:3.4.12-slim-bookworm): `Bundle complete! 44 Gemfile dependencies, 182 gems now installed`, Installing railties/rails 8.0.5.1, rspec-rails 8.0.4, web-console 4.3.0; exit 0. Inside: `bundle check` satisfied, `bundle list` shows rails 8.0.5.1, rack 3.2.7",
