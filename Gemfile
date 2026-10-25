@@ -43,7 +43,7 @@ gem 'bootstrap'
 gem 'jwt', '~> 3.3'
 
 group :development, :test do
-  gem 'byebug', platforms: %w[mri mingw x64_mingw]
+  gem 'byebug', platforms: %w[mri windows]
   gem 'database_cleaner-active_record', '~> 2.2'
   gem 'letter_opener'
   # A library for setting up Ruby objects as test data
