@@ -13,7 +13,7 @@ gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 1.7'
 gem 'puma', '~> 8.0'
-gem 'rails', '~> 7.2.0'
+gem 'rails', '~> 8.0.0'
 gem 'rake'
 # JS compressor for assets:precompile; replaces uglifier.
 gem 'terser', '~> 1.2'
@@ -63,7 +63,7 @@ group :development do
   gem 'annotaterb', '~> 4.25'
 
   gem 'listen'
-  gem 'web-console'
+  gem 'web-console', '~> 4.3'
 
   # guard
   gem 'guard'
@@ -73,7 +73,7 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'rspec-rails', '~> 7.1'
+  gem 'rspec-rails', '~> 8.0'
   # The RSpec testing framework with Rails integrations
   gem 'rspec-its'
 
