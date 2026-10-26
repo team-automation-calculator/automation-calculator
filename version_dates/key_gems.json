@@ -1,5 +1,5 @@
 {
-  "_note": "Versions locked in Gemfile.lock as of 2026-10-25 on the Phase 13 branch (upgrade/phase-13-ruby-3-4, stacked on Phase 12 #234; main is at Phase 11). Latest published versions live in latest_versions.json (regenerate with fetch_latest_versions.py); newest release per minor line via gem_lines.py.",
+  "_note": "Versions locked in Gemfile.lock as of 2026-10-25 on the Phase 15 branch (upgrade/phase-15-rails-8-0, main is at Phase 13 #235, Rails 7.2.4 on Ruby 3.4.12). Latest published versions live in latest_versions.json (regenerate with fetch_latest_versions.py); newest release per minor line via gem_lines.py.",
   "nokogiri": {
     "version": "1.19.4",
     "release_date": "2026-06-18",
@@ -96,10 +96,10 @@
     "notes": "latest 4.x; Propshaft is for new apps only and would need the CoffeeScript migration first (standing note)"
   },
   "rspec_rails": {
-    "version": "7.1.1",
-    "release_date": "2025-02-06",
-    "source": "Gemfile.lock (gem 'rspec-rails', '~> 7.1'); Phase 11",
-    "notes": "Last 7.x, carried through Rails 7.2 (Phase 12); 8.0.4 (2026-03-11) for Rails 8 in Phase 15. config.fixture_paths replaced fixture_path in spec/rails_helper.rb."
+    "version": "8.0.4",
+    "release_date": "2026-03-11",
+    "source": "Gemfile.lock (gem 'rspec-rails', '~> 8.0'); Phase 15",
+    "notes": "Latest; requires actionpack/activesupport/railties >= 7.2 and allows rspec-* < 5.0 (3.13.x locked). No spec change was needed on the 7.1.1 → 8.0.4 move; config.fixture_paths has been in spec/rails_helper.rb since Phase 11."
   },
   "rubocop": {
     "version": "1.92.1",
@@ -155,10 +155,10 @@
     "notes": "latest; requires Ruby >= 3.2 and depends on reline >= 0.6.0 (0.7.0 locked). Compiles on ruby:3.4.12-slim-bookworm. 10.0.2 did not compile under Trixie's GCC 14 — PR #229 finding, cleared by Phase 10"
   },
   "web_console": {
-    "version": "4.2.1",
-    "release_date": "2022-01-08",
-    "source": "Gemfile.lock (gem 'web-console', development group)",
-    "notes": "Held back in Phase 13: 4.3.0 (2026-02-23) requires railties and actionview >= 8.0.0, not just Ruby >= 3.2 as the plan assumed, so it moves with Rails 8.0 in Phase 15."
+    "version": "4.3.0",
+    "release_date": "2026-02-23",
+    "source": "Gemfile.lock (gem 'web-console', '~> 4.3', development group); Phase 15",
+    "notes": "Latest; requires railties and actionview >= 8.0.0 (why Phase 13 held it back) and no longer depends on activemodel. development.rb's config.web_console.whiny_requests = false is still a 4.3.0 setting."
   },
   "minitest": {
     "version": "5.27.0",
