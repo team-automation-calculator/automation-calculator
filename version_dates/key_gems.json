@@ -1,5 +1,5 @@
 {
-  "_note": "Versions locked in Gemfile.lock as of 2026-10-25 on the Phase 16 branch (upgrade/phase-16-rails-8-1, stacked on Phase 15 #238 and Phase 13 #235; main is at Phase 12, Rails 7.2.4). Latest published versions live in latest_versions.json (regenerate with fetch_latest_versions.py); newest release per minor line via gem_lines.py.",
+  "_note": "Versions locked in Gemfile.lock as of 2026-10-25 on the Phase 16 branch (upgrade/phase-16-rails-8-1, stacked on Phase 15 #238; main is at Phase 13 #235, Rails 7.2.4 on Ruby 3.4.12). Latest published versions live in latest_versions.json (regenerate with fetch_latest_versions.py); newest release per minor line via gem_lines.py.",
   "nokogiri": {
     "version": "1.19.4",
     "release_date": "2026-06-18",
