@@ -489,7 +489,7 @@
     {
       "phase": 18,
       "name": "Ruby 3.4 → 4.0 (+ Bundler 4 / RubyGems 4)",
-      "status": "planned",
+      "status": "in_progress",
       "depends_on": [
         16,
         17,

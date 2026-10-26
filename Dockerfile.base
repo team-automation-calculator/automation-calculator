@@ -1,4 +1,4 @@
-FROM ruby:3.4.12-slim-trixie
+FROM ruby:4.0.9-slim-trixie
 
 #Install dependencies as root
 RUN apt-get update
@@ -17,7 +17,7 @@ USER $username
 
 #Install rails dependencies as development user
 RUN gem install nokogiri -v 1.19.4
-RUN gem install bundler -v 2.6.9
+RUN gem install bundler -v 4.0.20
 
 #Installing gems here even though bundle install will need to be installed again to save 90 seconds on build server
 # This is because installing here installs a large number of gems that get cached.

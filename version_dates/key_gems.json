@@ -111,7 +111,7 @@
     "version": "1.92.1",
     "release_date": "2026-10-22",
     "source": "Gemfile.lock (rubocop ~> 1.92, rubocop-rails 2.38.0, rubocop-rspec 3.10.2, rubocop-capybara 3.1.0, rubocop-factory_bot 2.28.0); Phase 10, PR #227",
-    "notes": "Latest. .rubocop.yml uses `plugins:`; TargetRubyVersion 3.4 since Phase 13 (no new offence appeared under the higher target) with NewCops disable. 1.9x accepts TargetRubyVersion 3.4 and 4.0, which Phases 13 and 18 need (1.28 rejected anything above 3.2)."
+    "notes": "Latest. .rubocop.yml uses `plugins:`; TargetRubyVersion 4.0 since Phase 18 (3.4 in Phases 13–17) with NewCops disable. 1.9x accepts TargetRubyVersion 3.4 and 4.0 (1.28 rejected anything above 3.2). The 4.0 target produced two Lint/RedundantRequireStatement offences — `require 'pathname'` in bin/setup and bin/update, since Pathname is core in Ruby 4.0 — fixed by removing the lines; nothing else changed."
   },
   "capybara": {
     "version": "3.40.0",
@@ -158,7 +158,7 @@
     "version": "13.0.0",
     "release_date": "2026-01-15",
     "source": "Gemfile.lock; Phase 13",
-    "notes": "latest; requires Ruby >= 3.2 and depends on reline >= 0.6.0 (0.7.0 locked). Compiles on ruby:3.4.12-slim-bookworm. 10.0.2 did not compile under Trixie's GCC 14 — PR #229 finding, cleared by Phase 10"
+    "notes": "latest; requires Ruby >= 3.2 and depends on reline >= 0.6.0 (0.7.0 locked). Compiles on ruby:3.4.12-slim-bookworm, on Trixie (Phase 14) and on ruby:4.0.9-slim-trixie (Phase 18, 6 GCC warnings, 0 errors). 10.0.2 did not compile under Trixie's GCC 14 — PR #229 finding, cleared by Phase 10. Gemfile line is `platforms: %w[mri windows]` since Phase 18 (Bundler 4 deprecates :mingw / :x64_mingw). Ruby 4.0.9 bundles reline 0.6.3 next to the locked 0.7.0, hence the `ambiguous specs: reline` WARN once per rspec boot"
   },
   "web_console": {
     "version": "4.3.0",
@@ -170,6 +170,6 @@
     "version": "5.27.0",
     "release_date": "2025-12-11",
     "source": "Gemfile.lock (transitive of activesupport / rspec-rails); moved deliberately in Phase 13",
-    "notes": "Requires Ruby >= 3.1 with no upper cap. The standing note's `>= 5.26` check for Phase 18 is closed: 5.17.0 declared Ruby < 4.0, which broke the frozen install in the Ruby 4.0 spike; neither Phase 11 nor 12 moved it under --conservative, so Phase 13 named it in the update set. 6.0.6 (Ruby >= 3.2) exists; the resolver kept 5.x."
+    "notes": "Requires Ruby >= 3.1 with no upper cap. The standing note's `>= 5.26` check for Phase 18 is closed: 5.17.0 declared Ruby < 4.0, which broke the frozen install in the Ruby 4.0 spike; neither Phase 11 nor 12 moved it under --conservative, so Phase 13 named it in the update set. Confirmed in Phase 18: on ruby:4.0.9 (bundled minitest 6.0.0) the lock kept 5.27.0 through `bundle lock`, the image build and `BUNDLE_FROZEN=true bundle install` with no re-resolution."
   }
 }
