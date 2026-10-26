@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
     return unless resource_or_scope.is_a?(User)
     return unless resource_or_scope.sign_in_count < 2
 
-    resource_or_scope.automation_scenarios.first
+    resource_or_scope.automation_scenarios.order(:created_at).first
   end
 
   def layout_selector

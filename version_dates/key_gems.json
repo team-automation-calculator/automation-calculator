@@ -1,5 +1,5 @@
 {
-  "_note": "Versions locked in Gemfile.lock as of 2026-10-25 on the Phase 15 branch (upgrade/phase-15-rails-8-0, main is at Phase 13 #235, Rails 7.2.4 on Ruby 3.4.12). Latest published versions live in latest_versions.json (regenerate with fetch_latest_versions.py); newest release per minor line via gem_lines.py.",
+  "_note": "Versions locked in Gemfile.lock as of 2026-10-25 on the Phase 16 branch (upgrade/phase-16-rails-8-1, stacked on Phase 15 #238; main is at Phase 13 #235, Rails 7.2.4 on Ruby 3.4.12). Latest published versions live in latest_versions.json (regenerate with fetch_latest_versions.py); newest release per minor line via gem_lines.py.",
   "nokogiri": {
     "version": "1.19.4",
     "release_date": "2026-06-18",
@@ -57,13 +57,13 @@
     "version": "2.0.1",
     "release_date": "2025-12-10",
     "source": "Gemfile.lock (gem 'omniauth-rails_csrf_protection', '~> 2.0'); Phase 8, PR #228",
-    "notes": "latest; drops ActiveSupport::Configurable, which Action Pack 8.1 removes"
+    "notes": "latest; drops ActiveSupport::Configurable, which Rails 8.1 deprecates and 8.2 removes — no Configurable reference in app/, config/, lib/ or spec/, and no such deprecation emitted by the suite under 8.1.4 (Phase 16)"
   },
   "active_model_serializers": {
     "version": "0.10.16",
     "release_date": "2025-12-08",
     "source": "Gemfile.lock",
-    "notes": "latest; low-maintenance gem; declares support through Rails 8"
+    "notes": "latest; low-maintenance gem; declares support through Rails 8. Verified under Rails 8.1.4 (Phase 16): rspec spec/requests green against spec/support/api_schemas/*.json"
   },
   "haml": {
     "version": "5.2.2",
@@ -99,7 +99,7 @@
     "version": "8.0.4",
     "release_date": "2026-03-11",
     "source": "Gemfile.lock (gem 'rspec-rails', '~> 8.0'); Phase 15",
-    "notes": "Latest; requires actionpack/activesupport/railties >= 7.2 and allows rspec-* < 5.0 (3.13.x locked). No spec change was needed on the 7.1.1 → 8.0.4 move; config.fixture_paths has been in spec/rails_helper.rb since Phase 11."
+    "notes": "Latest; requires actionpack/activesupport/railties >= 7.2 (so railties 8.1.4 is admitted) and allows rspec-* < 5.0 (3.13.x locked). No spec change was needed on the 7.1.1 → 8.0.4 move nor on Rails 8.1; config.fixture_paths has been in spec/rails_helper.rb since Phase 11."
   },
   "rubocop": {
     "version": "1.92.1",
