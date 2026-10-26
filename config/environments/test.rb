@@ -6,7 +6,7 @@ Rails.application.configure do
   # test suite. You never need to work with it otherwise. Remember that
   # your test database is "scratch space" for the test suite and is wiped
   # and recreated between test runs. Don't rely on the data there!
-  config.cache_classes = true
+  config.enable_reloading = false
 
   # Do not eager load code on boot. This avoids loading your whole application
   # just for the purpose of running a single test. If you are using a tool that
@@ -28,7 +28,7 @@ Rails.application.configure do
     { host: 'localhost', port: 3000 }
 
   # Raise exceptions instead of rendering exception templates.
-  config.action_dispatch.show_exceptions = false
+  config.action_dispatch.show_exceptions = :none
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
@@ -51,7 +51,13 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  config.secret_key = ENV['SECRET_KEY_BASE']
+  # Rails 7.1 ignores ENV['SECRET_KEY_BASE'] outside production (it would
+  # generate tmp/local_secret.txt instead). Read it here so Rails, Devise
+  # (config/initializers/devise.rb) and JwtTokenService share one secret.
+  config.secret_key_base = ENV['SECRET_KEY_BASE']
+
+  # Raise when a before_action only/except option names a missing action.
+  config.action_controller.raise_on_missing_callback_actions = true
 
   # Debug logging
   # logger           = ActiveSupport::Logger.new(STDOUT)

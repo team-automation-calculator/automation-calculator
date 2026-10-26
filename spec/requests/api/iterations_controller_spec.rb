@@ -59,7 +59,7 @@ RSpec.describe API::IterationsController, type: :request do
 
       it 'returns a failure response' do
         post '/api/iterations', params: { iteration: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

@@ -1,15 +1,15 @@
 {
   "ruby": {
-    "version": "3.1.7",
-    "release_date": "2025-03-26",
-    "source": ".ruby-version, Dockerfile.base / Dockerfile.development / Dockerfile.production FROM ruby:3.1.7-slim-bookworm",
-    "end_of_life": "2025-03-26",
-    "notes": "3.1.7 was the final 3.1 release. Current lines on 2026-10-23: 4.0.9 (EOL 2029-03-31), 3.4.12 (EOL 2028-03-31), 3.3.13 (security-only, EOL 2027-03-31); 3.2 went EOL 2026-03-31. Ruby 4.0 ships RubyGems 4 / Bundler 4."
+    "version": "3.4.12",
+    "release_date": "2026-10-23",
+    "source": ".ruby-version, Dockerfile.base / Dockerfile.development / Dockerfile.production FROM ruby:3.4.12-slim-trixie (Ruby tag from Phase 13, Debian release from Phase 14)",
+    "end_of_life": "2028-03-31",
+    "notes": "3.4.12 is the newest 3.4 release on 2026-10-25 (ruby 3.4.12 (2026-10-23 revision 366f5fdc00) +PRISM). Phase 13 moved 3.1.7 → 3.4.12 in one step; 3.1 had been EOL since 2025-03-26. Other lines on 2026-10-25: 4.0.9 (EOL 2029-03-31, Trixie images only, ships RubyGems 4 / Bundler 4 — Phase 18), 3.3.13 (security-only, EOL 2027-03-31); 3.2 went EOL 2026-03-31. The image ships RubyGems 3.6.9, bundler 2.6.9, psych 5.2.2 (default gem, now the one the app uses since the Phase 11 pin is gone), minitest 5.25.4 and csv 3.3.2 as bundled gems, and libyaml-0-2 without its headers (psych 5.5.0 fails to compile there with `yaml.h not found`; nothing in the bundle compiles psych any more)."
   },
   "bundler": {
-    "version": "2.4.22",
-    "release_date": "2023-11-09",
-    "source": "Gemfile.lock BUNDLED WITH, Dockerfiles gem install bundler -v 2.4.22",
-    "notes": "Latest 2.x is 2.7.x; Bundler 4.0.23 (2026-10-14) requires Ruby >= 3.2 and changes lockfile defaults (CHECKSUMS section, no patch level in BUNDLED WITH)"
+    "version": "2.6.9",
+    "release_date": "2025-05-13",
+    "source": "Gemfile.lock BUNDLED WITH, Dockerfiles gem install bundler -v 2.6.9; Phase 13",
+    "notes": "The bundler ruby:3.4.12-slim-bookworm ships as its default gem. The upgrade plan assumed Ruby 3.4 ships 2.7.x; it does not — 2.7.2 (2025-09-09, Ruby >= 3.2) is the last 2.x line and would be a separate `gem install`, so Phase 13 pinned what the image ships. Bundler 4.0.23 (2026-10-14) requires Ruby >= 3.2 and rewrites the lockfile (CHECKSUMS on new lockfiles, self-downgrade until BUNDLED WITH is bumped — PR #229 findings); it comes with Ruby 4.0 in Phase 18."
   }
 }

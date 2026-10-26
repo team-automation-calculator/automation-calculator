@@ -16,7 +16,7 @@ module API
       if @iteration.save
         render json: @iteration, status: :created
       else
-        render json: @iteration.errors, status: :unprocessable_entity
+        render json: @iteration.errors, status: :unprocessable_content
       end
     end
 
@@ -25,7 +25,7 @@ module API
       response.status = if @iteration.valid?
                           200
                         else
-                          :unprocessable_entity
+                          :unprocessable_content
                         end
     end
 

@@ -73,3 +73,6 @@ config/environments/*.local.yml
 
 # Untracked docker compose override, see docker-compose.local.example.yml
 docker-compose.local.yml
+
+# Claude Code worktrees live inside the repo, never as siblings in ~/git
+/.claude/worktrees/

@@ -5,7 +5,7 @@ module API
     end
 
     rescue_from ActiveRecord::RecordInvalid do
-      head :unprocessable_entity
+      head :unprocessable_content
     end
   end
 end

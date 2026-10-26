@@ -11,7 +11,7 @@ class HealthCheckController < ApplicationController
   private
 
   def database_reachable?
-    ActiveRecord::Base.connection.execute('SELECT 1')
+    ActiveRecord::Base.with_connection { |connection| connection.execute('SELECT 1') }
     true
   rescue StandardError
     false

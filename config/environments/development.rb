@@ -2,13 +2,18 @@ Rails.application.configure do
   # Settings specified here will take precedence
   # over those in config/application.rb.
 
-  # In the development environment your application's code is reloaded on
-  # every request. This slows down response time but is perfect for development
+  # In the development environment your application's code is reloaded any time
+  # it changes. This slows down response time but is perfect for development
   # since you don't have to restart the web server when you make code changes.
-  config.cache_classes = false
+  config.enable_reloading = true
 
   # Do not eager load code on boot.
   config.eager_load = false
+
+  # Rails 7.1 ignores ENV['SECRET_KEY_BASE'] outside production (it would
+  # generate tmp/local_secret.txt instead). Read it here so Rails, Devise
+  # (config/initializers/devise.rb) and JwtTokenService share one secret.
+  config.secret_key_base = ENV['SECRET_KEY_BASE']
 
   # Show full error reports.
   config.consider_all_requests_local = true
@@ -74,4 +79,7 @@ Rails.application.configure do
 
   # Allow requests from any source in development
   config.web_console.whiny_requests = false
+
+  # Raise when a before_action only/except option names a missing action.
+  config.action_controller.raise_on_missing_callback_actions = true
 end

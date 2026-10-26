@@ -13,7 +13,7 @@ gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 1.7'
 gem 'puma', '~> 8.0'
-gem 'rails', '~> 7.0.0'
+gem 'rails', '~> 7.2.0'
 gem 'rake'
 # JS compressor for assets:precompile; replaces uglifier.
 gem 'terser', '~> 1.2'
@@ -73,16 +73,16 @@ end
 
 group :test do
   gem 'capybara'
-  gem 'rspec-rails', '~> 6.0'
+  gem 'rspec-rails', '~> 7.1'
   # The RSpec testing framework with Rails integrations
   gem 'rspec-its'
 
   gem 'selenium-webdriver'
   # Rspec cops for rubocop
   gem 'rubocop-rspec', '~> 3.10', require: false
-  gem 'shoulda-matchers', '~> 6.0'
-  # Code coverage for Ruby (1.x needs Ruby 3.3; rides with the Ruby phase)
-  gem 'simplecov', '~> 0.22', require: false
+  gem 'shoulda-matchers', '~> 8.0'
+  # Code coverage for Ruby
+  gem 'simplecov', '~> 1.3', require: false
   # Validate the JSON returned by your Rails JSON APIs
   gem 'json_matchers'
 end

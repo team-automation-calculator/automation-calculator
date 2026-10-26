@@ -5,7 +5,7 @@ plugins:
   - rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.4
   NewCops: disable
   DisplayCopNames: true
   # rubocop-rake / rubocop-rspec_rails are not adopted; silence the nag.
