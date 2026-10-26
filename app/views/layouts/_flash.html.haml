@@ -1,0 +1,7 @@
+-# Devise and the OmniAuth callbacks set flash[:notice] and flash[:alert];
+-# until this partial existed nothing rendered them, so a failed provider
+-# sign-in looked like a silent return to the landing page.
+- flash.each do |type, message|
+  .container.mt-3
+    .alert{class: flash_alert_class(type), role: 'alert'}
+      = safe_join(message.to_s.split("\n"), tag.br)

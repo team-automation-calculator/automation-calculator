@@ -27,5 +27,6 @@
           - else
             %li.nav-item
               = link_to('Sign in', new_user_session_path, class: 'nav-link')
+    = render 'layouts/flash'
     = yield
     = render "devise/shared/links"

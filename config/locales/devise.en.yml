@@ -30,6 +30,11 @@ en:
     omniauth_callbacks:
       failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
       success: "Successfully authenticated from %{kind} account."
+      email_taken: "An account for %{email} already exists and signs in with %{existing_kind}. Each email address can have only one account, so sign in with %{existing_kind} rather than %{kind}."
+      sign_in_methods:
+        github: "GitHub"
+        google_oauth2: "Google"
+        password: "an email address and password"
     passwords:
       no_token: "You can't access this page without coming from a password reset email. If you do come from a password reset email, please make sure you used the full URL provided."
       send_instructions: "You will receive an email with instructions on how to reset your password in a few minutes."
