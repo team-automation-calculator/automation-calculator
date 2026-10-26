@@ -1,6 +1,6 @@
 ---
 name: deploy-image
-description: Promote an app image through staging to production with a smoke-test baseline and retest at each step. Use when asked to deploy, roll out, baseline, or watch a deploy of a 0.9.6-<build> image, or to verify staging or production after a deploy.
+description: Promote an app image through staging to production with a smoke-test baseline and retest at each step, running the unchecked test-plan items of the PRs in the image and ticking them in the PR bodies. Use when asked to deploy, roll out, baseline, or watch a deploy of a 0.9.6-<build> image, or to verify staging or production after a deploy.
 ---
 
 # Deploy an app image: baseline, deploy, retest, then production
@@ -34,6 +34,30 @@ is only started after staging's retest matches its baseline.
 
   Never deploy `latest`. Only `main` builds push since #222, but `latest` is
   still just "most recent", not "approved".
+
+- **What the PRs asked to verify.** Every PR in the image ends with a
+  "Test plan" checklist, and its unchecked items are the checks that could
+  only be done once the image is live: `Staging: ./go smoke staging 49/0/2
+  before and after`, `GitHub and Google sign-in round trips`, `puma RSS vs
+  the pod memory limit in the first hour`, `/health → 200 with database:
+  ok` (see #238 for the shape). Those items are part of this deploy's
+  change-specific checks, and the PR body is where the result is recorded.
+  `scripts/pr_checklist.py` (in this skill's directory) lists the PRs
+  between two commits, prints their checklist items, and ticks one item at a
+  time with a note:
+
+  ```bash
+  S=.claude/skills/deploy-image/scripts/pr_checklist.py
+  python3 -I $S prs <deployed sha> <candidate sha>      # merged PRs whose merge commit is in the range
+  python3 -I $S list <pr> [<pr>...] --open               # unchecked items only
+  python3 -I $S check <pr> --match '<unique text>' --note '<what, where, when>' --dry-run
+  python3 -I $S note  <pr> --match '<unique text>' --note 'not checked: <why>'
+  ```
+
+  `check` ticks exactly one unchecked item and appends ` — <note>`; `note`
+  appends without ticking. Both refuse when the match text hits zero or
+  several items, and neither touches any other line of the body. Run with
+  `--dry-run` first and show the before/after line in the report.
 
 - **What is deployed where.** `GET /health` on each environment returns
   `short_commit_hash`. That is the signal that is always available to detect
@@ -240,11 +264,44 @@ say explicitly what the suite cannot cover:
 | Puma, pg, Rails major/minor | Watch `/health` through the whole rollout for any non-200 or unreachable response, not just the final flip. |
 | Host authorization, ingress, ALB controller | Forged `X-Forwarded-Host` on `/` is 403 and on `/health` is 200. |
 
+**PR checklist.** Before the baseline, list the unchecked items of every PR
+in the image (`pr_checklist.py prs`, then `list --open`) and sort each one
+into:
+
+- **Runs here.** The item names something this procedure observes: the
+  smoke counts, `/health` and its body, an asset, a status code, a log line
+  class, pod memory or restarts, the image tag on the pods. Do it at the
+  step the item names (staging or production, before or after), on top of
+  the standard checks. An item that needs a cluster check without a `CTX`
+  is "not checked", like the cluster checks themselves.
+- **User does it.** OAuth round trips, a page that has to be looked at,
+  anything behind a sign-in. Ask for it at the retest, as the
+  change-specific table already does, and wait for the answer.
+- **Not a deploy check.** Rebases, "after merge" bookkeeping, follow-up
+  phases, CI on another PR. Leave these alone and list them in the report
+  so the user can tick them.
+
+After each retest, tick what was verified: one `check` per item, with a note
+that says what was seen, on which environment and image, and when
+(`staging 49/0/2 before (-950) and after (-951), 2026-10-26 04:40 UTC`).
+An item the user verified by hand is ticked with `verified by user,
+<environment>, <date>` once they say so, not before. A compound item
+("smoke 49/0/2 **and** the production logs show only the four `to_time`
+lines") is ticked only when every clause held; otherwise `note` it with
+what did and did not hold. An item that failed, or that could not be
+checked, gets a `note`, never a tick, and a failed one stops the promotion
+like any other regression.
+
 ## Procedure
 
 1. **Identify the candidate.** Main head sha, its CircleCI build number, the
    tag present on Docker Hub, and the PR(s) it contains. If CI is still
    running, watch the commit status for a terminal state before going on.
+   Read the PR bodies (`pr_checklist.py prs <deployed sha> <candidate sha>`,
+   then `list --open`), sort the unchecked items as described under
+   "PR checklist", and add the ones that run here to the plan for the step
+   they name. Say which items need the user and which are not deploy
+   checks before the baseline starts.
    Probe for cluster access (the `CTX` check above) for staging and
    production and note which optional checks will run; carry on either way.
 2. **Baseline staging.** Record `/health`'s hash, run the smoke suite and the
@@ -264,6 +321,9 @@ say explicitly what the suite cannot cover:
    move to production. With `CTX`: the cluster rollout check first, then the
    bracketed log check around the smoke run; a restarted pod or a new error
    class in the logs stops the promotion the same way a failing example does.
+   Then tick the staging items of the PR checklists that held (`check`,
+   `--dry-run` first), `note` the ones that did not or could not run, and
+   ask the user for the items only they can do.
 5. **Baseline production.** Only after staging matches. Same checks, on the
    production URL, while production is still on the previous image.
 6. **Deploy to production.** Tell the user the Terraform Cloud production
@@ -272,11 +332,15 @@ say explicitly what the suite cannot cover:
    cluster checks when `CTX` exists for production.
 7. **Retest production.** Same checks. Production assets should be
    byte-identical (same digests and sizes) to staging's for the same image.
+   Tick the production items of the PR checklists the same way, including
+   any "after merge: production image built from `main`" item once
+   production's `/health` reports the candidate sha.
 8. **Record.** State the before/after result for each environment, the time
    each hash flipped, what the suite could not verify, which optional
    cluster and log checks ran or were skipped and why, and what the user
-   verified by hand. The new image is now the baseline for attributing the
-   next regression.
+   verified by hand. List every PR checklist item by PR: ticked (with its
+   note), noted but left open (and why), and left for the user. The new
+   image is now the baseline for attributing the next regression.
 
 ## Report shape
 
@@ -289,6 +353,15 @@ the user has to act on:
 | After (`<new sha>`, image `-<new>`) | 49 examples, 0 failures, 2 pending |
 | Cluster (optional) | 2/2 pods Ready on `-<new>`, 0 restarts, old ReplicaSet at 0 — or "not checked: no kubeconfig context" |
 | Logs around smoke runs (optional) | before/after: no 5xx, no exceptions — or "not checked" |
+
+Then the PR checklists, one line per item:
+
+| PR | Item | Result |
+|---|---|---|
+| #238 | Staging: `./go smoke staging` 49/0/2 before and after; … | ticked — staging 49/0/2 before (-950) and after (-951), 2026-10-26 04:40 UTC |
+| #238 | Staging: puma RSS vs the pod memory limit… | noted, left open — not checked: no kubeconfig context for staging |
+| #238 | Staging: GitHub and Google sign-in round trips… | for the user — ticked once they confirm |
+| #238 | #235 merged → rebase onto `main`… | not a deploy check, untouched |
 
 ## Rules
 
@@ -309,6 +382,12 @@ the user has to act on:
   profile works, otherwise ask the user before using the read-write role
   for anything, even reads. No `rollout restart`, `delete`, `scale`,
   `edit`, `apply` or `exec` under any role.
+- Edit a PR body only through `pr_checklist.py check` / `note`, one item at
+  a time, after a `--dry-run`. Tick only an item this deploy actually
+  observed (or the user said they did), with a note that says what, where
+  and when. Never untick, never tick an item you could not check, never
+  tick a compound item on a partial result, and never change any other
+  text in the body. Items that are not deploy checks are the user's.
 - When the suite's expectations change with the app (new status codes,
   pages, response shapes), update `spec/smoke/` in the same PR as the app
   change; CLAUDE.md explains how the smoke and unit suites stay in sync.
