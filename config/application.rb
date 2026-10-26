@@ -17,6 +17,10 @@ module App
     # Ruby constants.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    # The app does not use Active Storage variants. Rails 8.1 resolves the
+    # variant transformer at boot and warns when image_processing is absent.
+    config.active_storage.variant_processor = :disabled
+
     # Settings in config/environments/* take precedence
     # over those specified here.
     # Application configuration should go into files in config/initializers
