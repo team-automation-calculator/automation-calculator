@@ -14,11 +14,6 @@ gem 'jquery-rails'
 gem 'pg', '~> 1.7'
 gem 'puma', '~> 8.0'
 gem 'rails', '~> 7.2.0'
-# railties (7.1 onward) depends on irb, whose current release pulls in rdoc 7 and the
-# psych gem. Ruby 3.1.7 ships psych 4.0.4 as a default gem; any other version
-# compiles against libyaml headers, which the slim images do not carry.
-# Re-pin or drop when the Ruby image changes (Ruby 3.4 ships psych 5.2).
-gem 'psych', '4.0.4'
 gem 'rake'
 # JS compressor for assets:precompile; replaces uglifier.
 gem 'terser', '~> 1.2'
@@ -85,9 +80,9 @@ group :test do
   gem 'selenium-webdriver'
   # Rspec cops for rubocop
   gem 'rubocop-rspec', '~> 3.10', require: false
-  gem 'shoulda-matchers', '~> 6.0'
-  # Code coverage for Ruby (1.x needs Ruby 3.3; rides with the Ruby phase)
-  gem 'simplecov', '~> 0.22', require: false
+  gem 'shoulda-matchers', '~> 8.0'
+  # Code coverage for Ruby
+  gem 'simplecov', '~> 1.3', require: false
   # Validate the JSON returned by your Rails JSON APIs
   gem 'json_matchers'
 end

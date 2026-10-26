@@ -1,8 +1,8 @@
-FROM ruby:3.1.7-slim-bookworm
+FROM ruby:3.4.12-slim-bookworm
 
 #Install dependencies as root
 RUN apt-get update
-RUN apt-get install -y build-essential patch ruby-dev zlib1g-dev liblzma-dev libpq-dev curl
+RUN apt-get install -y build-essential patch zlib1g-dev liblzma-dev libpq-dev curl
 
 #Copy folder over
 COPY . /usr/src/app
@@ -19,8 +19,8 @@ RUN chown -R automation-calculator-production /usr/src/app
 USER automation-calculator-production
 
 #Install rails dependencies as non root user
-RUN gem install nokogiri -v 1.18.10
-RUN gem install bundler -v 2.4.22
+RUN gem install nokogiri -v 1.19.4
+RUN gem install bundler -v 2.6.9
 
 #Calling bundle install in image creation to install dependencies,
 # and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.

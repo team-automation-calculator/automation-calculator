@@ -1,0 +1,110 @@
+{
+  "phase": 13,
+  "name": "Ruby 3.1 → 3.4 (+ bundler 2.6.9, nokogiri 1.19, Ruby-gated test gems), base image 0.9.0",
+  "status": "in_progress",
+  "pr": 235,
+  "branch": "upgrade/phase-13-ruby-3-4",
+  "base_branch": "main — built on upgrade/phase-12-rails-7-2 (PR #234, head 426d2da). #234 was squash-merged to main as 53251c0 on 2026-10-25 19:13 UTC while this phase was in progress and its branch deleted (the first `gh pr create` against it failed with 'Base ref must be a branch'), so the four commits were rebased onto main (10e5c5f, which also carries the unrelated #233) with no conflicts and the PR targets main directly — the same thing that happened to Phase 12 when #232 merged",
+  "merged": null,
+  "image": null,
+  "deployed": null,
+  "ruby_version": "3.1.7 → 3.4.12",
+  "rails_version": "7.2.4 (unchanged)",
+  "changes": {
+    "ruby": "3.1.7 → 3.4.12 in .ruby-version and the three FROM lines (ruby:3.4.12-slim-bookworm; Bookworm kept, Trixie is Phase 14). Newest 3.4 on 2026-10-25; `ruby -v` in the dev image: ruby 3.4.12 (2026-10-23 revision 366f5fdc00) +PRISM [aarch64-linux]. No `ruby` directive in the Gemfile and no RUBY VERSION section in Gemfile.lock, so nothing to change there",
+    "bundler": "2.4.22 → 2.6.9 (Gemfile.lock BUNDLED WITH, `gem install bundler -v 2.6.9` in the three Dockerfiles). 2.6.9 is the default gem ruby:3.4.12 ships (RubyGems 3.6.9); the plan's '2.7.x' assumed 3.4 ships 2.7 — it does not, and 2.7.2 would be a separate install, so the image's own bundler is pinned. No `[DEPRECATED] Platform :mingw` message from 2.6.9 for the byebug `platforms:` line",
+    "nokogiri": "1.18.10 → 1.19.4 (newest, Ruby >= 3.2) in the lock and in all three Dockerfile `gem install nokogiri -v` lines. The dev and base builds reused the pre-installed nokogiri-1.19.4-aarch64-linux-gnu (`Nokogiri::VERSION_INFO['libxml']` → source packaged, precompiled true, libxml 2.13.9); no libxml2 source build",
+    "docker_apt": "`ruby-dev` dropped from the apt line in Dockerfile.base / .development / .production (Debian's Ruby headers, never used by the image's Ruby). Every native extension in the lock (bcrypt, bigdecimal, bindex, byebug 13, date, erb, ffi, json, nio4r, prism, puma, rbs 4.2.0, websocket-driver) compiled against /usr/local/include/ruby-3.4.0 with build-essential alone. libyaml-dev was NOT added: see changes.psych",
+    "base_image_version": "0.8.0 → 0.9.0 in Dockerfile.ci (FROM), scripts/docker_build.rb (build_base_image tag) and scripts/docker_hub.rb (BASE_VERSION)",
+    "ci_executor": ".circleci/config.yml cimg/ruby:3.1-node → cimg/ruby:3.4-node (tag exists per latest_versions.json docker_tags)",
+    "rubocop_target": ".rubocop.yml TargetRubyVersion 3.1 → 3.4; no new offence under the higher target, no cop scoping needed",
+    "ruby_gated_gems": {
+      "selenium-webdriver": "4.32.0 → 4.51.0 (Ruby >= 3.3); rexml 3.4.4 left the lock (no longer a dependency), rubyzip constraint < 3.0 → < 4.0 (2.4.1 kept under --conservative)",
+      "shoulda-matchers": "~> 6.0 → ~> 8.0; 6.5.0 → 8.0.1 (Ruby >= 3.3, activesupport >= 7.2). validate_numericality_of / validate_presence_of / belong_to / route / redirect_to all pass unchanged",
+      "simplecov": "~> 0.22 → ~> 1.3; 0.22.0 → 1.3.2 (Ruby >= 3.3). docile 1.4.1, simplecov-html 0.13.2 and simplecov_json_formatter 0.1.4 left the lock. Still writes coverage/index.html; the summary line is now `Line coverage: 435 / 462 (94.15%)` (0.22 reported 437 / 474, 92.19% — 1.x counts relevant lines differently, not a coverage change)",
+      "faker": "3.6.1 → 3.8.0 (Ruby >= 3.2)",
+      "web-console": "4.2.1 unchanged — HELD BACK: 4.3.0 requires railties >= 8.0.0 and actionview >= 8.0.0 (checked on rubygems.org), so it is Rails-gated and moves in Phase 15, not here",
+      "byebug": "12.0.0 → 13.0.0 (Ruby >= 3.2); new dependency reline >= 0.6.0 (0.7.0 already locked); compiles on the slim Bookworm image",
+      "zeitwerk": "2.6.6 → 2.8.3 (Ruby >= 3.2)"
+    },
+    "sass_embedded": "1.102.0 → 1.106.1 (newest; Ruby >= 3.2). The lock now carries sass-embedded-1.106.1-aarch64-linux-gnu and -x86_64-linux-gnu binary gems (google-protobuf ~> 4.31; 4.35.1 kept) instead of the generic gem that downloaded Dart Sass at bundle install",
+    "psych": "Gemfile pin `gem 'psych', '4.0.4'` (Phase 11) removed and psych left the lock entirely: with rdoc in the update set, rdoc 7.2.0 → 8.1.0, which depends on prism (>= 1.6.0) and rbs (>= 4.0.0) instead of psych, so no gem in the bundle requires the psych gem any more. Ruby 3.4.12's default psych 5.2.2 is what loads (`Psych::VERSION` 5.2.2 from /usr/local/lib/ruby/3.4.0/psych.rb). Probe before deciding: `gem install psych -v 5.5.0` on ruby:3.4.12-slim-bookworm fails with `yaml.h not found` and succeeds after `apt-get install libyaml-dev` — so if a future resolve re-adds the psych gem, libyaml-dev goes into the three Dockerfiles that bundle (Dockerfile.base feeds Dockerfile.ci). stringio 3.2.0 (psych's dependency) also left the lock",
+    "rdoc_rbs": "rdoc 7.2.0 → 8.1.0, rbs 4.2.0 new (native extension, compiles fine), tsort / logger / prism already locked",
+    "minitest": "5.17.0 → 5.27.0, named in the update set on purpose: the standing note's `>= 5.26` check for Phase 18 (5.17 declared Ruby < 4.0, which broke `bundle install --frozen` in the Ruby 4.0 spike). Phases 11 and 12 under --conservative never moved it; 5.27.0 requires Ruby >= 3.1 with no cap. The resolver kept 5.x (6.0.6 exists)",
+    "bundled_gems": "no Gemfile line needed for csv / base64 / bigdecimal / drb / mutex_m: base64 0.3.0, bigdecimal 3.3.1 and drb 2.2.3 are in the lock via Rails 7.2, mutex_m left in Phase 12 (activesupport 7.2 dropped it), and nothing requires csv (zero 'bundled gem' warnings in the -W:deprecated run)",
+    "transitives_unchanged": "rails 7.2.4, rspec-rails 7.1.1, i18n 1.12.0, concurrent-ruby 1.3.8, erb 4.0.4.1 (the 3.4.12 default version), erubi 1.12.0, google-protobuf 4.35.1, rubyzip 2.4.1, reline 0.7.0, io-console 0.9.4, pg 1.7.0, puma 8.0.2, haml 5.2.2, pry 0.16.1, rubocop 1.92.1, capybara 3.40.0, devise 5.0.4 — a first non-conservative `bundle lock --update` also moved i18n → 1.15.2, erb → 6.0.7, erubi, builder, crass, bindex, rubyzip → 3.7.0 and rack-test; that lock was discarded for the --conservative one so every moved line is attributable to this phase",
+    "lockfile_platforms": "aarch64-linux, ruby, x86_64-linux (unchanged; `bundle lock --add-platform x86_64-linux` then `--add-platform ruby` re-run after the update)",
+    "lock_method": "Gemfile edited first, then `bundle lock --update nokogiri psych rdoc sass-embedded selenium-webdriver shoulda-matchers simplecov faker web-console byebug zeitwerk minitest --conservative` in a plain ruby:3.4.12-slim-bookworm container (bundler 2.6.9; lock only, no install), then the dev image was built from that lock and `bundle check` passed inside it"
+  },
+  "files_touched": [
+    ".ruby-version",
+    "Dockerfile.base",
+    "Dockerfile.ci",
+    "Dockerfile.development",
+    "Dockerfile.production",
+    ".circleci/config.yml",
+    ".rubocop.yml",
+    "scripts/docker_build.rb",
+    "scripts/docker_hub.rb",
+    "Gemfile",
+    "Gemfile.lock",
+    "version_dates/phase_13_tracking.json",
+    "version_dates/ruby.json",
+    "version_dates/linux.json (source line only)",
+    "version_dates/key_gems.json"
+  ],
+  "commits": {
+    "5555aa0": "Ruby 3.1.7 → 3.4.12, base image 0.9.0, bundler 2.6.9, nokogiri 1.19.4 pins (Dockerfiles, CI, rubocop, scripts)",
+    "d07beb1": "Ruby-gated test gems, minitest 5.27, bundler 2.6.9 lockfile (Gemfile constraints for shoulda-matchers / simplecov)",
+    "bede15e": "nokogiri 1.19.4, sass-embedded 1.106.1, psych pin dropped (rdoc 8.1)",
+    "rebase": "SHAs above are after the rebase onto main (originally 4612771 / 43020e0 / 478edf6 on top of 426d2da); the trees are identical apart from #233's two files",
+    "tracking": "this file + ruby.json / linux.json / key_gems.json refresh; latest_versions.json was regenerated with fetch_latest_versions.py and came back identical (already refreshed on 2026-10-25)"
+  },
+  "verification": {
+    "dev_image_build": "docker compose build dev (Dockerfile.development, arm64, Bookworm): apt without ruby-dev OK, NodeSource 26.x → nodejs 26.12.1, `gem install nokogiri -v 1.19.4` → nokogiri-1.19.4-aarch64-linux-gnu, bundler 2.6.9, `Bundle complete! 44 Gemfile dependencies, 182 gems now installed`; exit 0. Inside: ruby 3.4.12, Bundler 2.6.9, gem 3.6.9, node v26.12.1, `bundle check` satisfied, sass-embedded / google-protobuf / nokogiri all present as aarch64-linux-gnu platform gems",
+    "base_image_build_native": "./go build base (single-arch arm64, not pushed): Dockerfile.base built as automationcalculationsci/automation-calculator-base:0.9.0, nokogiri 1.19.4 precompiled, `Bundle complete! 44 Gemfile dependencies, 182 gems`; exit 0",
+    "base_image_build_multi_platform": "./go build base --multi-platform (buildx docker-container builder, linux/amd64 + linux/arm64, no --push / --load so the result stays in the build cache): both platforms completed every step; amd64 installed nokogiri-1.19.4-x86_64-linux-gnu and reached `Bundle complete! 44 Gemfile dependencies, 182 gems` (79 s under emulation), arm64 the same with the aarch64 gems; exit 0. So the x86_64-linux lock entries and the amd64 native-extension compiles are proven before the operator pushes; Docker Hub still has no 0.9.0 tag",
+    "rubocop": "./go lint: 162 files inspected, no offenses detected under TargetRubyVersion 3.4 (a first run said 163 because a scratch tmp/step2/Gemfile matched RuboCop's **/Gemfile pattern; removed)",
+    "rspec": "./go test: 393 examples, 0 failures, 6 pending (the pre-existing 'Not yet implemented' view/helper specs); Line coverage 435 / 462 (94.15%) per simplecov 1.3.2. Second full run with `-e RUBYOPT=-W:deprecated`: same 393 / 0 / 6, zero `warning:` lines (the flag was verified to reach the process: a probe script in the same container printed Warning[:deprecated]=true and emitted the chilled-string warning for its own `s << 'y'`)",
+    "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples, 0 failures (loading only). The :smoke exclusion in spec/spec_helper.rb is unchanged (`Run options: exclude {smoke: true}`)",
+    "assets_precompile": "RAILS_ENV=production SECRET_KEY_BASE=dummy DATABASE_URL=<unreachable> bundle exec rails assets:precompile in the dev container with sass-embedded 1.106.1 (binary gem) and Node 26.12.1: exit 0, 86 files under public/assets; the five expected Dart Sass `@import` deprecations (bootstrap-customization, bootstrap, authentication, forms, graphs) printed and nothing else. public/assets and tmp/cache/assets removed afterwards",
+    "hash_inspect": "Ruby 3.4's `{a: 1, \"b\" => 2}` format confirmed in the container; no spec asserts on inspected output (grep of spec/ for .inspect / `=> ` / to_s in expectations found only spec/services/jwt_token_service_spec.rb comparing a Hash with eq, which is value equality), so no spec change was needed",
+    "frozen_string_literals": "no 'literal string will be frozen in the future' warning from app/, haml 5.2.2, coffee-script 2.4.1 or any other gem in the full suite under -W:deprecated; the plan's expectation that haml 5 would spam the log did not materialise (same as the Ruby 4.0 spike). A Haml::Engine render probe in the container was also silent. Production page renders beyond the feature specs were not exercised"
+  },
+  "warnings_observed": {
+    "ruby_W_deprecated": "none (0 lines) across 393 examples",
+    "rails_deprecation": "none (`DEPRECATION WARNING` only from Dart Sass, below)",
+    "dart_sass": "5 × `DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.` from application.scss on a cold sprockets cache — pre-existing since Phase 9, unchanged by sass-embedded 1.106.1 (Bootstrap 5 territory)",
+    "rubygems": "`WARN: Unresolved or ambiguous specs during Gem::Specification.reset: reline (>= 0.6.0) — Available/installed versions: 0.7.0, 0.6.0` + `Clearing out unresolved specs` once per rspec boot. New wording: byebug 13 depends on reline >= 0.6.0, Ruby 3.4.12 ships reline 0.6.0 as a default gem and the lock has 0.7.0 (the Phase 11/12 io-console (~> 0.5) variant of the same message is gone). Harmless, same as the Ruby 4.0 spike saw",
+    "rubyzip": "rubyzip 2.4.1's post-install message about the 3.x API (`RUBYZIP_V3_API_WARN`) prints during image build because selenium-webdriver 4.51 now allows rubyzip < 4.0; rubyzip stayed at 2.4.1 under --conservative. Nothing in app/ uses rubyzip",
+    "omniauth": "the `Authentication failure!` ERROR lines are the OAuth failure specs doing their job (pre-existing)"
+  },
+  "notes": {
+    "departures_from_plan": {
+      "bundler_2_6_not_2_7": "the plan said 'bundler 2.7.x (the bundler Ruby 3.4 ships)'; ruby:3.4.12 ships 2.6.9. Pinned 2.6.9 — the image's own default gem — rather than installing 2.7.2 on top (Bundler 4 comes with Ruby 4.0 in Phase 18)",
+      "web_console_held": "4.3.0 is Rails 8-gated (railties/actionview >= 8.0.0), not Ruby-gated; stays 4.2.1 until Phase 15",
+      "psych_removed_not_repinned": "neither re-pinned to 5.2.2 nor libyaml-dev added: rdoc 8.1 made the psych gem unnecessary, so the bundle has no psych entry at all",
+      "minitest_moved": "not on the plan's Phase 13 list; moved deliberately to close the standing note (5.17.0 → 5.27.0)",
+      "rdoc_rbs": "rdoc 7.2.0 → 8.1.0 and rbs 4.2.0 (new) came in via the psych removal; both development-time only",
+      "ruby_dev_dropped_here": "the plan allowed 'here or in Phase 14'; done here since the three Dockerfiles were being edited anyway and both image builds succeeded without it"
+    },
+    "held_back": {
+      "web_console": "see above",
+      "libyaml_dev": "not needed (no psych gem in the bundle); recipe recorded in changes.psych",
+      "yjit": "config.yjit (new_framework_defaults_7_2.rb) now has a Ruby that supports it (>= 3.3) but stays with the load_defaults 7.2 flip in Phase 15",
+      "trixie": "Phase 14, one FROM change per Dockerfile on top of this branch",
+      "haml_7": "Phase 17; haml 5.2.2 is warning-free on 3.4.12 in the suite, so there is no pressure from this phase",
+      "bundler_2_7": "see departures_from_plan.bundler_2_6_not_2_7"
+    },
+    "ci_red_until_base_pushed": "Dockerfile.ci pulls automation-calculator-base:0.9.0, which does not exist on Docker Hub until someone with Docker Hub login runs `docker login && ./go push base --multi-platform` from this branch (builds Dockerfile.base for linux/amd64,linux/arm64 and pushes :0.9.0), then `git commit --allow-empty -m 'Re-trigger CI now that base 0.9.0 is on Docker Hub' && git push`. This PR pushes no image",
+    "spec_semantics": "no spec expectation changed; no HTTP status code, response body, URL path, header or UI text changed. spec/smoke and spec/support/api_schemas untouched",
+    "staging_checklist": [
+      "after base 0.9.0 is on Docker Hub: CI green on x86_64 (`./go build ci` installs the x86_64-linux platform gems for nokogiri 1.19.4, sass-embedded 1.106.1, google-protobuf, pg 1.7.0 under `bundle install --frozen`; `./go build prod` runs assets:precompile on amd64)",
+      "/health 200 with database: ok; GitHub and Google sign-in round trips (same gems, new Ruby)",
+      "scenario chart page renders (Haml 5.2.2 on Ruby 3.4 in production mode — the one place chilled-string warnings could still appear, in the log, not the page)",
+      "./go smoke staging 49/0/2 before and after",
+      "puma 8.0.2 / pg 1.7.0 on Ruby 3.4.12 in production mode: check the first few minutes of logs for Ruby `warning:` lines (production.rb does not enable deprecation warnings, so none are expected)"
+    ],
+    "next": "Phase 14 (Trixie, base 0.10.0), Phase 15 (Rails 8.0: web-console 4.3, load_defaults 7.2, rspec-rails 8) and Phase 17 (haml 7) branch from upgrade/phase-13-ruby-3-4 and rebase onto main once this PR merges"
+  }
+}
