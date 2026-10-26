@@ -1,0 +1,122 @@
+{
+  "phase": 14,
+  "name": "Linux Bookworm → Trixie (OpenSSL 3.0 → 3.5 LTS), base image 0.10.0",
+  "status": "in_progress",
+  "pr": 236,
+  "branch": "upgrade/phase-14-trixie",
+  "base_branch": "upgrade/phase-13-ruby-3-4 (PR #235, head 845d5e5, itself a draft against main at 10e5c5f). Stacked PR: the diff against #235 is Phase 14 only. If #235 merges first, rebase onto main and retarget the PR, as Phases 12 and 13 had to",
+  "merged": null,
+  "image": null,
+  "deployed": null,
+  "ruby_version": "3.4.12 (unchanged, Phase 13)",
+  "rails_version": "7.2.4 (unchanged)",
+  "changes": {
+    "docker_base_image": "ruby:3.4.12-slim-bookworm → ruby:3.4.12-slim-trixie in Dockerfile.base, Dockerfile.development, Dockerfile.production (one FROM line each; nothing else in the Dockerfiles changed). The tag exists for linux/amd64 and linux/arm64/v8 (plus arm/v5, arm/v7, 386, ppc64le, s390x) — `docker buildx imagetools inspect ruby:3.4.12-slim-trixie`, index digest sha256:dd852d6d…, built 2026-10-23 from debian:trixie-slim snapshot 20261020T213255Z",
+    "debian": "12 (Bookworm) → 13 (Trixie); `cat /etc/debian_version` in the built dev image: 13.7. Security support to 2028-08-09, LTS to 2030-06-30",
+    "openssl": "3.0.x → 3.5.7 LTS (`openssl version`: OpenSSL 3.5.7 9 Jun 2026; Debian package openssl / libssl3t64 3.5.7-1~deb13u3; Ruby's openssl ext 3.3.3 reports OpenSSL::OPENSSL_LIBRARY_VERSION 'OpenSSL 3.5.7 9 Jun 2026'). 3.5 is supported upstream to 2030-04-08",
+    "toolchain": "gcc 12 → 14.2.0 (Debian 14.2.0-19, via build-essential 12.12); apt 2.6 → 3.0.3; the image's sources are deb822 (/etc/apt/sources.list.d/debian.sources), no apt-key anywhere in the Dockerfiles",
+    "libpq": "Bookworm libpq-dev 15 → Trixie libpq-dev / libpq5 17.11-0+deb13u1 (pg_config --version: PostgreSQL 17.11). Not what the app links against: pg 1.7.0 installs as the precompiled aarch64-linux / x86_64-linux gem and `PG.library_version` still reports 180006 (bundled libpq 18.6) inside the Trixie image. libpq-dev stays as the source-build fallback",
+    "apt_packages": "build-essential 12.12, patch 2.8-2, zlib1g-dev 1:1.3.dfsg+really1.3.1-1+b1, liblzma-dev 5.8.1-1+deb13u2, libpq-dev 17.11-0+deb13u1, curl 8.14.1-2+deb13u7 — all six names unchanged on Trixie (`apt-cache policy` in a plain ruby:3.4.12-slim-trixie container). ruby-dev was already dropped in Phase 13; libyaml-dev still not needed (no psych gem in the bundle)",
+    "nodesource": "setup_26.x unchanged; its single `nodistro` suite installed nodejs 26.12.1-1nodesource1 on Trixie (arm64 and amd64), the same package Phase 13's Bookworm build got. `node -v` in the dev image: v26.12.1",
+    "base_image_version": "0.9.0 → 0.10.0 in Dockerfile.ci (FROM), scripts/docker_build.rb (build_base_image tag) and scripts/docker_hub.rb (BASE_VERSION)",
+    "gemfile_lock": "UNCHANGED (Gemfile and Gemfile.lock byte-identical to Phase 13; `bundle install` on Trixie resolved the existing lock without re-resolving — 44 Gemfile dependencies, 182 gems on both arches)"
+  },
+  "files_touched": [
+    "Dockerfile.base",
+    "Dockerfile.ci",
+    "Dockerfile.development",
+    "Dockerfile.production",
+    "scripts/docker_build.rb",
+    "scripts/docker_hub.rb",
+    "version_dates/linux.json",
+    "version_dates/ruby.json (source line only)",
+    "version_dates/node.json (installed_at_last_image_build line only)",
+    "version_dates/phase_14_tracking.json"
+  ],
+  "commits": {
+    "b1b84b3": "Phase 14: Debian Bookworm → Trixie (ruby:3.4.12-slim-trixie), base image 0.10.0 (three FROM lines, Dockerfile.ci, docker_build.rb, docker_hub.rb)",
+    "e9897ff": "version_dates: linux.json → Debian 13 Trixie / OpenSSL 3.5 LTS; ruby.json and node.json source lines",
+    "tracking": "this file; latest_versions.json was regenerated with fetch_latest_versions.py first and came back identical (already refreshed on 2026-10-25)"
+  },
+  "native_gem_probe": {
+    "method": "the real builds, with output captured: `docker compose build --no-cache --progress=plain dev` (Dockerfile.development on arm64), `./go build base` (arm64) and `./go build base --multi-platform` (linux/amd64 + linux/arm64 under buildx). Then, inside the built dev image, every /usr/local/bundle/extensions/aarch64-linux/3.4.0/*/gem_make.out was grepped for `warning:` / `error:` and the GCC warning flags tallied. The brief's `gem install --platform ruby` per-gem form was not needed: bundler compiled every non-precompiled extension and none failed, so the parallel installer never aborted early (the failure mode PR #229 hit with byebug 10)",
+    "compiled_under_gcc_14_both_arches": [
+      "bcrypt 3.1.22",
+      "bigdecimal 3.3.1",
+      "bindex 0.5.0",
+      "byebug 13.0.0",
+      "cgi 0.5.2",
+      "date 3.6.0",
+      "erb 4.0.4.1",
+      "ffi 1.15.5",
+      "io-console 0.9.4",
+      "json 2.20.0",
+      "nio4r 2.7.5",
+      "prism 1.9.0",
+      "puma 8.0.2",
+      "rbs 4.2.0",
+      "websocket-driver 0.8.2"
+    ],
+    "precompiled_not_compiled": [
+      "pg 1.7.0 (aarch64-linux / x86_64-linux; bundled libpq 18.6, PG.library_version 180006)",
+      "nokogiri 1.19.4 (aarch64-linux-gnu / x86_64-linux-gnu via the Dockerfile `gem install nokogiri -v 1.19.4` pre-install; Nokogiri::VERSION_INFO libxml 2.13.9 precompiled=true)",
+      "sass-embedded 1.106.1 (aarch64-linux-gnu / x86_64-linux-gnu)",
+      "google-protobuf 4.35.1 (aarch64-linux-gnu / x86_64-linux-gnu)"
+    ],
+    "errors": "none; zero `error:` lines in any gem_make.out and no -Wincompatible-pointer-types anywhere (the GCC 14 promotion that broke byebug 10 in PR #229 — byebug 13 from Phase 13 is clean)",
+    "warnings": {
+      "ffi 1.15.5": "388, all -Wdeprecated-declarations: `rb_data_object_get_warning is deprecated: by TypedData` (Ruby 3.4 C-API deprecation, not a GCC 14 change) plus four libffi `ffi_java_raw_*` deprecations",
+      "nio4r 2.7.5": "79: 67 -Wundef and a few -Wcomment / -Wparentheses / -Wdangling-else, all from the vendored libev",
+      "puma 8.0.2": "8: -Wtype-limits / -Wsign-compare in the http11 parser",
+      "byebug 13.0.0": "3 -Wold-style-definition",
+      "bcrypt 3.1.22": "2 (-Wold-style-definition; `struct crypt_data` declared inside parameter list)",
+      "websocket-driver 0.8.2": "1",
+      "bigdecimal, bindex, cgi, date, erb, io-console, json, prism, rbs": "0",
+      "note": "a Bookworm/GCC 12 baseline of the same counts was not captured, so these are 'present on Trixie', not 'new on Trixie'; none is an error and none is -Wincompatible-pointer-types. ffi 1.15.5 is the oldest extension left in the lock (2021); ffi 1.17.x would silence the TypedData deprecations if it ever moves"
+    }
+  },
+  "verification": {
+    "image_facts": "inside the built dev image: Debian 13.7; OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7); ruby 3.4.12 (2026-10-23 revision 366f5fdc00) +PRISM [aarch64-linux]; node v26.12.1; gcc (Debian 14.2.0-19) 14.2.0; Bundler 2.6.9; RubyGems 3.6.9; libpq5 / libpq-dev 17.11-0+deb13u1 (no psql binary, pg_config says PostgreSQL 17.11); pg 1.7.0 PG.library_version=180006 platform aarch64-linux",
+    "dev_image_build": "docker compose build --no-cache dev (Dockerfile.development, arm64, Trixie): apt install of the six packages OK, NodeSource → nodejs 26.12.1-1nodesource1, `useradd --uid=501` OK (warning 'uid 501 outside of the UID_MIN 1000 and UID_MAX 60000 range', same as every Bookworm build), nokogiri-1.19.4-aarch64-linux-gnu, bundler 2.6.9, 15 native extensions compiled, `Bundle complete! 44 Gemfile dependencies, 182 gems now installed`; exit 0",
+    "base_image_build_native": "./go build base (single-arch arm64, not pushed): automationcalculationsci/automation-calculator-base:0.10.0 built from ruby:3.4.12-slim-trixie@sha256:dd852d6d…, `Bundle complete! 44 Gemfile dependencies, 182 gems`; exit 0; 1.56 GB (0.9.0 Bookworm: 1.52 GB)",
+    "base_image_build_multi_platform": "./go build base --multi-platform (buildx docker-container builder `multiplatform`, linux/amd64 + linux/arm64, no --push / --load so the result stays in the build cache): both platforms completed all 13 steps; amd64 installed nokogiri-1.19.4-x86_64-linux-gnu, pg 1.7.0 (x86_64-linux), sass-embedded 1.106.1 and google-protobuf 4.35.1 (x86_64-linux-gnu), compiled the same 15 native extensions under emulation (79 s) and reached `Bundle complete! 44 Gemfile dependencies, 182 gems`; arm64 the same with the aarch64 gems (24.7 s); exit 0. Docker Hub has no 0.10.0 tag — nothing was pushed",
+    "go_start_health": "`./go start` could not bind host port 3001 (held by the main checkout's automation-calculator-dev-1, a sibling session), so the same image was run detached with `docker compose … run -d -p 3011:3000 dev bash -c 'rails db:create db:migrate && rails s -b 0.0.0.0'` against this worktree's db container (docker-compose.local.yml override). `GET http://localhost:3011/health` → HTTP 200 `{\"current_time_in_unix\":…,\"short_commit_hash\":\"4ba60c3\",\"database\":\"ok\"}`; Puma 8.0.2 on ruby 3.4.12, environment test. Then `docker stop` and `./go stop` (db container and network removed)",
+    "dev_user_ownership": "inside the running container `id` → uid=501(stevenuray) gid=1000 groups=1000,50(staff); a file and a directory created under /usr/src/app/tmp from inside appeared on the host as uid 501 (stevenuray:staff, gid shown as 20 on macOS). The `useradd --uid` dev-user pattern behaves the same on Trixie; probe files removed",
+    "openssl_tls": "inside the dev image, TLS to both OAuth providers under OpenSSL 3.5.7: accounts.google.com TLSv1.3 TLS_AES_256_GCM_SHA384 verify=0 (X509_V_OK), api.github.com TLSv1.3 TLS_AES_128_GCM_SHA256 verify=0; `URI.open` of https://accounts.google.com/.well-known/openid-configuration (1399 bytes) and https://api.github.com (2262 bytes) both read; printed ok. The sandbox had network, so this was really exercised",
+    "rubocop": "./go lint: 162 files inspected, no offenses detected (TargetRubyVersion 3.4; scratch tmp/*.rb removed first because .rubocop.yml's AllCops/Exclude replaces the defaults)",
+    "rspec": "./go test: 393 examples, 0 failures, 6 pending (the pre-existing 'Not yet implemented' view/helper specs); Line coverage 435 / 462 (94.15%), identical to Phase 13. Second full run with `-e RUBYOPT=-W:deprecated`: 393 / 0 / 6, zero `warning:` lines",
+    "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples, 0 failures (loading only). `config.filter_run_excluding :smoke` in spec/spec_helper.rb is unchanged (`Run options: exclude {smoke: true}` in the real run)",
+    "assets_precompile": "not re-run in this phase (Phase 13 ran it two commits ago with the same gems and Node; the Trixie production image build in CI runs it on amd64 once base 0.10.0 is on Docker Hub)"
+  },
+  "warnings_observed": {
+    "ruby_W_deprecated": "none (0 lines) across 393 examples",
+    "rails_deprecation": "none",
+    "dart_sass": "5 × `DEPRECATION WARNING [import]: Sass @import rules are deprecated` from application.scss on a cold sprockets cache — pre-existing since Phase 9",
+    "rubygems": "`WARN: Unresolved or ambiguous specs during Gem::Specification.reset: reline (>= 0.6.0)` once per rspec boot — the Phase 13 byebug 13 / bundled reline 0.6.0 vs locked 0.7.0 message, unchanged",
+    "rubyzip": "rubyzip 2.4.1's post-install note about the 3.x API during image build — pre-existing since Phase 13",
+    "useradd": "`useradd warning: stevenuray's uid 501 outside of the UID_MIN 1000 and UID_MAX 60000 range` in the dev build — macOS uids are below Debian's UID_MIN; the user is created regardless, same as on Bookworm",
+    "docker_apt": "the usual `update-alternatives: warning: skip creation of /usr/share/man/...` lines from the slim image having no man pages"
+  },
+  "notes": {
+    "departures_from_plan": {
+      "none_in_scope": "the plan's Phase 14 is one FROM change per Dockerfile plus the base version bump, and that is the whole diff. ruby-dev was already gone (Phase 13), no apt package renamed, NodeSource needed no channel change",
+      "probe_form": "the per-gem `gem install` probe was replaced by the real image builds plus a gem_make.out sweep, which gives the same per-gem compile verdict (and the warning flags) without a second toolchain install; the plan's risk — a 2018-era extension failing under GCC 14 — is answered: none of the 15 compiled extensions is older than ffi 1.15.5 (2021) and all compiled on both arches",
+      "libpq_wording": "the plan's 'pg 1.7 links against Trixie's libpq 17 at build time' is not what happens (PR #229 already noted this): the precompiled pg gem ships libpq 18.6; the apt libpq-dev 17.11 is only there for a source build. Recorded in changes.libpq and linux.json"
+    },
+    "held_back": {
+      "ffi_1_17": "ffi 1.15.5 compiles but is the source of 388 TypedData deprecation warnings under Ruby 3.4's headers; bumping it is a Gemfile.lock change and this phase deliberately has none — a candidate for Phase 15/16's bundle update",
+      "assets_precompile_rerun": "see verification.assets_precompile"
+    },
+    "ci_red_until_base_pushed": "Dockerfile.ci pulls automationcalculationsci/automation-calculator-base:0.10.0, which does not exist on Docker Hub until someone with Docker Hub login runs `docker login && ./go push base --multi-platform` from this branch (builds Dockerfile.base for linux/amd64,linux/arm64 and pushes :0.10.0), then `git commit --allow-empty -m 'Re-trigger CI now that base 0.10.0 is on Docker Hub' && git push`. Order: 0.9.0 from #235 first (so #235's CI can go green and merge), then 0.10.0 from this branch. This PR pushes no image",
+    "spec_semantics": "no spec expectation changed; no HTTP status code, response body, URL path, header or UI text changed. spec/smoke and spec/support/api_schemas untouched",
+    "staging_checklist": [
+      "after base 0.10.0 is on Docker Hub: CI green on x86_64 (`./go build ci` does `bundle install --frozen` on the Trixie base; `./go build prod` runs assets:precompile on amd64 Trixie)",
+      "/health 200 with database: ok (pg 1.7.0's bundled libpq against RDS 16.13 — unchanged binary, new OS)",
+      "GitHub and Google sign-in round trips: the TLS 1.3 handshakes to both were verified from the image, the full OAuth flow is the staging check (OpenSSL 3.0 → 3.5)",
+      "scenario chart page renders (Haml / Dart Sass / Node 26 unchanged, new libc 2.41)",
+      "./go smoke staging 49/0/2 before and after",
+      "first minutes of puma logs free of Ruby `warning:` lines and of any OpenSSL / certificate errors (ca-certificates is Trixie's now)"
+    ],
+    "next": "Phase 15 (Rails 8.0) and Phase 17 (haml 7) run in parallel from upgrade/phase-13-ruby-3-4; Phase 18 (Ruby 4.0, Trixie-only images) depends on this phase. Phase 19a (compose postgres 16 → 18) is independent"
+  }
+}
