@@ -101,6 +101,8 @@ RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Mat
 
 Test plans for Dockerfile changes do not need to include steps for building the image or running the test suite — CI handles both automatically on every PR. The test plan only needs to cover anything CI cannot verify, such as confirming the app starts correctly locally or checking that a new system dependency is available inside the container.
 
+CI (`.circleci/config.yml`) runs on an arm64 machine executor: branch builds build and test natively on `linux/arm64`, and `main` publishes the production image as a multi-arch manifest (`linux/amd64` + `linux/arm64`) with `./go push prod --multi-platform`, cross-building the amd64 half under QEMU. A `Dockerfile.production` change therefore has to build on both architectures; `./go build prod --multi-platform` reproduces that locally (slow: the non-native half is emulated).
+
 ## GitHub Workflow
 
 Use the `gh` CLI (not `hub`) for all GitHub operations such as opening pull requests. `hub`'s token gets `Forbidden (HTTP 403): Resource not accessible by personal access token` when opening PRs on this repo.
