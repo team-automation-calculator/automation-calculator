@@ -109,7 +109,7 @@ RSpec.describe API::IterationsController, type: :request do
                params: { iteration: { cost: 2 } }
       end
 
-      it { expect(response).to have_http_status(:ok) }
+      it { expect(response).to have_http_status(:no_content) }
 
       it 'updates the iteration' do
         expect(iteration.reload.cost).to eq 2
