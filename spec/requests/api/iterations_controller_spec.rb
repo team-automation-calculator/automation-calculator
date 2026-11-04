@@ -67,8 +67,9 @@ RSpec.describe API::IterationsController, type: :request do
     describe 'GET #show' do
       before { v1_get "/api/iterations/#{iteration.id}" }
 
+      it { expect(response).to have_http_status(:ok) }
+
       it 'returns the iteration' do
-        expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)['id']).to eq iteration.id
       end
     end
@@ -82,10 +83,12 @@ RSpec.describe API::IterationsController, type: :request do
           } }
         end
 
-        it 'creates an iteration on that scenario' do
-          expect { v1_post '/api/iterations', params: params }
-            .to change(scenario.iterations, :count).by(1)
-          expect(response).to have_http_status(:created)
+        before { v1_post '/api/iterations', params: params }
+
+        it { expect(response).to have_http_status(:created) }
+
+        it 'creates the iteration on that scenario' do
+          expect(scenario.iterations.count).to eq 1
         end
       end
 
@@ -94,62 +97,83 @@ RSpec.describe API::IterationsController, type: :request do
           { iteration: { cost: -1, automation_scenario_id: scenario.id } }
         end
 
-        it 'is unprocessable' do
-          v1_post '/api/iterations', params: params
-          expect(response).to have_http_status(:unprocessable_content)
-        end
+        before { v1_post '/api/iterations', params: params }
+
+        it { expect(response).to have_http_status(:unprocessable_content) }
       end
     end
 
     describe 'PUT #update' do
-      it 'updates the iteration' do
+      before do
         v1_put "/api/iterations/#{iteration.id}",
                params: { iteration: { cost: 2 } }
-        expect(response).to have_http_status(:ok)
+      end
+
+      it { expect(response).to have_http_status(:ok) }
+
+      it 'updates the iteration' do
         expect(iteration.reload.cost).to eq 2
       end
     end
 
     describe 'DELETE #destroy' do
-      it 'destroys the iteration' do
-        iteration
-        expect { v1_delete "/api/iterations/#{iteration.id}" }
-          .to change(Iteration, :count).by(-1)
+      before { v1_delete "/api/iterations/#{iteration.id}" }
+
+      it { expect(response).to be_successful }
+
+      it 'removes the iteration' do
+        expect(Iteration.exists?(iteration.id)).to be false
       end
     end
   end
 
   describe "accessing another member's iteration" do
     let(:other_scenario) { create :automation_scenario, owner: create(:user) }
-    let!(:other_iteration) { create :iteration, automation_scenario: other_scenario }
+    let!(:other_iteration) do
+      create :iteration, automation_scenario: other_scenario
+    end
 
     before { member }
 
-    it 'cannot be shown' do
-      v1_get "/api/iterations/#{other_iteration.id}"
-      expect(response).to have_http_status(:not_found)
+    describe 'GET #show' do
+      before { v1_get "/api/iterations/#{other_iteration.id}" }
+
+      it { expect(response).to have_http_status(:not_found) }
     end
 
-    it 'cannot be updated' do
-      v1_put "/api/iterations/#{other_iteration.id}",
-             params: { iteration: { cost: 99 } }
-      expect(response).to have_http_status(:not_found)
-      expect(other_iteration.reload.cost).not_to eq 99
+    describe 'PUT #update' do
+      before do
+        v1_put "/api/iterations/#{other_iteration.id}",
+               params: { iteration: { cost: 99 } }
+      end
+
+      it { expect(response).to have_http_status(:not_found) }
+
+      it 'does not change the iteration' do
+        expect(other_iteration.reload.cost).not_to eq 99
+      end
     end
 
-    it 'cannot be destroyed' do
-      expect { v1_delete "/api/iterations/#{other_iteration.id}" }
-        .not_to change(Iteration, :count)
-      expect(response).to have_http_status(:not_found)
+    describe 'DELETE #destroy' do
+      before { v1_delete "/api/iterations/#{other_iteration.id}" }
+
+      it { expect(response).to have_http_status(:not_found) }
+
+      it 'does not remove the iteration' do
+        expect(Iteration.exists?(other_iteration.id)).to be true
+      end
     end
 
-    it 'cannot receive a new iteration on an unowned scenario' do
-      v1_post '/api/iterations',
-              params: { iteration: {
-                time: Time.zone.now, cost: 5,
-                automation_scenario_id: other_scenario.id
-              } }
-      expect(response).to have_http_status(:not_found)
+    describe 'POST #create on an unowned scenario' do
+      before do
+        v1_post '/api/iterations',
+                params: { iteration: {
+                  time: Time.zone.now, cost: 5,
+                  automation_scenario_id: other_scenario.id
+                } }
+      end
+
+      it { expect(response).to have_http_status(:not_found) }
     end
   end
 end
