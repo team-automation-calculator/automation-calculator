@@ -1,6 +1,8 @@
 module API
   module V1
     class VisitorsController < API::V1::ApplicationController
+      rate_limit to: 30, within: 1.minute
+
       def create
         # create and sign in a visitor
         visitor = Visitor.create_with_random_uuid(request.remote_ip)

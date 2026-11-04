@@ -1,6 +1,8 @@
 module API
   module V1
     class UsersController < API::V1::ApplicationController
+      rate_limit to: 10, within: 1.minute
+
       def create
         user = User.create! registration_params
 
