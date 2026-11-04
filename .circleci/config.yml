@@ -2,11 +2,21 @@
 #
 # Check https://circleci.com/docs/language-ruby/ for more details
 #
+# The job runs on an arm64 Linux VM (machine executor, resource class
+# arm.medium), so the CI image build, RuboCop and the RSpec suite execute
+# natively on the architecture the EKS worker nodes are moving to
+# (core-iac PR #406, "arm64 worker node migration plan"). The VM has its own
+# Docker daemon, so there is no setup_remote_docker step. On main the
+# production image is published as one multi-arch manifest
+# (linux/amd64 + linux/arm64) under the same :latest and semver tags; the
+# amd64 half is cross-built under QEMU (tonistiigi/binfmt).
+#
 version: 2.1
 jobs:
   build_verify_push:
-    docker:
-      - image: cimg/ruby:4.0-node
+    machine:
+      image: ubuntu-2404:current
+    resource_class: arm.medium
 
     environment:
       USER: "circleci"
@@ -16,9 +26,21 @@ jobs:
     steps:
       - checkout
 
-      - setup_remote_docker
+      # ./go is a Ruby script that only shells out to docker, so any Ruby 3+
+      # on the host will do; the app's own Ruby (.ruby-version, 4.0.9) runs
+      # inside the Docker images. The machine image manages Ruby with rbenv,
+      # whose shim reads .ruby-version from the checkout and exits 1 because
+      # that version is not installed on the host. Pin the host to the
+      # image's global Ruby for every later step via BASH_ENV, and print the
+      # toolchain and architecture so the build log shows what ran.
+      - run:
+          name: Use the machine image's Ruby for ./go and show the toolchain
+          command: |
+            echo "export RBENV_VERSION=$(rbenv global)" >> "$BASH_ENV"
+            source "$BASH_ENV"
+            uname -m && ruby --version && docker version && docker buildx version
 
-      # build test image to test, create semver tag
+      # build test image to test (native arm64)
       - run:
           name: ./go build ci
           command: ./go build ci
@@ -33,7 +55,8 @@ jobs:
           name: ./go test ci
           command: ./go test ci
 
-      # build prod image if tests pass
+      # build prod image if tests pass (native arm64; proves the production
+      # Dockerfile builds on every branch without publishing anything)
       - run:
           name: ./go build prod
           command: ./go build prod
@@ -47,19 +70,24 @@ jobs:
           condition:
             equal: [main, << pipeline.git.branch >>]
           steps:
-            # tag image with semver (uses this job's CIRCLE_BUILD_NUM)
+            # Register the QEMU handler so buildx can cross-build the
+            # linux/amd64 half of the manifest on this arm64 host.
             - run:
-                name: ./go tag
-                command: ./go tag
+                name: Register QEMU for linux/amd64
+                command: docker run --rm --privileged tonistiigi/binfmt --install amd64
 
             # login to docker hub in preparation for pushing image
             - run:
                 name: Login to Docker Hub
                 command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
 
+            # One buildx build for linux/amd64,linux/arm64, tagged with both
+            # :latest and the semver tag (SEMVER_* + this job's
+            # CIRCLE_BUILD_NUM, computed in scripts/docker_hub.rb), and
+            # pushed. This replaces the former ./go tag + ./go push pair.
             - run:
-                name: Upload Docker image to Docker Hub
-                command: ./go push
+                name: Upload multi-arch Docker image to Docker Hub
+                command: ./go push prod --multi-platform
 
       - unless:
           condition:
@@ -67,7 +95,7 @@ jobs:
           steps:
             - run:
                 name: Skip Docker Hub publish (not main)
-                command: echo "Branch ${CIRCLE_BRANCH} is not main; skipping ./go tag, Docker Hub login and ./go push."
+                command: echo "Branch ${CIRCLE_BRANCH} is not main; skipping Docker Hub login and ./go push prod --multi-platform."
 
 workflows:
   build_verify_push:
