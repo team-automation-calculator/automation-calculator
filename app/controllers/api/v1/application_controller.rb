@@ -37,6 +37,20 @@ module API
         current_user || current_visitor
       end
 
+      # Re-authenticate the bearer-token holder before a sensitive change
+      # (password or email). A valid JWT alone is not enough.
+      def verify_current_password!
+        return if valid_current_password?
+
+        render json: { error: 'Invalid current password' },
+               status: :unauthorized
+      end
+
+      def valid_current_password?
+        password = params[:current_password]
+        password.present? && current_user&.valid_password?(password)
+      end
+
       def decode_token
         token = request.headers['HTTP_ACCESS_TOKEN']
         JwtTokenService.decode_token(token)[:data]

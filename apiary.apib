@@ -245,6 +245,7 @@ Update the current user's profile
 
 
     + Attributes(User / Core)
+        + current_password: `foobar` - The current password, required to confirm the change.
 
 
 + Response 200 (application/json)
@@ -282,7 +283,8 @@ Update the current user's password.
 
 
     + Attributes
-      + password: `s7dhe63` - New user's password.
+      + current_password: `s7dhe63` - The current password, required to confirm the change.
+      + password: `n3wp4ss` - New user's password.
 
 
 + Response 200 (application/json)
