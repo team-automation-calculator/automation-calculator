@@ -31,12 +31,11 @@ RSpec.describe 'User password recovery', type: :feature do
       click_button 'Reset Password'
     end
 
-    it 'renders the error block' do
-      expect(page).to have_css('#error_explanation')
-    end
-
-    it 'lists the validation message' do
-      expect(page).to have_text('Email not found')
+    # With Devise config.paranoid, an unknown email behaves exactly like a
+    # known one: it redirects to sign in instead of rendering an error, so
+    # the form no longer reveals whether the account exists.
+    it 'redirects to the sign in page' do
+      expect(page).to have_current_path(new_user_session_path)
     end
   end
 

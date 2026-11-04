@@ -3,6 +3,7 @@ module API
     module Users
       class ProfilesController < API::V1::ApplicationController
         before_action :authenticate_user!
+        before_action :verify_current_password!, only: :update
 
         def show
           render json: current_user

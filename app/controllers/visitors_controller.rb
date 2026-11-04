@@ -1,4 +1,8 @@
 class VisitorsController < ApplicationController
+  # Both actions write visitor and scenario rows (show calls create), so
+  # throttle them together on one per-IP counter.
+  rate_limit to: 30, within: 1.minute, only: %i[show create]
+
   def show
     # to support the GET method
     create

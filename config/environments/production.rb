@@ -49,7 +49,13 @@ Rails.application.configure do
 
   # Force all access to the app over SSL,
   # use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  # The ALB target-group health check and the Kubernetes liveness/readiness/
+  # startup probes hit /health over plain HTTP; exclude it from the redirect
+  # so a 301 never marks pods unhealthy.
+  config.force_ssl = true
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == '/health' } } }
+  # TLS terminates at the ALB, so trust the X-Forwarded-Proto header.
+  config.assume_ssl = true
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.

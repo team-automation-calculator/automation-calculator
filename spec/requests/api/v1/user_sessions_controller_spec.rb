@@ -35,7 +35,9 @@ RSpec.describe API::V1::UserSessionsController, type: :request do
 
     it { expect(response.body).to be_blank }
     it { expect(response.headers['Access-Token']).to be_blank }
-    it { expect(response).to have_http_status(:not_found) }
+    # Unknown email returns the same :unauthorized as a wrong password so
+    # the response cannot be used to probe which accounts exist.
+    it { expect(response).to have_http_status(:unauthorized) }
   end
 
   context 'with invalid password' do
