@@ -26,12 +26,19 @@ jobs:
     steps:
       - checkout
 
-      # ./go is a Ruby script that only shells out to docker; the machine
-      # image ships a Ruby (3.4+). Print the toolchain and the architecture so
-      # the build log shows what this job actually ran on.
+      # ./go is a Ruby script that only shells out to docker, so any Ruby 3+
+      # on the host will do; the app's own Ruby (.ruby-version, 4.0.9) runs
+      # inside the Docker images. The machine image manages Ruby with rbenv,
+      # whose shim reads .ruby-version from the checkout and exits 1 because
+      # that version is not installed on the host. Pin the host to the
+      # image's global Ruby for every later step via BASH_ENV, and print the
+      # toolchain and architecture so the build log shows what ran.
       - run:
-          name: Toolchain versions
-          command: uname -m && ruby --version && docker version && docker buildx version
+          name: Use the machine image's Ruby for ./go and show the toolchain
+          command: |
+            echo "export RBENV_VERSION=$(rbenv global)" >> "$BASH_ENV"
+            source "$BASH_ENV"
+            uname -m && ruby --version && docker version && docker buildx version
 
       # build test image to test (native arm64)
       - run:
