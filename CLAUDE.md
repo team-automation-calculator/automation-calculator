@@ -79,13 +79,13 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 
 ### JWT Authentication (API)
 
-`JwtTokenService` (`app/services/jwt_token_service.rb`) encodes/decodes tokens using `Rails.application.secrets.secret_key_base`. The payload contains either `user_id` or `visitor_id`. Token expiry is controlled by `Settings.api_session_duration` (minutes, from `config/settings.yml`).
+`JwtTokenService` (`app/services/jwt_token_service.rb`) encodes/decodes tokens using `Rails.application.secret_key_base`. The payload contains either `user_id` or `visitor_id`. Token expiry is controlled by `Settings.api_session_duration` (minutes, from `config/settings.yml`).
 
 ### Key Configuration
 
 - `config/settings.yml` — app-level config accessed via `Settings.*` (the `config` gem)
-- `docker-compose.yml` + `docker-compose.dev.yml` — base + dev overrides; `RAILS_SERVER_PORT` defaults to 3001
-- `.rubocop.yml` — targets Ruby 2.4; RuboCop-RSpec cops enabled
+- `docker-compose.yml` + `docker-compose.dev.yml` — base + dev overrides; the dev server is published on host port 3001 (`3001:3000` in `docker-compose.dev.yml`); `RAILS_SERVER_PORT` is the port Puma listens on inside the container (3000)
+- `.rubocop.yml` — targets Ruby 4.0; the rubocop-rails, rubocop-rspec, rubocop-capybara and rubocop-factory_bot plugins are enabled
 
 ### Testing Stack
 

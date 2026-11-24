@@ -6,13 +6,12 @@
 
 To help people make and communicate automation decisions quickly and effectively. 
 
-[Examples of automation decisions.](https://github.com/team-automation-calculator/automation-calculator/blob/master/About.md)
+[Examples of automation decisions.](About.md)
 
 ## Setup
 ### Dependencies
-* Ruby 2.0.0+
-* Docker Engine 17.09.0+
-* Docker Compose (Must support Compose 3.4 format)
+* Ruby on the host, only to run the `./go` script. The app's own Ruby (see `.ruby-version`) runs inside Docker.
+* Docker Engine with the Compose v2 plugin (`./go` calls `docker compose`, not `docker-compose`)
 
 ### Install
 `./go init`
@@ -22,7 +21,7 @@ To help people make and communicate automation decisions quickly and effectively
 ### View app in local browser
 * `./go start`
 * Open browser, go to `http://localhost:3001/`.
-* If you wish to configure the port to be something else, edit `RAILS_SERVER_PORT` inside `docker-compose.yml`.
+* If you wish to configure the port to be something else, edit the host side of the `3001:3000` port mapping in `docker-compose.dev.yml`. `RAILS_SERVER_PORT` in that file is the port Puma listens on inside the container, not the one your browser uses.
 
 ### Interact with the app via terminal
 * `./go shell`
@@ -30,6 +29,7 @@ To help people make and communicate automation decisions quickly and effectively
 ### Run the tests
 * `./go test`
 * `./go lint`
+* `./go smoke` runs the smoke tests against the running dev server (`./go start` first); `./go smoke staging` and `./go smoke prod` target the deployed sites.
 
 ### View available functions
 * `./go help`
