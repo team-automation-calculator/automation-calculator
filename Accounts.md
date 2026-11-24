@@ -6,5 +6,4 @@ Alphabetical Order:
 * CircleCI - Build Pipeline
 * [Docker Hub](https://hub.docker.com/r/automationcalculator/automation-calculator-rails/) - Docker Image Repository
 * Github - Code Repository
-* Namecheap - DNS/address for automation-calculators.net
 * Papertrail - Logs
