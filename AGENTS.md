@@ -110,3 +110,7 @@ Use the `gh` CLI (not `hub`) for all GitHub operations such as opening pull requ
 ```bash
 gh pr create --draft --title "Title" --body "Body"
 ```
+
+## Repo standards
+
+This repo follows https://github.com/stevenuray/repo-standards; `.repo-standards.toml` lists the rules it does not adopt, with reasons. Audit with `python3 ~/git/repo-standards/scripts/audit_repo.py .` (needs Python 3.11+).
