@@ -19,5 +19,7 @@ python3 -I version_dates/fetch_latest_versions.py
 python3 -I version_dates/gem_lines.py rails rspec-rails --min 7.1   # when the target is not the newest line
 ```
 
-Both need only `curl` and Python 3.9+, no API keys. Docker Hub rate-limits unauthenticated
+Both need only `curl` and Python 3.9+, no API keys. Diagnostics go through `logging` (set
+`LOG_LEVEL`, default `INFO`); the report itself is on stdout. The scripts are kept
+Black-formatted and Ruff-clean by hand: `black version_dates/` and `ruff check version_dates/`. Docker Hub rate-limits unauthenticated
 paging, so each repo is queried with a `name=` filter to keep it to a few pages.

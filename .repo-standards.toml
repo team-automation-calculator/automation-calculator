@@ -12,11 +12,14 @@ source = "https://github.com/stevenuray/repo-standards"   # upstream definition 
 [repo]
 # A Ruby on Rails app. Its only Python is two standard-library helper scripts in
 # version_dates/, so the Python rules (python-version, poetry, compile-check, black,
-# lint, pytest) are skipped. Ruby is linted with RuboCop and tested with RSpec.
+# lint, pytest) are skipped. Those two scripts are still kept to the standard by
+# hand (logging module, Black, Ruff), just not enforced in CI.
+# The Ruby side follows the conventions: `./go compile` (ruby -c), `./go lint`
+# (compile check, then RuboCop), `./go format`, `./go validate`, and RSpec.
 python = false
 
 [overrides.ci]
-reason = "CI is CircleCI (.circleci/config.yml): it builds the Docker images on an arm64 machine executor, runs RuboCop, RSpec and the smoke tests in them, and publishes the multi-arch production image from main"
+reason = "CI is CircleCI (.circleci/config.yml): it builds the Docker images on an arm64 machine executor, runs the Ruby compile check, RuboCop and RSpec in them, and publishes the multi-arch production image from main"
 
 [overrides.claude-project]
 reason = "not yet adopted: no claude.ai Project named automation-calculator exists yet; create it in the UI and record it in iac/specs/claude/project.json"

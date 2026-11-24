@@ -10,7 +10,10 @@ All commands run via the `./go` script (a Ruby dispatcher into `scripts/`):
 ./go init              # First-time setup: build images and run db setup
 ./go start             # Start dev server at http://localhost:3001/
 ./go test              # Run full RSpec suite in Docker
-./go lint              # Run RuboCop in Docker
+./go compile           # Check that every tracked Ruby file parses (ruby -c); takes file paths too
+./go lint              # Run the compile check, then RuboCop, in Docker
+./go format            # Apply RuboCop safe autocorrections
+./go validate          # lint, then test: what CI checks; changes nothing
 ./go shell             # Open a shell in the dev container
 ./go stop              # Stop containers
 ./go restart           # Stop and restart the dev environment
@@ -32,7 +35,7 @@ Or from the host:
 docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspec spec/path/to/file_spec.rb
 ```
 
-**Before committing:** Run `./go lint` and fix all RuboCop offenses. CI runs lint and will fail on any offense, including in scripts and config files.
+**Before committing:** Run `./go lint` and fix every syntax error and RuboCop offense (`./go format` applies the safe autocorrections). CI runs lint and will fail on any offense, including in scripts and config files.
 
 **Troubleshooting:**
 - After updating the Gemfile, run `./go build` before `./go test` or `./go start`.

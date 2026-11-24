@@ -9,10 +9,14 @@ need" without leaving the terminal.
 Run:  python3 -I version_dates/gem_lines.py rails rspec-rails haml
       python3 -I version_dates/gem_lines.py rails --min 7.1
 """
+
 import argparse
 import json
+import logging
+import os
 import subprocess
-import sys
+
+logger = logging.getLogger(__name__)
 
 USER_AGENT = "automation-calculator-version-check/1.0"
 
@@ -21,10 +25,21 @@ def versions(name):
     # Docker Hub answers urllib with 403 but curl with 200 (see
     # fetch_latest_versions.py); rubygems is fine either way, keep one method.
     result = subprocess.run(
-        ["curl", "-sS", "--fail", "--max-time", "30", "-A", USER_AGENT,
-         "-H", "Accept: application/json",
-         f"https://rubygems.org/api/v1/versions/{name}.json"],
-        check=True, capture_output=True, text=True,
+        [
+            "curl",
+            "-sS",
+            "--fail",
+            "--max-time",
+            "30",
+            "-A",
+            USER_AGENT,
+            "-H",
+            "Accept: application/json",
+            f"https://rubygems.org/api/v1/versions/{name}.json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
     )
     return json.loads(result.stdout)
 
@@ -52,21 +67,31 @@ def newest_per_line(releases, minimum):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=(__doc__ or "").split("\n", maxsplit=1)[0])
+    parser = argparse.ArgumentParser(
+        description=(__doc__ or "").split("\n", maxsplit=1)[0]
+    )
     parser.add_argument("gems", nargs="+")
-    parser.add_argument("--min", default=None, help="lowest minor line to show, e.g. 7.1")
+    parser.add_argument(
+        "--min", default=None, help="lowest minor line to show, e.g. 7.1"
+    )
     args = parser.parse_args()
+    logging.basicConfig(
+        level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+        format="%(levelname)s: %(message)s",
+    )
 
     for name in args.gems:
         try:
             releases = versions(name)
         except subprocess.CalledProcessError as exc:
-            print(f"{name}: {exc.stderr.strip()}", file=sys.stderr)
+            logger.error("%s: %s", name, exc.stderr.strip())
             continue
         print(f"== {name}")
         for release in newest_per_line(releases, args.min):
             ruby = release.get("ruby_version") or "-"
-            print(f"  {release['number']:<12} {release['created_at'][:10]}  ruby {ruby}")
+            print(
+                f"  {release['number']:<12} {release['created_at'][:10]}  ruby {ruby}"
+            )
 
 
 if __name__ == "__main__":
