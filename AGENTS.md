@@ -84,6 +84,7 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 ### Key Configuration
 
 - `config/settings.yml` — app-level config accessed via `Settings.*` (the `config` gem)
+- `RAILS_LOG_LEVEL` — production log level (`config/environments/production.rb`); defaults to `debug`. Log through `Rails.logger` / `logger`, never `puts`.
 - `docker-compose.yml` + `docker-compose.dev.yml` — base + dev overrides; the dev server is published on host port 3001 (`3001:3000` in `docker-compose.dev.yml`); `RAILS_SERVER_PORT` is the port Puma listens on inside the container (3000)
 - `.rubocop.yml` — targets Ruby 4.0; the rubocop-rails, rubocop-rspec, rubocop-capybara and rubocop-factory_bot plugins are enabled
 

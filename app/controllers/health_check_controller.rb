@@ -13,7 +13,8 @@ class HealthCheckController < ApplicationController
   def database_reachable?
     ActiveRecord::Base.with_connection { |connection| connection.execute('SELECT 1') }
     true
-  rescue StandardError
+  rescue StandardError => e
+    logger.error("Health check: database unreachable: #{e.class}: #{e.message}")
     false
   end
 end
