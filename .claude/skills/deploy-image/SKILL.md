@@ -182,7 +182,7 @@ expected):
 
 If another checkout's `db` container is up and compose refuses to start,
 either copy `docker-compose.local.example.yml` to `docker-compose.local.yml`
-(see CLAUDE.md) or run the suite without compose:
+(see AGENTS.md) or run the suite without compose:
 
 ```bash
 docker run --rm -v "$(pwd):/usr/src/app" -w /usr/src/app \
@@ -390,4 +390,4 @@ Then the PR checklists, one line per item:
   text in the body. Items that are not deploy checks are the user's.
 - When the suite's expectations change with the app (new status codes,
   pages, response shapes), update `spec/smoke/` in the same PR as the app
-  change; CLAUDE.md explains how the smoke and unit suites stay in sync.
+  change; AGENTS.md explains how the smoke and unit suites stay in sync.
