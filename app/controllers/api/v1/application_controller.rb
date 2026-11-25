@@ -28,8 +28,10 @@ module API
           @current_visitor = Visitor.find(visitor_id)
           @current_user = nil
         else
-          # neither user nor visitor found
-          raise ActiveRecord::RecordNotFound
+          # A correctly signed token that names nobody: this app never
+          # issues one, so it is a bug or a forged token.
+          raise ActiveRecord::RecordNotFound,
+                'token payload names neither a user nor a visitor'
         end
       end
 
@@ -42,6 +44,10 @@ module API
       def verify_current_password!
         return if valid_current_password?
 
+        logger.warn(
+          'API 401: current password rejected: ' \
+          "user=#{current_user&.id} ip=#{request.remote_ip}"
+        )
         render json: { error: 'Invalid current password' },
                status: :unauthorized
       end

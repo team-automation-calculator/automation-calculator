@@ -45,8 +45,12 @@ module API
         @solution = Solution.find params[:id]
 
         # a primitive permissions check
-        raise ActiveRecord::RecordNotFound unless
-          @solution.automation_scenario.owner == current_member
+        return if @solution.automation_scenario.owner == current_member
+
+        raise NotOwnedError,
+              "solution=#{@solution.id} is not owned by " \
+              "#{current_member.class.name.downcase}=#{current_member.id} " \
+              "ip=#{request.remote_ip}"
       end
 
       def permitted_params
