@@ -102,7 +102,7 @@ RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Mat
 
 Test plans for Dockerfile changes do not need to include steps for building the image or running the test suite — CI handles both automatically on every PR. The test plan only needs to cover anything CI cannot verify, such as confirming the app starts correctly locally or checking that a new system dependency is available inside the container.
 
-CI (`.circleci/config.yml`) runs on an arm64 machine executor: branch builds build and test natively on `linux/arm64`, and `main` publishes the production image as a multi-arch manifest (`linux/amd64` + `linux/arm64`) with `./go push prod --multi-platform`, cross-building the amd64 half under QEMU. A `Dockerfile.production` change therefore has to build on both architectures; `./go build prod --multi-platform` reproduces that locally (slow: the non-native half is emulated).
+CI (`.circleci/config.yml`) runs three parallel jobs on machine executors: `verify` (CI image, RuboCop, RSpec, on arm64) and `build_prod_arm64` / `build_prod_amd64`, which each build the production image natively on a runner of that architecture. Every branch therefore proves that `Dockerfile.production` builds on both architectures; `./go build prod --multi-platform` reproduces that locally (slow: the non-native half is emulated under QEMU, which is why CI does not do it). On `main` each `build_prod` job pushes its image untagged with `./go push prod --digest-only`, and `publish_manifest` then joins the two into one multi-arch manifest (`linux/amd64` + `linux/arm64`) with `./go push prod --manifest`. Only that last job creates the `:latest` and semver tags, and it waits for all three jobs.
 
 ## GitHub Workflow
 
