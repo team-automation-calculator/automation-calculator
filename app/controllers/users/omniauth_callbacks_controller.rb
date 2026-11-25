@@ -14,7 +14,8 @@ module Users
     # tampered or replayed callback), :missing_client_id (the provider's
     # credentials are not configured in this environment), :access_denied
     # (the user said no at the provider). The message can carry text from
-    # the callback's query string, so it is logged escaped.
+    # the callback's query string or the provider's response, so it is
+    # logged escaped and truncated.
     def failure
       logger.warn("OAuth sign-in failed: #{omniauth_failure} ip=#{request.remote_ip}")
       redirect_to root_path
@@ -27,7 +28,7 @@ module Users
       error = env['omniauth.error']
       "provider=#{env['omniauth.error.strategy']&.name} " \
         "type=#{env['omniauth.error.type']} " \
-        "error=#{error.class}: #{error&.message.inspect}"
+        "error=#{error&.class}: #{error&.message.to_s.truncate(200).inspect}"
     end
 
     # One account per email address. When the provider reports an email that
