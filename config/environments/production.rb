@@ -65,8 +65,11 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
 
-  # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  # Solid Cache keeps Rails.cache in the primary database (config/cache.yml),
+  # so every pod reads and writes the same rate_limit counters. The default
+  # FileStore is per container: with N replicas each client got N times the
+  # configured limit, and a restart reset the counters.
+  config.cache_store = :solid_cache_store
 
   # Use a real queuing backend for Active Job
   # (and separate queues per environment)

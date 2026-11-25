@@ -1,0 +1,21 @@
+# Solid Cache (config.cache_store = :solid_cache_store in production.rb).
+#
+# No `database:` key on purpose: entries go in the primary database, in the
+# solid_cache_entries table, over the ActiveRecord::Base connection pool.
+#
+# The cache holds the rate_limit counters, which live for a minute, so the
+# caps are small: nothing here needs to outlive a day.
+default: &default
+  store_options:
+    max_age: <%= 1.day.to_i %>
+    max_size: <%= 64.megabytes %>
+    namespace: <%= Rails.env %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
