@@ -70,7 +70,8 @@ jobs:
           name: ./go build ci
           command: ./go build ci
 
-      # lint
+      # lint: the Ruby compile check (ruby -c on every tracked Ruby file)
+      # first, so a file that does not parse fails fast, then RuboCop
       - run:
           name: ./go lint ci
           command: ./go lint ci

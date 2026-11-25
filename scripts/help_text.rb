@@ -24,10 +24,21 @@ class HelpText
     }.freeze,
     clean:
       'Remove all docker containers, images, and volumes for a full reset.',
+    compile: {
+      dev:
+        '[Default] Check that Ruby files parse (ruby -c) in the development ' \
+        'container. Pass file paths to check only those; ' \
+        'the default is every tracked Ruby file.',
+      ci: 'Run the same check in the ci container.'
+    }.freeze,
+    format:
+      'Apply RuboCop safe autocorrections in the development container.',
     init: 'Setup your development environment with docker.',
     lint: {
-      dev: '[Default] Run RuboCop in the development container.',
-      ci: 'Run RuboCop in the ci container.'
+      dev:
+        '[Default] Run the compile check, then RuboCop, ' \
+        'in the development container.',
+      ci: 'Run the compile check, then RuboCop, in the ci container.'
     }.freeze,
     logs: 'Tail logs from the dev container.',
     push: {
@@ -90,6 +101,12 @@ class HelpText
     test: {
       dev: '[Default] Run the RSpec suite in the development container.',
       ci: 'Run the RSpec suite in the ci container.'
+    }.freeze,
+    validate: {
+      dev:
+        '[Default] Run lint, then test, in the development container. ' \
+        'Changes nothing.',
+      ci: 'Run lint, then test, in the ci container.'
     }.freeze
   }.freeze
 

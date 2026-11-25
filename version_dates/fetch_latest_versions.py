@@ -7,29 +7,82 @@ against today's reality rather than memory.
 
 Run:  python3 -I version_dates/fetch_latest_versions.py
 """
+
 import json
+import logging
+import os
 import re
 import subprocess
-import sys
 import urllib.request
 from datetime import date
 from pathlib import Path
 
 GEMS = [
-    "rails", "puma", "pg", "devise", "omniauth", "omniauth-google-oauth2",
-    "omniauth-github", "omniauth-rails_csrf_protection", "jwt", "bootstrap",
-    "haml", "haml-rails", "sass-rails", "sassc-rails", "sassc", "dartsass-rails",
-    "dartsass-sprockets", "sassc-embedded", "sass-embedded",
-    "sprockets", "sprockets-rails", "propshaft", "turbolinks", "turbo-rails",
-    "coffee-rails", "uglifier", "terser", "jquery-rails", "config",
-    "active_model_serializers", "rspec-rails", "capybara", "selenium-webdriver",
-    "rubocop", "rubocop-rails", "rubocop-rspec", "rubocop-capybara",
-    "rubocop-factory_bot", "nokogiri", "factory_bot_rails", "faker",
-    "shoulda-matchers", "simplecov", "database_cleaner",
-    "database_cleaner-active_record", "json_matchers", "listen", "web-console",
-    "guard", "guard-rspec", "guard-rubocop", "annotate", "annotaterb",
-    "letter_opener", "jbuilder", "bundler", "importmap-rails", "execjs",
-    "byebug", "pry", "rspec-its", "rake", "rack", "zeitwerk", "concurrent-ruby",
+    "rails",
+    "puma",
+    "pg",
+    "devise",
+    "omniauth",
+    "omniauth-google-oauth2",
+    "omniauth-github",
+    "omniauth-rails_csrf_protection",
+    "jwt",
+    "bootstrap",
+    "haml",
+    "haml-rails",
+    "sass-rails",
+    "sassc-rails",
+    "sassc",
+    "dartsass-rails",
+    "dartsass-sprockets",
+    "sassc-embedded",
+    "sass-embedded",
+    "sprockets",
+    "sprockets-rails",
+    "propshaft",
+    "turbolinks",
+    "turbo-rails",
+    "coffee-rails",
+    "uglifier",
+    "terser",
+    "jquery-rails",
+    "config",
+    "active_model_serializers",
+    "rspec-rails",
+    "capybara",
+    "selenium-webdriver",
+    "rubocop",
+    "rubocop-rails",
+    "rubocop-rspec",
+    "rubocop-capybara",
+    "rubocop-factory_bot",
+    "nokogiri",
+    "factory_bot_rails",
+    "faker",
+    "shoulda-matchers",
+    "simplecov",
+    "database_cleaner",
+    "database_cleaner-active_record",
+    "json_matchers",
+    "listen",
+    "web-console",
+    "guard",
+    "guard-rspec",
+    "guard-rubocop",
+    "annotate",
+    "annotaterb",
+    "letter_opener",
+    "jbuilder",
+    "bundler",
+    "importmap-rails",
+    "execjs",
+    "byebug",
+    "pry",
+    "rspec-its",
+    "rake",
+    "rack",
+    "zeitwerk",
+    "concurrent-ruby",
 ]
 
 # repo -> (Docker Hub `name=` substring filter, regex applied to the result)
@@ -42,15 +95,33 @@ DOCKER_TAG_FILTERS = {
 NODE_CHANNELS = [20, 22, 24, 26]
 
 
-HEADERS = {"User-Agent": "automation-calculator-version-check/1.0", "Accept": "application/json"}
+HEADERS = {
+    "User-Agent": "automation-calculator-version-check/1.0",
+    "Accept": "application/json",
+}
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_json(url):
     # Docker Hub answers urllib with 403 but curl with 200, so shell out to curl.
     result = subprocess.run(
-        ["curl", "-sS", "--fail", "--max-time", "30", "-A", HEADERS["User-Agent"],
-         "-H", "Accept: application/json", url],
-        check=True, capture_output=True, text=True,
+        [
+            "curl",
+            "-sS",
+            "--fail",
+            "--max-time",
+            "30",
+            "-A",
+            HEADERS["User-Agent"],
+            "-H",
+            "Accept: application/json",
+            url,
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
     )
     return json.loads(result.stdout)
 
@@ -63,7 +134,9 @@ def gem_latest(name):
     version = latest.get("version")
     if version in (None, "unknown"):
         return {"error": "not found"}
-    detail = get_json(f"https://rubygems.org/api/v2/rubygems/{name}/versions/{version}.json")
+    detail = get_json(
+        f"https://rubygems.org/api/v2/rubygems/{name}/versions/{version}.json"
+    )
     return {
         "version": version,
         "released": detail.get("created_at", "")[:10],
@@ -83,14 +156,19 @@ def docker_tags(repo, name_filter, pattern):
         url = data.get("next")
         if not url:
             break
-    return sorted(tags, key=lambda t: [int(x) if x.isdigit() else x for x in re.split(r"(\d+)", t)])
+    return sorted(
+        tags,
+        key=lambda t: [int(x) if x.isdigit() else x for x in re.split(r"(\d+)", t)],
+    )
 
 
 def node_channels():
     out = {}
     for major in NODE_CHANNELS:
         req = urllib.request.Request(
-            f"https://deb.nodesource.com/setup_{major}.x", method="HEAD", headers=HEADERS
+            f"https://deb.nodesource.com/setup_{major}.x",
+            method="HEAD",
+            headers=HEADERS,
         )
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
@@ -101,6 +179,10 @@ def node_channels():
 
 
 def main():
+    logging.basicConfig(
+        level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+        format="%(levelname)s: %(message)s",
+    )
     snapshot = {
         "fetched_on": date.today().isoformat(),
         "gems": {name: gem_latest(name) for name in GEMS},
@@ -112,9 +194,11 @@ def main():
     }
     out = Path(__file__).with_name("latest_versions.json")
     out.write_text(json.dumps(snapshot, indent=2) + "\n")
-    print(f"wrote {out}", file=sys.stderr)
+    logger.info("wrote %s", out)
     for name, info in snapshot["gems"].items():
-        print(f"{name:32} {info.get('version', info.get('error'))}  {info.get('released', '')}  ruby {info.get('ruby_version', '')}")
+        print(
+            f"{name:32} {info.get('version', info.get('error'))}  {info.get('released', '')}  ruby {info.get('ruby_version', '')}"
+        )
 
 
 if __name__ == "__main__":

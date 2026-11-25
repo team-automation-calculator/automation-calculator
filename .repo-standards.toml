@@ -1,0 +1,25 @@
+# .repo-standards.toml — this repo's link to the shared standards, and where it
+# intentionally departs from them. Every rule is optional per repo: a rule not
+# listed under [overrides] is expected to be met; a rule listed with a reason is
+# skipped by the audit and left alone by the conform flow.
+#
+# Rule ids: python-version, poetry, compile-check, black, lint, pytest, logging, ci,
+#           go-script, claude-project, routines, git-sync, agents-md, worktrees
+
+[standards]
+source = "https://github.com/stevenuray/repo-standards"   # upstream definition of the rules
+
+[repo]
+# A Ruby on Rails app. Its only Python is two standard-library helper scripts in
+# version_dates/, so the Python rules (python-version, poetry, compile-check, black,
+# lint, pytest) are skipped. Those two scripts are still kept to the standard by
+# hand (logging module, Black, Ruff), just not enforced in CI.
+# The Ruby side follows the conventions: `./go compile` (ruby -c), `./go lint`
+# (compile check, then RuboCop), `./go format`, `./go validate`, and RSpec.
+python = false
+
+[overrides.ci]
+reason = "CI is CircleCI (.circleci/config.yml): it builds the Docker images, runs the Ruby compile check, RuboCop and RSpec in them, and publishes the multi-arch production image from main"
+
+[overrides.claude-project]
+reason = "not yet adopted: no claude.ai Project named automation-calculator exists yet; create it in the UI and record it in iac/specs/claude/project.json"
