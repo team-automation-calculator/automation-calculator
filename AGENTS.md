@@ -22,6 +22,9 @@ All commands run via the `./go` script (a Ruby dispatcher into `scripts/`):
 ./go push              # Push built images to Docker Hub; separate from build
 ./go db dev            # Connect to PostgreSQL with psql
 ./go logs              # Tail container logs
+./go graphify-status   # How far the knowledge graph is behind HEAD (--brief: one line, only when behind)
+./go graphify-update   # Refresh the knowledge graph's code layer to HEAD: AST only, no LLM, no Docker
+./go graphify-seed     # In a git worktree: copy the main checkout's graph, refresh it to the branch
 ```
 
 **Run a single test** from inside `./go shell`:
@@ -117,6 +120,30 @@ Use the `gh` CLI (not `hub`) for all GitHub operations such as opening pull requ
 ```bash
 gh pr create --draft --title "Title" --body "Body"
 ```
+
+## Knowledge graph
+
+`graphify-out/` holds a [graphify](https://pypi.org/project/graphifyy/) knowledge graph of `main`: `graph.json`, a plain-language `GRAPH_REPORT.md` and `graph.html`. It is gitignored, a local artifact like `tmp/`: a fresh clone, a CI build and a cloud session have none and build none.
+
+**Graph first for questions about structure.** When `graphify-out/graph.json` exists, a question about structure, callers, dependencies, "what breaks if this changes" or "where is X" goes to the graph first, and files are read to confirm, not to search:
+
+```bash
+graphify query "how does a visitor's scenario reach the chart?" --budget 2000
+graphify path "SolutionPair" "AutomationScenarioForGraphSerializer"
+graphify explain "Visitable"
+graphify affected app/services/solution_pair.rb
+```
+
+If `graphify` is not on the `PATH`, the interpreter recorded in `graphify-out/.graphify_python` has it: `"$(cat graphify-out/.graphify_python)" -m graphify query ...`. Finding a name or a string you already know stays with grep, which is as fast and exact. The graph is a snapshot (`main` as of its last refresh; in a worktree, the branch as of its last `./go graphify-update`), so read a file before you edit it.
+
+**Keeping it current.** The graph has two layers with two costs:
+
+- The **code layer** is parsed by AST: no LLM, seconds. `./go graphify-update` refreshes it to `HEAD` and is safe to run unattended. It exits 0 with a note and does nothing when there is no graph yet, when the main checkout is not on `main`, and in CI or a cloud session. `./go graphify-status` says how far behind the graph is (exit 0 current, 3 behind, 1 no graph). On the laptop the repo-standards git-sync agent fast-forwards `main` at 07:00 and 23:00 and then runs `[git-sync] post_sync = "./go graphify-update"` from `.repo-standards.toml`, so a merged PR reaches the graph without a step from its author. After moving `main` by hand (`git pull`), run `./go graphify-update`.
+- The **document layer** (Markdown, images) is extracted by an LLM pass, `/graphify --update` in a session, and costs tokens. It runs when a person asks for it, in the main checkout on `main`, never from a hook. `./go graphify-status` lists the documents that wait for it. The first build of the graph is `/graphify .`, under the same rule.
+
+**The graph is `main`'s, and never part of a pull request.** It is not rebuilt on a feature branch in the main checkout and `graphify-out/` is never committed. A git worktree gets a private copy instead: `./go graphify-seed` copies the main checkout's graph, shares its extraction caches by symlink, and refreshes the code layer to the worktree's `HEAD`; `./go graphify-update` then refreshes that copy after edits, commits, or a merge of `origin/main`. Nothing is copied back: the copy goes away with the worktree, and `main`'s graph gets the merged work from `main`. `graphify hook install` is not used here, because it makes the graph follow whatever branch is checked out.
+
+`.graphifyignore` (gitignore syntax) keeps generated, vendored and captured files out of the graph; add to it when a new directory of that kind appears. The commands live in `scripts/graphify.rb` and `scripts/graphify_status.rb`; `scripts/graphify/graphify_seed.py` is the repo-standards template (`templates/graphify/graphify_seed.py`), copied unchanged: take upstream changes by copying it again rather than editing it here.
 
 ## Repo standards
 

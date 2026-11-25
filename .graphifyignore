@@ -1,0 +1,30 @@
+# What graphify leaves out of the knowledge graph (gitignore syntax), so the
+# graph holds what was written on purpose. See AGENTS.md, "Knowledge graph".
+
+# The graph itself, and other checkouts of this repo
+graphify-out/
+.claude/worktrees/
+
+# Generated at run or build time
+coverage/
+log/
+tmp/
+node_modules/
+public/assets/
+.bundle/
+vendor/bundle/
+Gemfile.lock
+
+# Vendored: third-party code and fonts
+vendor/assets/
+
+# Rendered from the .dot files beside them
+docs/*.svg
+
+# Captured data: release dates and upgrade tracking fetched by the
+# version_dates scripts (the scripts and the README stay in)
+version_dates/*.json
+
+# Binary site assets
+public/*.png
+public/favicon.ico
