@@ -83,8 +83,12 @@ Rails.application.configure do
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
 
-  # Send deprecation notices to registered listeners.
-  config.active_support.deprecation = :notify
+  # Write deprecation notices to the log (at warn). The Rails default here,
+  # :notify, only publishes them to ActiveSupport::Notifications, and this
+  # app has no subscriber, so a code path that only production traffic
+  # exercises could be deprecated without anyone seeing it before the
+  # upgrade that removes it.
+  config.active_support.deprecation = :log
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new

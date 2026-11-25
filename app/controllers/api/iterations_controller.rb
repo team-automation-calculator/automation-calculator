@@ -20,6 +20,7 @@ module API
       if @iteration.save
         render json: @iteration, status: :created
       else
+        log_invalid_iteration
         render json: @iteration.errors, status: :unprocessable_content
       end
     end
@@ -29,6 +30,7 @@ module API
       response.status = if @iteration.valid?
                           200
                         else
+                          log_invalid_iteration
                           :unprocessable_content
                         end
     end
@@ -38,6 +40,14 @@ module API
     end
 
     private
+
+    # These two actions do not raise, so the RecordInvalid handler in
+    # API::ApplicationController never sees their failures.
+    def log_invalid_iteration
+      logger.info(
+        "API 422: iteration invalid: #{@iteration.errors.full_messages.to_sentence}"
+      )
+    end
 
     # Iterations reachable by the caller: only those on scenarios they own.
     def member_iterations

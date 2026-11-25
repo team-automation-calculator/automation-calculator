@@ -88,6 +88,7 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 
 - `config/settings.yml` — app-level config accessed via `Settings.*` (the `config` gem)
 - `RAILS_LOG_LEVEL` — production log level (`config/environments/production.rb`); defaults to `debug`. Log through `Rails.logger` / `logger`, never `puts`.
+- Security events (sign-in, sign-up, password and email changes, rejected credentials, OAuth failures, rate-limit hits) are logged as `Event: key=value … ip=…`: `warn` for a rejection, `info` for a success. Name people by `user=<id>` / `visitor=<id>`; never log an email address, password or token. Cross-cutting ones live in `config/initializers/security_event_logging.rb`; `lib/boot_report.rb` writes the `Boot:` line (commit, hosts, OAuth configuration) at server start.
 - `docker-compose.yml` + `docker-compose.dev.yml` — base + dev overrides; the dev server is published on host port 3001 (`3001:3000` in `docker-compose.dev.yml`); `RAILS_SERVER_PORT` is the port Puma listens on inside the container (3000)
 - `.rubocop.yml` — targets Ruby 4.0; the rubocop-rails, rubocop-rspec, rubocop-capybara and rubocop-factory_bot plugins are enabled
 
