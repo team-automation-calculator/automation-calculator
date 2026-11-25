@@ -28,4 +28,4 @@ services:
     command: postgresql://${USER}:automation-calculator-password@db:5432/automation-calculator-development
     container_name: db_client
     entrypoint: psql
-    image: jbergknoff/postgresql-client:latest
+    image: postgres:18-alpine
