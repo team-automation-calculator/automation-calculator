@@ -13,6 +13,15 @@ module API
       head :not_found
     end
 
+    # rate_limit raises this for a request over the limit. Unhandled, Rails
+    # answers 429 but also logs the exception with a full backtrace at
+    # ERROR, once per throttled request: a flood is exactly when that is
+    # least wanted. The warn line from
+    # config/initializers/security_event_logging.rb already records it.
+    rescue_from ActionController::TooManyRequests do
+      head :too_many_requests
+    end
+
     rescue_from ActiveRecord::RecordInvalid do |error|
       logger.info("API 422: #{error.class}: #{error.message}")
       head :unprocessable_content

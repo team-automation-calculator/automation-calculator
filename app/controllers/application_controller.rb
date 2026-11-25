@@ -3,6 +3,12 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   layout :layout_selector
 
+  # See API::ApplicationController: answer a throttled request with a bare
+  # 429 instead of letting Rails log a backtrace at ERROR for each one.
+  rescue_from ActionController::TooManyRequests do
+    head :too_many_requests
+  end
+
   def default_url_options
     if Rails.env.production?
       { host: ENV['APP_HOSTNAME'] }
