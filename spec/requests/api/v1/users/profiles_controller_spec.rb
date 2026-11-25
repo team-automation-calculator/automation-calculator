@@ -55,25 +55,65 @@ RSpec.describe API::V1::Users::ProfilesController, type: :request do
     describe '.update' do
       let(:new_email) { 'test@test.com' }
 
-      before do
-        v1_put '/api/users/profile', params: { email: new_email }
+      context 'with the correct current password' do
+        before do
+          v1_put(
+            '/api/users/profile',
+            params: {
+              current_password: current_user.password,
+              email: new_email
+            }
+          )
+        end
+
+        it { expect(response).to have_http_status(:ok) }
+        it { expect(response).to match_json_schema('user') }
+
+        it 'returns correct user data' do
+          expect(json_response)
+            .to include(
+              email: new_email
+            )
+        end
+
+        it 'does not return old user data' do
+          expect(json_response)
+            .not_to include(
+              email: current_user.email
+            )
+        end
       end
 
-      it { expect(response).to have_http_status(:ok) }
-      it { expect(response).to match_json_schema('user') }
+      context 'without a current password' do
+        before do
+          v1_put '/api/users/profile', params: { email: new_email }
+        end
 
-      it 'returns correct user data' do
-        expect(json_response)
-          .to include(
-            email: new_email
-          )
+        it { expect(response).to have_http_status(:unauthorized) }
+
+        it 'does not change the email' do
+          expect(current_user.reload.email)
+            .not_to eq(new_email)
+        end
       end
 
-      it 'does not return old user data' do
-        expect(json_response)
-          .not_to include(
-            email: current_user.email
+      context 'with an incorrect current password' do
+        before do
+          v1_put(
+            '/api/users/profile',
+            params: {
+              current_password: 'wrong-password',
+              email: new_email
+            }
           )
+        end
+
+        it { expect(response).to have_http_status(:unauthorized) }
+
+        it 'does not change the email' do
+          expect(current_user.reload.email)
+            .not_to eq(new_email)
+        end
       end
     end
   end

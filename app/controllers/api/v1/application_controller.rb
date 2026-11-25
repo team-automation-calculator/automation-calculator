@@ -28,8 +28,10 @@ module API
           @current_visitor = Visitor.find(visitor_id)
           @current_user = nil
         else
-          # neither user nor visitor found
-          raise ActiveRecord::RecordNotFound
+          # A correctly signed token that names nobody: this app never
+          # issues one, so it is a bug or a forged token.
+          raise ActiveRecord::RecordNotFound,
+                'token payload names neither a user nor a visitor'
         end
       end
 
@@ -37,14 +39,40 @@ module API
         current_user || current_visitor
       end
 
+      # Re-authenticate the bearer-token holder before a sensitive change
+      # (password or email). A valid JWT alone is not enough.
+      def verify_current_password!
+        return if valid_current_password?
+
+        logger.warn(
+          'API 401: current password rejected: ' \
+          "user=#{current_user&.id} ip=#{request.remote_ip}"
+        )
+        render json: { error: 'Invalid current password' },
+               status: :unauthorized
+      end
+
+      def valid_current_password?
+        password = params[:current_password]
+        password.present? && current_user&.valid_password?(password)
+      end
+
       def decode_token
         token = request.headers['HTTP_ACCESS_TOKEN']
         JwtTokenService.decode_token(token)[:data]
-      rescue JwtTokenService::ExpiredError
-        render json: { error: 'Unauthorized' }, status: :unauthorized
-      rescue JwtTokenService::DecodeError
-        render json: { error: 'Unauthorized' }, status: :unauthorized
-      rescue ActiveRecord::RecordNotFound
+      rescue JwtTokenService::ExpiredError => e
+        render_unauthorized(:info, e)
+      rescue JwtTokenService::DecodeError, ActiveRecord::RecordNotFound => e
+        render_unauthorized(:warn, e)
+      end
+
+      # Every rejected token gets the same response body; the reason goes to
+      # the log only. The token itself is never logged.
+      def render_unauthorized(level, error)
+        logger.public_send(
+          level,
+          "API 401: access token rejected: #{error.class}: #{error.message}"
+        )
         render json: { error: 'Unauthorized' }, status: :unauthorized
       end
     end

@@ -6,3 +6,9 @@
 Rails.application.config.filter_parameters += %i[
   passw email secret token _key crypt salt certificate otp ssn cvv cvc
 ]
+
+# The OAuth callback (GET /users/auth/:provider/callback?code=…&state=…)
+# carries the authorization code and the CSRF state in the query string,
+# which Rails writes to the log in the "Started GET" line. Exact names
+# only, so unrelated parameters that merely contain "code" stay readable.
+Rails.application.config.filter_parameters += [/\Acode\z/, /\Astate\z/]

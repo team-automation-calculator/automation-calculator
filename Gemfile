@@ -13,8 +13,11 @@ gem 'jbuilder'
 gem 'jquery-rails'
 gem 'pg', '~> 1.7'
 gem 'puma', '~> 8.0'
-gem 'rails', '~> 8.0.0'
+gem 'rails', '~> 8.1.0'
 gem 'rake'
+# Database-backed Rails.cache, shared by every pod; holds the rate_limit
+# counters (config/cache.yml).
+gem 'solid_cache', '~> 1.0'
 # JS compressor for assets:precompile; replaces uglifier.
 gem 'terser', '~> 1.2'
 gem 'turbolinks'
@@ -34,8 +37,8 @@ gem 'config'
 # brings convention over configuration to your JSON generation
 gem 'active_model_serializers'
 # provides Haml generators for Rails
-gem 'haml', '~> 5.1'
-gem 'haml-rails', '~> 2.0'
+gem 'haml', '~> 7.5'
+gem 'haml-rails', '~> 3.1'
 # Bootstrap 4 Ruby Gem for Rails / Sprockets and Compass
 gem 'bootstrap'
 # A pure ruby implementation of
@@ -43,7 +46,7 @@ gem 'bootstrap'
 gem 'jwt', '~> 3.3'
 
 group :development, :test do
-  gem 'byebug', platforms: %w[mri mingw x64_mingw]
+  gem 'byebug', platforms: %w[mri windows]
   gem 'database_cleaner-active_record', '~> 2.2'
   gem 'letter_opener'
   # A library for setting up Ruby objects as test data

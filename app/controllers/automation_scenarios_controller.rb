@@ -45,6 +45,7 @@ class AutomationScenariosController < ApplicationController
   end
 
   def set_scenario
-    @automation_scenario = AutomationScenario.find params[:id]
+    @automation_scenario =
+      AutomationScenario.where(owner: current_user_or_visitor).find(params[:id])
   end
 end

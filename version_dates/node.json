@@ -4,7 +4,7 @@
     "lts_start_date": "2026-10-28",
     "end_of_life": "2029-04-30",
     "source": "Dockerfiles: curl -sL https://deb.nodesource.com/setup_26.x (Phase 6, PR #223)",
-    "installed_at_last_image_build": "26.12.1 (nodejs 26.12.1-1nodesource1, 2026-10-23; same package on Trixie in Phase 14 via the single `nodistro` suite, setup_26.x unchanged)",
+    "installed_at_last_image_build": "26.12.1 (nodejs 26.12.1-1nodesource1, 2026-10-23; same package on Trixie in Phase 14 and on ruby:4.0.9-slim-trixie in Phase 18 via the single `nodistro` suite, setup_26.x unchanged)",
     "notes": "Exact minor/patch version is resolved at image build time from the NodeSource 26.x channel, which publishes a single `nodistro` suite and so also installs on Trixie (Phase 14) without a channel change. Only used as the ExecJS runtime for coffee-script and terser. Node 26 enters Active LTS on 2026-10-28. Other lines on 2026-10-25: 24 Krypton (Maintenance LTS, EOL 2028-04-30), 22 Jod (Maintenance, EOL 2027-04-30), 20 (EOL 2026-04-30, what the app ran until Phase 6). Node 27 (2027-04, LTS 2027-10) is Phase 20 and optional."
   },
   "yarn": {

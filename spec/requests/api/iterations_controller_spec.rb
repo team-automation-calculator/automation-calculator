@@ -1,117 +1,179 @@
 require 'rails_helper'
 
 RSpec.describe API::IterationsController, type: :request do
-  describe 'GET to index' do
-    let(:iteration) { create :iteration }
+  let(:member) { v1_login_user }
+  let(:scenario) { create :automation_scenario, owner: member }
+  let(:iteration) { create :iteration, automation_scenario: scenario }
 
-    it 'returns a success response' do
-      get '/api/iterations'
-      expect(response).to be_successful
-    end
-  end
+  describe 'without authentication' do
+    # A record owned by someone else; an anonymous caller must not reach it.
+    let!(:other_iteration) { create :iteration }
 
-  describe 'GET #show' do
-    let(:expected_time) { Time.zone.now.yesterday }
-    let(:expected_cost) { 5 }
-    let(:iteration) do
-      create :iteration, time: expected_time, cost: expected_cost
+    describe 'GET #index' do
+      before { get '/api/iterations' }
+
+      it_behaves_like 'an unauthenticated api request'
     end
 
-    before { get "/api/iterations/#{iteration.id}" }
+    describe 'GET #show' do
+      before { get "/api/iterations/#{other_iteration.id}" }
 
-    it 'returns a success response' do
-      expect(response).to be_successful
+      it_behaves_like 'an unauthenticated api request'
     end
 
-    context 'when inspecting the response' do
-      subject { OpenStruct.new JSON.parse(response.body) }
-
-      its(:time)  { is_expected.to eq expected_time.strftime('%FT%T.%LZ') }
-      its(:cost)  { is_expected.to eq expected_cost }
-      its(:id)    { is_expected.to eq iteration.id }
-      its(:automation_scenario_id) { is_expected.to be_present }
-    end
-  end
-
-  describe 'POST #create' do
-    context 'with valid params' do
-      let(:automation_scenario) { create :automation_scenario }
-      let(:valid_attributes) do
-        attributes_for(:iteration).merge(
-          automation_scenario_id: automation_scenario.id
-        )
-      end
-
-      it 'creates a new Iteration' do
-        expect do
-          post '/api/iterations', params: { iteration: valid_attributes }
-        end.to change(Iteration, :count).by(1)
-      end
-
-      it 'returns a correct status code' do
-        post '/api/iterations', params: { iteration: valid_attributes }
-        expect(response.status).to eq 201
-      end
-    end
-
-    context 'with invalid params' do
-      let(:invalid_attributes) { { invalid_attribute: 5 } }
-
-      it 'returns a failure response' do
-        post '/api/iterations', params: { iteration: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_content)
-      end
-    end
-  end
-
-  describe 'PUT #update' do
-    let(:iteration) { create :iteration }
-
-    context 'with valid params' do
-      let(:new_attributes) do
-        {
-          cost: 2,
-          time: Time.zone.today
-        }
-      end
-      let(:wrong_attributes) do
-        {
-          wrong_attribute: 3,
-          another_attribute: 5,
-          iteration_count: 2
-        }
-      end
-      let(:attributes) { new_attributes.merge wrong_attributes }
-
+    describe 'POST #create' do
       before do
-        put "/api/iterations/#{iteration.id}",
-            params: { iteration: attributes }
+        post '/api/iterations',
+             params: { iteration: {
+               time: Time.zone.now, cost: 5,
+               automation_scenario_id: other_iteration.automation_scenario_id
+             } }
       end
 
-      it 'updates the requested iteration' do
-        iteration.reload
-        expect(iteration.attributes).to include(new_attributes.stringify_keys)
+      it_behaves_like 'an unauthenticated api request'
+
+      it 'creates no iteration' do
+        expect(Iteration.count).to eq 1
+      end
+    end
+
+    describe 'PUT #update' do
+      before do
+        put "/api/iterations/#{other_iteration.id}",
+            params: { iteration: { cost: 99 } }
       end
 
-      it 'returns correct status code' do
-        expect(response.status).to eq 204
+      it_behaves_like 'an unauthenticated api request'
+
+      it 'does not change the iteration' do
+        expect(other_iteration.reload.cost).not_to eq 99
+      end
+    end
+
+    describe 'DELETE #destroy' do
+      before { delete "/api/iterations/#{other_iteration.id}" }
+
+      it_behaves_like 'an unauthenticated api request'
+
+      it 'does not destroy the iteration' do
+        expect(Iteration.exists?(other_iteration.id)).to be true
       end
     end
   end
 
-  describe 'DELETE #destroy' do
-    let!(:iteration) { create :iteration }
-    let!(:another_iteration) { create :iteration }
+  describe 'as an authenticated member' do
+    before { member }
 
-    it 'destroys the requested iteration' do
-      expect do
-        delete "/api/iterations/#{iteration.id}"
-      end.to change(Iteration, :count).by(-1)
+    describe 'GET #show' do
+      before { v1_get "/api/iterations/#{iteration.id}" }
+
+      it { expect(response).to have_http_status(:ok) }
+
+      it 'returns the iteration' do
+        expect(JSON.parse(response.body)['id']).to eq iteration.id
+      end
     end
 
-    it 'returns the correct status code' do
-      delete "/api/iterations/#{another_iteration.id}"
-      expect(response).to be_successful
+    describe 'POST #create' do
+      context 'with a scenario the member owns' do
+        let(:params) do
+          { iteration: {
+            time: Time.zone.now, cost: 5,
+            automation_scenario_id: scenario.id
+          } }
+        end
+
+        before { v1_post '/api/iterations', params: params }
+
+        it { expect(response).to have_http_status(:created) }
+
+        it 'creates the iteration on that scenario' do
+          expect(scenario.iterations.count).to eq 1
+        end
+      end
+
+      context 'with invalid attributes' do
+        let(:params) do
+          { iteration: { cost: -1, automation_scenario_id: scenario.id } }
+        end
+
+        before { v1_post '/api/iterations', params: params }
+
+        it { expect(response).to have_http_status(:unprocessable_content) }
+      end
+    end
+
+    describe 'PUT #update' do
+      before do
+        v1_put "/api/iterations/#{iteration.id}",
+               params: { iteration: { cost: 2 } }
+      end
+
+      it { expect(response).to have_http_status(:no_content) }
+
+      it 'updates the iteration' do
+        expect(iteration.reload.cost).to eq 2
+      end
+    end
+
+    describe 'DELETE #destroy' do
+      before { v1_delete "/api/iterations/#{iteration.id}" }
+
+      it { expect(response).to be_successful }
+
+      it 'removes the iteration' do
+        expect(Iteration.exists?(iteration.id)).to be false
+      end
+    end
+  end
+
+  describe "accessing another member's iteration" do
+    let(:other_scenario) { create :automation_scenario, owner: create(:user) }
+    let!(:other_iteration) do
+      create :iteration, automation_scenario: other_scenario
+    end
+
+    before { member }
+
+    describe 'GET #show' do
+      before { v1_get "/api/iterations/#{other_iteration.id}" }
+
+      it { expect(response).to have_http_status(:not_found) }
+    end
+
+    describe 'PUT #update' do
+      before do
+        v1_put "/api/iterations/#{other_iteration.id}",
+               params: { iteration: { cost: 99 } }
+      end
+
+      it { expect(response).to have_http_status(:not_found) }
+
+      it 'does not change the iteration' do
+        expect(other_iteration.reload.cost).not_to eq 99
+      end
+    end
+
+    describe 'DELETE #destroy' do
+      before { v1_delete "/api/iterations/#{other_iteration.id}" }
+
+      it { expect(response).to have_http_status(:not_found) }
+
+      it 'does not remove the iteration' do
+        expect(Iteration.exists?(other_iteration.id)).to be true
+      end
+    end
+
+    describe 'POST #create on an unowned scenario' do
+      before do
+        v1_post '/api/iterations',
+                params: { iteration: {
+                  time: Time.zone.now, cost: 5,
+                  automation_scenario_id: other_scenario.id
+                } }
+      end
+
+      it { expect(response).to have_http_status(:not_found) }
     end
   end
 end

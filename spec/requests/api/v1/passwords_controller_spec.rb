@@ -39,7 +39,9 @@ RSpec.describe API::V1::PasswordsController, type: :request do
     context 'when inspecting the response' do
       before { reset_password }
 
-      it { expect(response).to have_http_status(:not_found) }
+      # Same :ok response as a known email: the endpoint must not reveal
+      # whether the account exists.
+      it { expect(response).to have_http_status(:ok) }
       it { expect(response.body).to be_blank }
     end
   end

@@ -1,5 +1,5 @@
 {
-  "_note": "Versions locked in Gemfile.lock as of 2026-10-25 on the Phase 15 branch (upgrade/phase-15-rails-8-0, main is at Phase 13 #235, Rails 7.2.4 on Ruby 3.4.12). Latest published versions live in latest_versions.json (regenerate with fetch_latest_versions.py); newest release per minor line via gem_lines.py.",
+  "_note": "Versions locked in Gemfile.lock as of 2026-10-25 on the Phase 16 branch (upgrade/phase-16-rails-8-1, stacked on Phase 15 #238; main is at Phase 13 #235, Rails 7.2.4 on Ruby 3.4.12). Latest published versions live in latest_versions.json (regenerate with fetch_latest_versions.py); newest release per minor line via gem_lines.py.",
   "nokogiri": {
     "version": "1.19.4",
     "release_date": "2026-06-18",
@@ -57,19 +57,25 @@
     "version": "2.0.1",
     "release_date": "2025-12-10",
     "source": "Gemfile.lock (gem 'omniauth-rails_csrf_protection', '~> 2.0'); Phase 8, PR #228",
-    "notes": "latest; drops ActiveSupport::Configurable, which Action Pack 8.1 removes"
+    "notes": "latest; drops ActiveSupport::Configurable, which Rails 8.1 deprecates and 8.2 removes — no Configurable reference in app/, config/, lib/ or spec/, and no such deprecation emitted by the suite under 8.1.4 (Phase 16)"
   },
   "active_model_serializers": {
     "version": "0.10.16",
     "release_date": "2025-12-08",
     "source": "Gemfile.lock",
-    "notes": "latest; low-maintenance gem; declares support through Rails 8"
+    "notes": "latest; low-maintenance gem; declares support through Rails 8. Verified under Rails 8.1.4 (Phase 16): rspec spec/requests green against spec/support/api_schemas/*.json"
   },
   "haml": {
-    "version": "5.2.2",
-    "release_date": "2021-05-29",
-    "source": "Gemfile.lock (gem 'haml', '~> 5.1'; haml-rails 2.1.0)",
-    "notes": "6.0 replaced the implementation with Hamlit and removed helpers (surround/succeed used in show.html.haml); 7.5.1 requires Ruby >= 3.2 (Phase 17). 5.2.2 renders every template under Rails 7.2 on Ruby 3.4.12 (Phase 13) and emitted no chilled-string warning in the suite under -W:deprecated — the 'haml 5 spams the log on 3.4' risk did not materialise, as in the Ruby 4.0 spike."
+    "version": "7.5.1",
+    "release_date": "2026-09-01",
+    "source": "Gemfile.lock (gem 'haml', '~> 7.5'; haml-rails 3.1.0); Phase 17",
+    "notes": "Latest (gem_lines.py 2026-10-25: 7.5.1 is the newest 7.x, Ruby >= 3.2). Was 5.2.2 (2021-05-29) until Phase 17. 6.0 replaced the implementation with Hamlit and removed every helper except preserve — surround/succeed in automation_scenarios/show.html.haml were rewritten as `= \"...#{}...\"` interpolation with byte-identical output; 7.0 switched the default attribute quote from ' to \" (accepted, no attr_quote override). Rendered HTML of 21 pages/mailers was identical to haml 5.2.2 apart from the quote change. Runtime deps prism (>= 1.1.0), temple (>= 0.8.2), thor, tilt — all already in the lock (temple 0.10.4, tilt 2.0.8 unchanged)."
+  },
+  "haml_rails": {
+    "version": "3.1.0",
+    "release_date": "2026-07-09",
+    "source": "Gemfile.lock (gem 'haml-rails', '~> 3.1'); Phase 17",
+    "notes": "Latest. Was 2.1.0 until Phase 17. Runtime deps actionpack / activesupport / railties >= 5.1 and haml >= 4.0.6, so it admits Rails 7.2 today and Rails 8.x later; only its generators and the Haml::RailsTemplate handler registration (via haml itself) matter to this app."
   },
   "dartsass_sprockets": {
     "version": "3.2.1",
@@ -99,13 +105,13 @@
     "version": "8.0.4",
     "release_date": "2026-03-11",
     "source": "Gemfile.lock (gem 'rspec-rails', '~> 8.0'); Phase 15",
-    "notes": "Latest; requires actionpack/activesupport/railties >= 7.2 and allows rspec-* < 5.0 (3.13.x locked). No spec change was needed on the 7.1.1 → 8.0.4 move; config.fixture_paths has been in spec/rails_helper.rb since Phase 11."
+    "notes": "Latest; requires actionpack/activesupport/railties >= 7.2 (so railties 8.1.4 is admitted) and allows rspec-* < 5.0 (3.13.x locked). No spec change was needed on the 7.1.1 → 8.0.4 move nor on Rails 8.1; config.fixture_paths has been in spec/rails_helper.rb since Phase 11."
   },
   "rubocop": {
     "version": "1.92.1",
     "release_date": "2026-10-22",
     "source": "Gemfile.lock (rubocop ~> 1.92, rubocop-rails 2.38.0, rubocop-rspec 3.10.2, rubocop-capybara 3.1.0, rubocop-factory_bot 2.28.0); Phase 10, PR #227",
-    "notes": "Latest. .rubocop.yml uses `plugins:`; TargetRubyVersion 3.4 since Phase 13 (no new offence appeared under the higher target) with NewCops disable. 1.9x accepts TargetRubyVersion 3.4 and 4.0, which Phases 13 and 18 need (1.28 rejected anything above 3.2)."
+    "notes": "Latest. .rubocop.yml uses `plugins:`; TargetRubyVersion 4.0 since Phase 18 (3.4 in Phases 13–17) with NewCops disable. 1.9x accepts TargetRubyVersion 3.4 and 4.0 (1.28 rejected anything above 3.2). The 4.0 target produced two Lint/RedundantRequireStatement offences — `require 'pathname'` in bin/setup and bin/update, since Pathname is core in Ruby 4.0 — fixed by removing the lines; nothing else changed."
   },
   "capybara": {
     "version": "3.40.0",
@@ -152,7 +158,7 @@
     "version": "13.0.0",
     "release_date": "2026-01-15",
     "source": "Gemfile.lock; Phase 13",
-    "notes": "latest; requires Ruby >= 3.2 and depends on reline >= 0.6.0 (0.7.0 locked). Compiles on ruby:3.4.12-slim-bookworm. 10.0.2 did not compile under Trixie's GCC 14 — PR #229 finding, cleared by Phase 10"
+    "notes": "latest; requires Ruby >= 3.2 and depends on reline >= 0.6.0 (0.7.0 locked). Compiles on ruby:3.4.12-slim-bookworm, on Trixie (Phase 14) and on ruby:4.0.9-slim-trixie (Phase 18, 6 GCC warnings, 0 errors). 10.0.2 did not compile under Trixie's GCC 14 — PR #229 finding, cleared by Phase 10. Gemfile line is `platforms: %w[mri windows]` since Phase 18 (Bundler 4 deprecates :mingw / :x64_mingw). Ruby 4.0.9 bundles reline 0.6.3 next to the locked 0.7.0, hence the `ambiguous specs: reline` WARN once per rspec boot"
   },
   "web_console": {
     "version": "4.3.0",
@@ -164,6 +170,6 @@
     "version": "5.27.0",
     "release_date": "2025-12-11",
     "source": "Gemfile.lock (transitive of activesupport / rspec-rails); moved deliberately in Phase 13",
-    "notes": "Requires Ruby >= 3.1 with no upper cap. The standing note's `>= 5.26` check for Phase 18 is closed: 5.17.0 declared Ruby < 4.0, which broke the frozen install in the Ruby 4.0 spike; neither Phase 11 nor 12 moved it under --conservative, so Phase 13 named it in the update set. 6.0.6 (Ruby >= 3.2) exists; the resolver kept 5.x."
+    "notes": "Requires Ruby >= 3.1 with no upper cap. The standing note's `>= 5.26` check for Phase 18 is closed: 5.17.0 declared Ruby < 4.0, which broke the frozen install in the Ruby 4.0 spike; neither Phase 11 nor 12 moved it under --conservative, so Phase 13 named it in the update set. Confirmed in Phase 18: on ruby:4.0.9 (bundled minitest 6.0.0) the lock kept 5.27.0 through `bundle lock`, the image build and `BUNDLE_FROZEN=true bundle install` with no re-resolution."
   }
 }

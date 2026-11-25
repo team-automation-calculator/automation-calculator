@@ -10,12 +10,16 @@ module App
   # The main class of the Rails application
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.2
+    config.load_defaults 8.0
 
     # Autoload lib/ (lib/allowed_hosts.rb is also required explicitly by
     # config/initializers/host_authorization.rb). assets and tasks hold no
     # Ruby constants.
     config.autoload_lib(ignore: %w[assets tasks])
+
+    # The app does not use Active Storage variants. Rails 8.1 resolves the
+    # variant transformer at boot and warns when image_processing is absent.
+    config.active_storage.variant_processor = :disabled
 
     # Settings in config/environments/* take precedence
     # over those specified here.

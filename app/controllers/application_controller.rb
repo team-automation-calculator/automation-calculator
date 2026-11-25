@@ -3,6 +3,12 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   layout :layout_selector
 
+  # See API::ApplicationController: answer a throttled request with a bare
+  # 429 instead of letting Rails log a backtrace at ERROR for each one.
+  rescue_from ActionController::TooManyRequests do
+    head :too_many_requests
+  end
+
   def default_url_options
     if Rails.env.production?
       { host: ENV['APP_HOSTNAME'] }
@@ -29,7 +35,7 @@ class ApplicationController < ActionController::Base
     return unless resource_or_scope.is_a?(User)
     return unless resource_or_scope.sign_in_count < 2
 
-    resource_or_scope.automation_scenarios.first
+    resource_or_scope.automation_scenarios.order(:created_at).first
   end
 
   def layout_selector

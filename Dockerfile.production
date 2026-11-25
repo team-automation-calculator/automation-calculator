@@ -1,4 +1,4 @@
-FROM ruby:3.4.12-slim-trixie
+FROM ruby:4.0.9-slim-trixie
 
 #Install dependencies as root
 RUN apt-get update
@@ -20,11 +20,11 @@ USER automation-calculator-production
 
 #Install rails dependencies as non root user
 RUN gem install nokogiri -v 1.19.4
-RUN gem install bundler -v 2.6.9
+RUN gem install bundler -v 4.0.20
 
 #Calling bundle install in image creation to install dependencies,
 # and also so that important bundle installed bins are in /usr/local/bundle/bin and thus in PATH variable for users.
-RUN bundle install --frozen
+RUN BUNDLE_FROZEN=true bundle install
 
 #Precompile static assets with the production asset pipeline config (digests,
 # Uglifier minification) so production serves them straight from public/assets;

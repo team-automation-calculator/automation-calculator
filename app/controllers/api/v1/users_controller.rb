@@ -1,8 +1,11 @@
 module API
   module V1
     class UsersController < API::V1::ApplicationController
+      rate_limit to: 10, within: 1.minute
+
       def create
         user = User.create! registration_params
+        logger.info("API sign-up: user=#{user.id} ip=#{request.remote_ip}")
 
         token = JwtTokenService.encode_token(user_id: user.id)
         response.set_header('Access-Token', token)

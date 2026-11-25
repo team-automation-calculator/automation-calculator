@@ -1,8 +1,37 @@
-# Spec and lint commands for docker containers
+# Compile, lint, format and spec commands for docker containers
+require 'shellwords'
 require './scripts/utils/compose_files'
 
 class Verify
+  # Ruby sources without a .rb or .rake extension.
+  RUBY_FILE_PATTERNS = %w[
+    *.rb *.rake bin/* go Gemfile Rakefile config.ru Guardfile
+  ].freeze
+
   class << self
+    # Compile check: parse the given files (default: every tracked Ruby
+    # file) without running them. `./go lint` runs this first.
+    def compile(cmds)
+      env = shift_env(cmds)
+      files = cmds.empty? ? tracked_ruby_files : cmds
+
+      run_in(env, "ruby scripts/utils/syntax_check.rb #{files.shelljoin}")
+    end
+
+    # Apply RuboCop's safe autocorrections to the working tree.
+    def autoformat
+      run_in('dev', 'rubocop --autocorrect')
+    end
+
+    # Everything CI checks before it builds the production image:
+    # lint (compile check, then RuboCop), then the RSpec suite.
+    def validate(cmds)
+      env = shift_env(cmds)
+
+      lint([env])
+      rspec_test([env])
+    end
+
     def rspec_test(cmds)
       env = cmds.shift || 'dev'
 
@@ -37,16 +66,30 @@ class Verify
     end
 
     def lint(cmds)
-      env = cmds.shift.to_s == 'ci' ? 'ci' : 'dev'
+      env = shift_env(cmds)
 
+      compile([env])
+      run_in(env, 'rubocop')
+    end
+
+    private
+
+    # Takes a leading dev|ci argument off cmds; dev when there is none.
+    def shift_env(cmds)
+      %w[dev ci].include?(cmds.first) ? cmds.shift : 'dev'
+    end
+
+    def run_in(env, command)
       system(
         "docker compose #{ComposeFiles.flags(env)} " \
-        "run --no-deps --rm #{env} rubocop",
+        "run --no-deps --rm #{env} #{command}",
         exception: true
       )
     end
 
-    private
+    def tracked_ruby_files
+      `git ls-files -z -- #{RUBY_FILE_PATTERNS.shelljoin}`.split("\0")
+    end
 
     def setup_smoke_url(arg)
       if arg.empty? || arg == 'dev'

@@ -49,17 +49,27 @@ Rails.application.configure do
 
   # Force all access to the app over SSL,
   # use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  # The ALB target-group health check and the Kubernetes liveness/readiness/
+  # startup probes hit /health over plain HTTP; exclude it from the redirect
+  # so a 301 never marks pods unhealthy.
+  config.force_ssl = true
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == '/health' } } }
+  # TLS terminates at the ALB, so trust the X-Forwarded-Proto header.
+  config.assume_ssl = true
 
-  # Use the lowest log level to ensure availability of diagnostic information
-  # when problems arise.
-  config.log_level = :debug
+  # Defaults to the lowest log level to ensure availability of diagnostic
+  # information when problems arise; set RAILS_LOG_LEVEL (debug, info, warn,
+  # error, fatal, unknown) to change it without a code change.
+  config.log_level = ENV.fetch('RAILS_LOG_LEVEL', 'debug')
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
 
-  # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  # Solid Cache keeps Rails.cache in the primary database (config/cache.yml),
+  # so every pod reads and writes the same rate_limit counters. The default
+  # FileStore is per container: with N replicas each client got N times the
+  # configured limit, and a restart reset the counters.
+  config.cache_store = :solid_cache_store
 
   # Use a real queuing backend for Active Job
   # (and separate queues per environment)
@@ -76,8 +86,12 @@ Rails.application.configure do
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
 
-  # Send deprecation notices to registered listeners.
-  config.active_support.deprecation = :notify
+  # Write deprecation notices to the log (at warn). The Rails default here,
+  # :notify, only publishes them to ActiveSupport::Notifications, and this
+  # app has no subscriber, so a code path that only production traffic
+  # exercises could be deprecated without anyone seeing it before the
+  # upgrade that removes it.
+  config.active_support.deprecation = :log
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new

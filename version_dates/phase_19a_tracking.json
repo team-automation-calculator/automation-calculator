@@ -6,13 +6,13 @@
   "merged": null,
   "image": null,
   "deployed": "not deployable on its own: docker-compose.yml only drives local dev and the CI database; the production image and Helm chart are untouched",
-  "ruby_version": "3.1.7 (unchanged)",
-  "rails_version": "7.0.10 (unchanged)",
+  "ruby_version": "4.0.9 (unchanged; 3.1.7 when the PR was opened)",
+  "rails_version": "8.1.4.1 (unchanged; 7.0.10 when the PR was opened)",
   "changes": {
     "docker_compose_db_image": "postgres:16-alpine → postgres:18-alpine (resolved to 18.6, image built 2026-10-21, on 2026-10-25)",
     "docker_compose_db_volume": "postgres:/var/lib/postgresql/data → postgres:/var/lib/postgresql. The 18+ official image defaults PGDATA to /var/lib/postgresql/18/docker and its entrypoint exits with 'Error: in 18+, these Docker images are configured to store database data in a format which is compatible with pg_ctlcluster' whenever anything — even an empty volume — is mounted at /var/lib/postgresql/data (docker-library/postgres#1259). Mounting the volume one level up is upstream's recommended layout and keeps a future `pg_upgrade --link` inside one mount",
     "docker_compose_dev_db_client": "jbergknoff/postgresql-client:latest → postgres:18-alpine (entrypoint psql unchanged). The old image is amd64-only (emulated on arm64 hosts with a platform warning), last built 2020-08-28 and ships psql 12.3 (EOL 2024-11). psql 12.3 still worked against the 18 server (`select version()`, \\l, \\dt, \\d table, \\di all fine), so this is a maintenance/platform fix, not a breakage fix. postgres:18-alpine is already pulled for the db service, so ./go db costs no extra download",
-    "claude_md": "Troubleshooting bullet: a checkout whose compose volume still holds a 16 data directory fails at db start; recovery is `docker compose down --volumes` then `./go init` (or `./go clean`, which also removes images). No ./go subcommand drops only the volume",
+    "agents_md": "Troubleshooting bullet (in CLAUDE.md when the PR was opened; main has since moved the agent guidance to AGENTS.md): a checkout whose compose volume still holds a 16 data directory fails at db start; recovery is `docker compose down --volumes` then `./go init` (or `./go clean`, which also removes images). No ./go subcommand drops only the volume",
     "version_dates_postgresql_json": "16 → 18 line, EOL 2030-11-14, notes on the PGDATA layout change and the client swap; rds section still 16.13 and points at 19b",
     "not_touched": "Dockerfiles (libpq-dev stays for a source build of pg), docker-compose.ci.yml, docker-compose.production_http.yml (inherits the db service), .circleci/config.yml, Gemfile/Gemfile.lock, db/schema.rb, specs, core-iac"
   },
@@ -30,7 +30,7 @@
     "rspec": "393 examples, 0 failures, 6 pending (pre-existing 'Not yet implemented' helper/view specs); line coverage 92.19% (437 / 474)",
     "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples load, 0 failures",
     "go_db_dev": "docker compose run db_client -c 'select version();' -c '\\conninfo' against the 18 server: psql (PostgreSQL) 18.6 connects, no version-skew warning",
-    "stale_volume_simulation": "16 data dir mounted at /var/lib/postgresql under the 18 image → entrypoint 'Error: in 18+ ... there appears to be PostgreSQL data in: /var/lib/postgresql'; same dir with PGDATA pinned to /var/lib/postgresql/data → 'FATAL: database files are incompatible with server ... initialized by PostgreSQL version 16'. Both are the texts the CLAUDE.md note names"
+    "stale_volume_simulation": "16 data dir mounted at /var/lib/postgresql under the 18 image → entrypoint 'Error: in 18+ ... there appears to be PostgreSQL data in: /var/lib/postgresql'; same dir with PGDATA pinned to /var/lib/postgresql/data → 'FATAL: database files are incompatible with server ... initialized by PostgreSQL version 16'. Both are the texts the AGENTS.md note names"
   },
   "notes": {
     "plan_delta": "upgrade_path.json called 19a a one-line change; the image's PGDATA/mount-layout change made it two lines in docker-compose.yml plus the client swap",

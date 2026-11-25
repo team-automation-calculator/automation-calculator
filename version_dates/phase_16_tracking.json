@@ -1,0 +1,155 @@
+{
+  "phase": 16,
+  "name": "Rails 8.0 → 8.1 (+ load_defaults 8.0, explicit scenario ordering)",
+  "status": "in_progress",
+  "pr": 239,
+  "branch": "upgrade/phase-16-rails-8-1",
+  "base_branch": "upgrade/phase-15-rails-8-0 (PR #238, head 0808523, itself stacked on Phase 13 #235) — stacked; this PR's diff shows only Phase 16. main is at 10e5c5f (Phases 11 and 12 merged, Rails 7.2.4). Rails 8.0's security support ends 2026-11-07, so #238 and this PR should be promoted close together. Phase 17 (haml 7) also touches Gemfile.lock from the Phase 13 base; whichever lands later needs a lockfile rebase",
+  "merged": null,
+  "image": null,
+  "deployed": null,
+  "ruby_version": "3.4.12 (unchanged)",
+  "rails_version": "8.0.5.1 → 8.1.4",
+  "changes": {
+    "rails": "~> 8.0.0 → ~> 8.1.0; 8.0.5.1 → 8.1.4 (all eleven frameworks + railties; the only 8.1.x release gem_lines.py lists on 2026-10-25, released 2026-09-24; security fixes until 2027-10-10, bug fixes ended 2026-10-10)",
+    "rspec_rails": "8.0.4 unchanged — its runtime deps are actionpack/activesupport/railties >= 7.2 (rubygems API checked), so railties 8.1.4 is admitted without a bump",
+    "transitives_moved": "none — `bundle lock --update rails --conservative` moved exactly the twelve rails-* lines",
+    "transitives_new": "action_text-trix 2.1.19 (actiontext 8.1.4 depends on action_text-trix ~> 2.1.15; the Trix editor assets moved out of the actiontext gem). Action Text is loaded by rails/all but unused here; its railtie now also adds `encrypted_rich_text.*` entries to filter_parameters (seen in the production probe) — log-only",
+    "transitives_removed": "benchmark 0.5.0 (activesupport 8.1 no longer declares `benchmark (>= 0.3)`; Benchmark.ms was removed in 8.1 and nothing here used it)",
+    "dependency_edges_changed": "activesupport 8.1 adds `json` (json 2.20.0 was already locked) and drops `benchmark`; actiontext adds action_text-trix. actionpack's edges are unchanged from 8.0 (rack >= 2.2.4, rack-session >= 1.0.1, rack-test >= 0.6.3, nokogiri >= 1.8.5, useragent ~> 0.16)",
+    "transitives_unchanged": "rack 3.2.7, rack-session 2.1.2, rackup 2.3.1, rack-test 2.2.0, minitest 5.27.0, zeitwerk 2.8.3, i18n 1.12.0, concurrent-ruby 1.3.8, nokogiri 1.19.4, json 2.20.0, uri 1.1.2, logger 1.7.0, sprockets 4.4.1 / sprockets-rails 3.5.2, coffee-rails 5.0.0, jquery-rails 4.6.1, active_model_serializers 0.10.16, devise 5.0.4, haml 5.2.2 / haml-rails 2.1.0, puma 8.0.2, pg 1.7.0, omniauth 2.3.1, turbolinks 5.2.1, terser 1.2.8, dartsass-sprockets 3.2.1 / sass-embedded 1.106.1, capybara 3.40.0, shoulda-matchers 8.0.1, simplecov 1.3.2, rubocop 1.92.1 / rubocop-rails 2.38.0, rspec-rails 8.0.4, web-console 4.3.0",
+    "lockfile_platforms": "aarch64-linux, ruby, x86_64-linux (unchanged; `bundle lock --add-platform x86_64-linux` then `--add-platform ruby` re-run after the update)",
+    "bundler": "2.6.9 (unchanged)",
+    "lock_method": "Gemfile edited first, then `bundle lock --update rails --conservative` under bundler 2.6.9 in a plain ruby:3.4.12-slim-bookworm container (lock only; this worktree had no dev image yet — same approach as Phase 15), then the dev image was built from that lock (`Bundle complete! 44 Gemfile dependencies, 182 gems now installed`, Installing railties 8.1.4 / action_text-trix 2.1.19 / rails 8.1.4); inside it `bundle check` passes and `bundle list` shows rails 8.1.4, railties 8.1.4, activesupport 8.1.4, rspec-rails 8.0.4, rack 3.2.7"
+  },
+  "rails_8_1_upgrade_guide_and_release_notes_checked": {
+    "upgrade_guide_8_0_to_8_1": "guides.rubyonrails.org 'Upgrading from Rails 8.0 to Rails 8.1' (read 2026-10-25) has a single subsection, 2.1 'The table columns inside schema.rb are now sorted alphabetically', plus a pointer to the 8.1 release notes. It does not mention order-dependent finders, mb_chars, ActiveSupport::Configurable or to_time_preserves_timezone — those are release-notes deprecations, not guide items. The plan's wording ('the upgrade guide lists ... deprecations worth fixing now') conflated the two",
+    "release_notes_deprecations_vs_this_app": {
+      "order_dependent_finders": "Active Record: 'Deprecate using an order dependent finder method (e.g. #first) without an order'. activerecord 8.1.4 finder_methods.rb#ordered_relation warns (or raises, under raise_on_missing_required_finder_order_columns) ONLY when the relation has no order AND the model has no implicit_order_column, query_constraints or primary_key to fall back on. Every model here has an id primary key, so `.first` still orders by id and never warns — the suite emitted no such deprecation. The two relation sites were given order(:created_at) anyway (see finder_ordering); the two Array#first sites are unaffected",
+      "to_time_preserves_timezone": "Active Support: 'Remove deprecated support for to_time to preserve the system local time' and 'Deprecate config.active_support.to_time_preserves_timezone'. activesupport 8.1.4 active_support.rb: both the reader and the writer warn '`config.active_support.to_time_preserves_timezone` is deprecated and will be removed in Rails 8.2'; TimeWithZone#to_time is now unconditionally getlocal(time_zone). So the plan's 'set :zone explicitly to silence the deprecation' would CREATE a deprecation in 8.1; the key is not set anywhere (the probe confirms `config.active_support.key?(:to_time_preserves_timezone)` → false) and the four boot warnings are gone",
+      "mb_chars": "Active Support: 'Deprecate String#mb_chars and ActiveSupport::Multibyte::Chars' — grep app/ config/ lib/ spec/: no hits",
+      "active_support_configurable": "Active Support: 'Deprecate ActiveSupport::Configurable' — no hits in app/ config/ lib/ spec/; omniauth-rails_csrf_protection 2.0.1 (Phase 8) already dropped it; no such warning in the suite's stderr",
+      "signed_id_verifier_secret": "no signed_id use — no hits",
+      "insert_all_upsert_all_update_all": "no hits in app/ or lib/",
+      "ignore_leading_brackets": "not set — no hits",
+      "benchmark_ms_time_since": "no Benchmark or Time#since(Time) use — no hits",
+      "active_job_enqueue_after_transaction_commit": "removed in 8.1; never set here (Phase 15 recorded that 8.0 had already dropped it from the 7.2 block)",
+      "action_pack_removals": "semicolon query-string separators, leading-bracket skipping and multi-path routes: none used (routes.rb has one path per route; the smoke and request specs exercise the real query strings)"
+    }
+  },
+  "load_defaults": {
+    "application_rb": "config.load_defaults 7.2 → 8.0",
+    "new_framework_defaults_8_0_rb": "deleted (every key was commented out; the two 8.0 keys that still exist switch on here)",
+    "new_framework_defaults_8_1_rb": "added verbatim from `rails app:update` (railties 8.1.4) with every key commented out, for Phase 20 (Rails 8.2 / load_defaults 8.1): action_controller.escape_json_responses = false, active_support.escape_js_separators_in_json = false, active_record.raise_on_missing_required_finder_order_columns = true, action_controller.action_on_path_relative_redirect = :raise, action_view.render_tracker = :ruby, action_view.remove_hidden_field_autocomplete = true",
+    "railties_8_1_4_block": "`load_defaults \"8.0\"` in railties 8.1.4 is: load_defaults 7.2; action_dispatch.strict_freshness = true; Regexp.timeout ||= 1 (if Regexp responds to timeout=). It does NOT set active_support.to_time_preserves_timezone = :zone any more — the 8.0.5.1 defaults file listed three keys, the 8.1.4 block has two, because 8.1 removed the old to_time behaviour and deprecated the setting. For reference, `load_defaults \"8.1\"` (Phase 20) is: load_defaults 8.0; yjit = !Rails.env.local?; action_controller.escape_json_responses = false; action_controller.action_on_path_relative_redirect = :raise; active_record.raise_on_missing_required_finder_order_columns = true; active_support.escape_js_separators_in_json = false; action_view.render_tracker = :ruby; action_view.remove_hidden_field_autocomplete = true",
+    "effects_here": {
+      "strict_freshness_true": "ActionDispatch::Http::Cache::Request.strict_freshness true (probe): when a client sends both If-None-Match and If-Modified-Since only the ETag is considered (RFC 7232 §6). No fresh_when / stale? / etag / expires_in use anywhere in app/ (grep), so no controller emits ETag/Last-Modified conditional-GET responses — the only HTTP-level effect is on Rack::ETag-generated ETags for the HTML pages, where no Last-Modified header is ever set, so behaviour is identical. No status code or header change in the request/feature specs",
+      "regexp_timeout_1": "Regexp.timeout 1.0 (probe; was nil under load_defaults 7.2). Process-global: every Regexp without its own timeout now raises Regexp::TimeoutError after 1 s of matching. app/ and lib/ contain no regexp code (the only patterns in config/ are commented-out initializer examples); the regexps that run per request belong to Rails routing, Devise's email validator (Devise.email_regexp, linear), Rack and the sanitizer — all bounded, none anywhere near 1 s on the inputs this app accepts (the API's largest payload is a scenario with nested solutions; parameters are numeric). Suite green with it in force",
+      "to_time_preserves_timezone": "no longer part of the block (see railties_8_1_4_block) — nothing to flip; the four boot deprecations Phase 15 recorded are absent in every run (see warnings_observed)"
+    },
+    "yjit": "unchanged from Phase 15: load_defaults 7.2's `yjit = true` still applies in every environment (probe: RubyVM::YJIT.enabled? true in production mode; the suite ran with YJIT on). load_defaults 8.1 (Phase 20) changes this to `yjit = !Rails.env.local?`, i.e. production only"
+  },
+  "finder_ordering": {
+    "decision": "app/controllers/application_controller.rb#first_sign_in_scenario and app/controllers/users/registrations_controller.rb#after_sign_up_path_for: `automation_scenarios.first` → `automation_scenarios.order(:created_at).first`. OPTIONAL under 8.1 (see release_notes_deprecations_vs_this_app.order_dependent_finders — AutomationScenario has a primary key, so the implicit `ORDER BY id` continues and no deprecation fires, now or in 8.2). Kept as a clarification of intent ('the owner's first scenario by creation') since the plan called for it and it costs nothing",
+    "sql": "SELECT \"automation_scenarios\".* FROM \"automation_scenarios\" WHERE owner_id = ? AND owner_type = 'User' ORDER BY \"automation_scenarios\".\"created_at\" ASC LIMIT 1 (probe); before: ORDER BY id ASC LIMIT 1",
+    "spec_safety": "User#after_create creates exactly one scenario (app/models/user.rb), so for every user in the specs both orderings return the same single record. spec/requests/user_sessions_spec.rb:26 and spec/controllers/application_controller_spec.rb:10 compute the expected redirect with `user.automation_scenarios.first` (primary-key order) and still pass; no spec was changed. created_at is a timestamp(6) column, so even with several scenarios the order is well defined",
+    "left_alone": "app/services/jwt_token_service.rb:14 (`.first` on an Array from a chain) and app/services/solution_pair.rb:52 (`point.first` on a two-element Array) — not Active Record relations"
+  },
+  "rails_app_update": {
+    "method": "run in a scratch copy inside the dev container (tar the tree to /tmp/scratch, `yes a | bin/rails app:update`, railties 8.1.4), diffed against the tree (1812-line diff), applied by hand",
+    "generated": "config/ci.rb + bin/ci (new in 8.1: ActiveSupport::ContinuousIntegration runner), config/initializers/new_framework_defaults_8_1.rb, bin/dev, bin/rubocop, public/400.html, public/406-unsupported-browser.html, public/icon.png, public/icon.svg, rewrites of public/404.html, 422.html, 500.html and robots.txt, three Active Storage migrations (dated today), template rewrites of application.rb, boot.rb, environment.rb, bin/rails, bin/rake, bin/setup, the three environment files, puma.rb, assets.rb, content_security_policy.rb, filter_parameter_logging.rb, inflections.rb; cors.rb created and removed by app:update itself; `remove app/assets/stylesheets/application.css` (no-op, the app has application.scss). Again no Kamal/Thruster/Solid*/Dockerfile output (rails new only)",
+    "accepted": [
+      "config/initializers/new_framework_defaults_8_1.rb (new, all commented out)",
+      "config/environments/development.rb: `config.action_dispatch.verbose_redirect_logs = true` — new 8.1 development setting from the template (actionpack 8.1.4 railtie defaults it to false); appends the controller action or view that issued a redirect to its log line. Development only, no production/test effect; useful for the Devise/OmniAuth redirect chains"
+    ],
+    "rejected": [
+      "quote-style and comment rewrites in config/application.rb, config/boot.rb, config/environment.rb, bin/rails, bin/rake, bin/setup (RuboCop enforces single quotes; the comments describe this app)",
+      "config/ci.rb and bin/ci (8.1's ActiveSupport::ContinuousIntegration): CI is GitHub Actions / CircleCI driving `./go lint` / `./go test`; the template's steps (bin/importmap audit, bin/rails test, db:seed:replant) do not apply to an RSpec + Sprockets app",
+      "`require 'active_support/core_ext/integer/time'` at the top of development.rb and production.rb — rails/all already loads it",
+      "config/environments/production.rb rewrite: force_ssl / assume_ssl (TLS terminates at the ALB), 1-year public_file_server cache-control, TaggedLogging.logger(STDOUT) (the RAILS_LOG_TO_STDOUT block does this conditionally), log_level ENV/info (keep :debug), silence_healthcheck_path '/up' (probe path is /health), report_deprecations = false (keep :notify), mailer host example.com, active_storage.service, attributes_for_inspect [:id] (already the production default), dropping the terser/js_compressor, assets.compile and log_formatter settings",
+      "config/environments/development.rb rewrite beyond the one accepted line: would drop secret_key_base, letter_opener delivery, assets.debug/quiet, the evented file watcher, web_console.whiny_requests and the disallowed_deprecation settings; would add cache_store :memory_store, active_storage.service :local, query_log_tags_enabled, active_job.verbose_enqueue_logs (no jobs), action_view.annotate_rendered_view_with_filenames (ERB only; the app is Haml)",
+      "config/environments/test.rb rewrite: eager_load = ENV['CI'].present? (would silently change CI), show_exceptions = :rescuable (:none is deliberate), mailer host example.com (would change mailer URLs in specs), dropping secret_key_base, public_file_server.enabled and the disallowed_deprecation settings, active_storage.service :test",
+      "config/puma.rb rewrite — would drop the IPv4 bind, RAILS_SERVER_PORT, RAILS_ENV and the 5-thread settings (see Phase 7), switch to 3 threads and PORT, and add `plugin :solid_queue if ENV['SOLID_QUEUE_IN_PUMA']`",
+      "config/initializers/inflections.rb — would delete `inflect.acronym 'API'` (API::V1 controllers depend on it)",
+      "config/initializers/assets.rb — would drop the node_modules/fonts load paths, the precompile list and sass.quiet_deps",
+      "config/initializers/filter_parameter_logging.rb — array-literal/comment restyle of the same twelve keys (Phase 15 already added cvv/cvc); no new key in 8.1",
+      "config/initializers/content_security_policy.rb — comment-only rewrite (style-src nonce directive and content_security_policy_nonce_auto examples; the file is all comments here)",
+      "bin/dev (new, `exec bin/rails server`) — `./go start` is the entry point; bin/rubocop (new) — `./go lint`",
+      "public/400.html, public/406-unsupported-browser.html, public/icon.png, public/icon.svg (allow_browser is not used), the 404/422/500 page redesigns (UI text change, out of scope), public/robots.txt rewrite (would drop `Disallow: /visitor`)",
+      "db/migrate/*active_storage* (3 migrations) — no Active Storage tables",
+      "config/initializers/cors.rb — created and removed by app:update itself"
+    ]
+  },
+  "schema": "db/schema.rb: `ActiveRecord::Schema[8.0]` → `[8.1]` only. The upgrade guide's 'columns sorted alphabetically' (8.1.0) was reverted before 8.1.4: activerecord 8.1.4's schema_dumper.rb sorts tables, indexes, constraints and (PostgreSQL) extensions/types/schemas — as every dumper since 4.x did — but emits columns in table order, and the re-dump matches the 8.0 dump line for line apart from the header. `rails db:schema:load` of the new file succeeds; the suite was re-run afterwards",
+  "files_touched": [
+    "Gemfile",
+    "Gemfile.lock",
+    "config/application.rb",
+    "config/initializers/new_framework_defaults_8_0.rb (deleted)",
+    "config/initializers/new_framework_defaults_8_1.rb (new)",
+    "config/environments/development.rb",
+    "app/controllers/application_controller.rb",
+    "app/controllers/users/registrations_controller.rb",
+    "db/schema.rb",
+    "version_dates/phase_16_tracking.json",
+    "version_dates/rails.json",
+    "version_dates/key_gems.json"
+  ],
+  "commits": {
+    "13d7a7f": "Rails 8.0.5.1 → 8.1.4 (Gemfile + lock)",
+    "4a5596c": "load_defaults 8.0, new_framework_defaults_8_1.rb, verbose_redirect_logs in development",
+    "b668733": "Order the owner's first scenario explicitly by created_at",
+    "b7c4711": "db/schema.rb: ActiveRecord::Schema[8.0] → [8.1]",
+    "tracking": "this file + rails.json / key_gems.json refresh; latest_versions.json was regenerated with fetch_latest_versions.py and came back identical (already refreshed on 2026-10-25, rails 8.1.4 listed)"
+  },
+  "verification": {
+    "dev_image_build": "docker compose build dev (Dockerfile.development, arm64, ruby:3.4.12-slim-bookworm): Bundle complete, 44 Gemfile dependencies, 182 gems; Installing railties 8.1.4, action_text-trix 2.1.19, rails 8.1.4; exit 0. Inside: `bundle check` satisfied, `bundle list` shows rails 8.1.4, rack 3.2.7, rspec-rails 8.0.4",
+    "rubocop": "./go lint equivalent (`docker compose run --no-deps --rm dev rubocop`): 162 files inspected, no offenses detected (rubocop 1.92.1 / rubocop-rails 2.38.0 under TargetRubyVersion 3.4; new_framework_defaults_*.rb excluded by .rubocop.yml; no scratch .rb files under tmp/ at lint time)",
+    "rspec": "393 examples, 0 failures, 6 pending (the pre-existing 'Not yet implemented' view/helper specs); Line coverage 435 / 462 (94.15%). Green four times, each with RUBYOPT=-W:deprecated and test.rb's deprecation = :stderr: on the gem bump alone (Rails 8.1.4 under load_defaults 7.2 — isolates the framework from the defaults flip), after load_defaults 8.0 + the accepted hunks + the finder ordering, and twice on the final tree after `rails db:schema:load` of the [8.1] schema",
+    "api_regression_net": "rspec spec/requests (all API request specs, validated against spec/support/api_schemas/*.json by json_matchers): 215 examples, 0 failures — active_model_serializers 0.10.16 serializes identically under Rails 8.1 (escape_json_responses is still true under load_defaults 8.0; the 8.1 default flips it in Phase 20)",
+    "smoke_dry_run": "rspec spec/smoke --tag smoke --dry-run: 49 examples, 0 failures (loading only; smoke specs need a live server). The :smoke exclusion in spec/spec_helper.rb is unchanged (`Run options: exclude {smoke: true}` on every full run)",
+    "production_boot": "RAILS_ENV=production SECRET_KEY_BASE=x bin/rails runner in the dev container (eager_load true): Rails 8.1.4, loaded_config_version 8.0, Regexp.timeout 1.0, strict_freshness true, to_time_preserves_timezone config key not set (Tokyo TimeWithZone#to_time → +0900, i.e. zone preserved), RubyVM::YJIT.enabled? true (config.yjit true), raise_on_missing_required_finder_order_columns false, escape_json_responses true, action_on_path_relative_redirect :log, render_tracker nil, escape_js_separators_in_json true, verbose_redirect_logs false (production), PostgreSQLAdapter.decode_dates true, filter_parameters = the twelve keys + Action Text's encrypted_rich_text.* entries, Rack 3.2.7; AutomationScenario, Solution, SolutionPair, JwtTokenService and API::V1::AutomationScenariosController eager-loaded; the ordered first-scenario SQL printed",
+    "schema_dump": "rails db:schema:load && rails db:schema:dump: [8.1] header, nothing else (git diff: 1 insertion, 1 deletion)"
+  },
+  "warnings_observed": {
+    "rails_deprecation": "NONE. Zero `DEPRECATION WARNING` lines in stderr across all four full-suite runs, the request-spec run and the production-mode boot — the four `to_time` lines from Phase 15 are gone because 8.1 removed the old behaviour (no config needed), and no 8.1 deprecation (order-dependent finder, mb_chars, Configurable, signed_id_verifier_secret, insert_all/upsert_all, update_all WITH/DISTINCT, Active Job serializer klass, sidekiq adapter) fires for this app",
+    "ruby_W_deprecated": "none (0 `warning:` lines) across 393 examples with RUBYOPT=-W:deprecated",
+    "dart_sass": "5 × `DEPRECATION WARNING [import]` from application.scss on a cold sprockets cache only (first run; absent on the warm-cache runs) — pre-existing since Phase 9 (Bootstrap 5 territory), not a Rails deprecation",
+    "rubygems": "`WARN: Unresolved or ambiguous specs during Gem::Specification.reset: reline (>= 0.6.0)` once per boot — pre-existing since Phase 13 (byebug 13 vs the default reline)",
+    "omniauth": "the `Authentication failure!` ERROR lines are the OAuth failure specs doing their job (pre-existing)"
+  },
+  "deprecations_remaining_for_phase_20": [
+    "none emitted by this app under Rails 8.1.4 with load_defaults 8.0 — the target of zero remaining Rails deprecations is met",
+    "load_defaults 8.1 (Phase 20, with Rails 8.2) flips the six keys in new_framework_defaults_8_1.rb; the ones with a touchpoint here: escape_json_responses = false changes the bytes of every `render json:` response (<, >, & and U+2028/2029 no longer \\u-escaped — the API request specs compare parsed JSON so they should stay green, but the smoke spec and any raw-body comparison need a look); remove_hidden_field_autocomplete = true changes the hidden-input markup of `button_to` (devise/shared/_links.html.haml OAuth buttons) — a UI markup change to carry into the feature specs; action_on_path_relative_redirect = :raise — every redirect_to here is a record, a route helper or a *_path/_url (grep), so nothing should raise; raise_on_missing_required_finder_order_columns — no-op (all models have primary keys); render_tracker :ruby — Haml templates, verify the dependency tracker still resolves partials; yjit = !Rails.env.local? turns YJIT off for development/test",
+    "to_time_preserves_timezone is removed in 8.2 — never set here, nothing to do",
+    "ActiveSupport::Configurable and String#mb_chars are removed in 8.2 — no references here",
+    "Rails 8.1 bug-fix support ended 2026-10-10 (security fixes until 2027-10-10); take 8.2 within a few months of its release"
+  ],
+  "notes": {
+    "departures_from_plan": {
+      "to_time_preserves_timezone_not_set": "the plan (and the Phase 16 PR title brief) said 'set config.active_support.to_time_preserves_timezone = :zone explicitly to silence the 8.1 deprecation'. In 8.1.4 that very setting is deprecated (writer and reader both warn) and the behaviour it selected is now the only behaviour, so setting it would add a deprecation rather than remove one. Not set; the boot warnings are gone regardless",
+      "load_defaults_8_0_is_two_keys": "the 8.0 defaults file listed three keys; railties 8.1.4's 8.0 block has two (strict_freshness, Regexp.timeout) — to_time_preserves_timezone was dropped from it",
+      "finder_ordering_optional": "the plan treated the two `.first` sites as a deprecation to fix; under 8.1.4 the deprecation does not apply to models with a primary key, so the explicit order(:created_at) is a clarification, not a requirement (recorded in finder_ordering)",
+      "upgrade_guide_wording": "the 8.0 → 8.1 upgrade guide section contains only the schema.rb column-sorting note; the deprecations the plan attributed to it are in the 8.1 release notes",
+      "adopted_beyond_the_phase_spec": "config.action_dispatch.verbose_redirect_logs = true in development.rb — one line, development-only logging, from the 8.1 app:update template",
+      "transitives": "the plan expected no transitive movement; actiontext 8.1 pulls in action_text-trix 2.1.19 and activesupport 8.1 drops the benchmark gem"
+    },
+    "held_back": {
+      "load_defaults_8_1": "Phase 20, once 8.1 is on production (ordering constraint: a defaults flip never ships with the framework bump that introduced it)",
+      "haml": "5.2.2 renders every template under ActionView 8.1 (the suite covers them); haml 7 is Phase 17, in flight in parallel from the Phase 13 base",
+      "params_expect": "optional; `permit` keeps working and the request specs pin the current behaviour",
+      "propshaft": "sprockets-rails 3.5.2 stays (standing note: CoffeeScript migration first)",
+      "bin_ci_config_ci": "8.1's ActiveSupport::ContinuousIntegration not adopted; ./go and the existing CI workflows stay"
+    },
+    "spec_semantics": "no spec expectation changed; no HTTP status code, response body, URL path, header or UI text changed. spec/smoke and spec/support/api_schemas untouched",
+    "staging_checklist": [
+      "Regexp.timeout = 1 is in force for the first time: watch for Regexp::TimeoutError in the production logs (none expected — no app regexps; Devise email validation and routing are linear)",
+      "/health returns 200 with database: ok; scenario chart page renders; GitHub and Google sign-in round trips (strict_freshness and the ordered first-scenario redirect are on the sign-in/sign-up paths)",
+      "./go smoke staging 49/0/2 before and after",
+      "production logs: expect NO Rails deprecation lines at all per boot now (Phase 15 expected four); anything that appears is new and belongs in phase_20",
+      "pod memory: YJIT is still on (unchanged from Phase 15) — same check as #238's checklist",
+      "promote #238 (8.0) and this PR (8.1) close together — 8.0's security support ends 2026-11-07"
+    ],
+    "next": "Phase 20 (Rails 8.2 + load_defaults 8.1) once 8.2 ships; rebase this branch onto main after #235 and #238 merge, and rebase Gemfile.lock against Phase 17 (haml 7) whichever lands second"
+  }
+}

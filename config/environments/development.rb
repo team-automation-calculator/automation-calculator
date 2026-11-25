@@ -62,6 +62,10 @@ Rails.application.configure do
   # Highlight code that triggered database queries in logs.
   config.active_record.verbose_query_logs = true
 
+  # Append the source (controller action or view) of a redirect to its log
+  # line (Rails 8.1).
+  config.action_dispatch.verbose_redirect_logs = true
+
   # Debug mode disables concatenation and preprocessing of assets.
   # This option may cause significant delays in view rendering with a large
   # number of complex assets.

@@ -13,7 +13,9 @@ main_arg = cmds.shift || 'init'
 COMMAND_HASH = {
   build: -> { DockerBuild.build(cmds) },
   clean: -> { Lifecycle.clean },
+  compile: -> { Verify.compile(cmds) },
   db: -> { DatabaseTerminal.connect(cmds) },
+  format: -> { Verify.autoformat },
   help: -> { HelpText.help(cmds) },
   init: -> { Lifecycle.init(cmds) },
   lint: -> { Verify.lint(cmds) },
@@ -27,7 +29,8 @@ COMMAND_HASH = {
   start: -> { Lifecycle.start(cmds) },
   stop: -> { Lifecycle.stop },
   tag: -> { DockerHub.tag_latest_with_semver },
-  test: -> { Verify.rspec_test(cmds) }
+  test: -> { Verify.rspec_test(cmds) },
+  validate: -> { Verify.validate(cmds) }
 }.freeze
 
 if COMMAND_HASH.key? main_arg.to_sym

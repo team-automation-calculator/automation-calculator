@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/team-automation-calculator/automation-calculator/tree/master.svg?style=shield&circle-token=b5937e6c3aa7290dc6425381ce5be7ea98a027bb)](https://circleci.com/gh/team-automation-calculator/automation-calculator/tree/master) ![License](https://img.shields.io/badge/license-mit-blue.svg)
+![License](https://img.shields.io/badge/license-mit-blue.svg)
 
 # automation-calculator
 
@@ -6,13 +6,12 @@
 
 To help people make and communicate automation decisions quickly and effectively. 
 
-[Examples of automation decisions.](https://github.com/team-automation-calculator/automation-calculator/blob/master/About.md)
+[Examples of automation decisions.](About.md)
 
 ## Setup
 ### Dependencies
-* Ruby 2.0.0+
-* Docker Engine 17.09.0+
-* Docker Compose (Must support Compose 3.4 format)
+* Ruby on the host, only to run the `./go` script. The app's own Ruby (see `.ruby-version`) runs inside Docker.
+* Docker Engine with the Compose v2 plugin (`./go` calls `docker compose`, not `docker-compose`)
 
 ### Install
 `./go init`
@@ -22,14 +21,16 @@ To help people make and communicate automation decisions quickly and effectively
 ### View app in local browser
 * `./go start`
 * Open browser, go to `http://localhost:3001/`.
-* If you wish to configure the port to be something else, edit `RAILS_SERVER_PORT` inside `docker-compose.yml`.
+* If you wish to configure the port to be something else, edit the host side of the `3001:3000` port mapping in `docker-compose.dev.yml`. `RAILS_SERVER_PORT` in that file is the port Puma listens on inside the container, not the one your browser uses.
 
 ### Interact with the app via terminal
 * `./go shell`
 
 ### Run the tests
 * `./go test`
-* `./go lint`
+* `./go lint` runs the compile check (`./go compile`), then RuboCop. `./go format` applies RuboCop's safe autocorrections.
+* `./go validate` runs lint, then test.
+* `./go smoke` runs the smoke tests against the running dev server (`./go start` first); `./go smoke staging` and `./go smoke prod` target the deployed sites.
 
 ### View available functions
 * `./go help`
@@ -50,7 +51,7 @@ The two repos meet at a Docker image on Docker Hub:
 
 The Graphviz source is at [`docs/repo-relationship.dot`](docs/repo-relationship.dot); see the header of that file for the render command.
 
-1. **Build & publish (this repo).** `./go build prod` produces a production image from `Dockerfile.production`. `./go push prod` tags it as both `:latest` and a semver tag (e.g. `0.9.6-830`) and pushes both to `automationcalculationsci/automation-calculator` on Docker Hub. The image repository name is defined in `scripts/docker_hub.rb` as the `REPO` constant.
+1. **Build & publish (this repo).** `./go build prod` produces a production image from `Dockerfile.production`. `./go push prod` tags it as both `:latest` and a semver tag (e.g. `0.9.6-830`) and pushes both to `automationcalculationsci/automation-calculator` on Docker Hub. CI (`.circleci/config.yml`) builds the production image natively on an arm64 and an amd64 runner in parallel and, on `main` only, publishes: each runner pushes its image untagged (`./go push prod --digest-only`) and a final job joins the two under the tags (`./go push prod --manifest`), so each tag is a multi-arch manifest (`linux/amd64` + `linux/arm64`) that runs on either node architecture. The semver tag's last number is that final job's CircleCI build number. The image repository name is defined in `scripts/docker_hub.rb` as the `REPO` constant.
 2. **Deploy (core-iac).** The Helm chart at `core-iac/helm/automation-calculator/` defines the Kubernetes resources (Deployment, Service, Ingress, ConfigMap, Secret). Its `values.yaml` points `image.repository` at the same Docker Hub repo above; the Terraform module `core-iac/terraform/modules/aws/main_rails_app/` renders the chart with `image.tag = var.app_version`.
 3. **Version bump.** When a new image is pushed, `core-iac/scripts/bump_app_docker_image_version.sh` (or the `_branch.sh` variant) updates the `app_version` variable in the per-environment Terraform configs under `core-iac/terraform/env/<env>/`. A Terraform apply then triggers a new `helm_release` rollout, which causes Kubernetes to pull the new image tag.
 4. **Surrounding infrastructure (core-iac only).** Beyond the app workload, `core-iac` also provisions the VPC, EKS cluster, RDS PostgreSQL database, ALB ingress controller, and DNS — none of which live in this repo. The Rails app connects to the database via the `DATABASE_URL` secret rendered into the Helm release.

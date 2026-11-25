@@ -53,6 +53,13 @@ RSpec.describe HealthCheckController, type: :controller do
         get :health
         expect(response.body).not_to match(/host|password|user|dbname|connect/i)
       end
+
+      it 'logs the failure as an error' do
+        allow(Rails.logger).to receive(:error)
+        get :health
+        expect(Rails.logger).to have_received(:error)
+          .with(/database unreachable: PG::ConnectionBad/)
+      end
     end
   end
 end

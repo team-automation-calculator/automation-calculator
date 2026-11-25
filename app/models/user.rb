@@ -20,6 +20,12 @@ class User < ApplicationRecord
     end
   end
 
+  # How this account signs in, for messages to the user: the OAuth provider's
+  # name, or email and password for an account registered directly.
+  def sign_in_method_name
+    I18n.t("devise.omniauth_callbacks.sign_in_methods.#{provider.presence || 'password'}")
+  end
+
   protected
 
   def create_automation_scenario
