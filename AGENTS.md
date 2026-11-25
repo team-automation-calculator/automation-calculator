@@ -87,6 +87,7 @@ The scenario show page uses a server-side-to-client-side data handoff rather tha
 ### Key Configuration
 
 - `config/settings.yml` — app-level config accessed via `Settings.*` (the `config` gem)
+- `config/cache.yml` — Solid Cache, the production `Rails.cache` (`config.cache_store = :solid_cache_store`). Entries live in the `solid_cache_entries` table of the primary database, so the `rate_limit` counters are shared by every pod and survive a restart. Development and test stay on `:null_store`, so `rate_limit` never throttles there.
 - `RAILS_LOG_LEVEL` — production log level (`config/environments/production.rb`); defaults to `debug`. Log through `Rails.logger` / `logger`, never `puts`.
 - `docker-compose.yml` + `docker-compose.dev.yml` — base + dev overrides; the dev server is published on host port 3001 (`3001:3000` in `docker-compose.dev.yml`); `RAILS_SERVER_PORT` is the port Puma listens on inside the container (3000)
 - `.rubocop.yml` — targets Ruby 4.0; the rubocop-rails, rubocop-rspec, rubocop-capybara and rubocop-factory_bot plugins are enabled

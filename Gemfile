@@ -15,6 +15,9 @@ gem 'pg', '~> 1.7'
 gem 'puma', '~> 8.0'
 gem 'rails', '~> 8.1.0'
 gem 'rake'
+# Database-backed Rails.cache, shared by every pod; holds the rate_limit
+# counters (config/cache.yml).
+gem 'solid_cache', '~> 1.0'
 # JS compressor for assets:precompile; replaces uglifier.
 gem 'terser', '~> 1.2'
 gem 'turbolinks'
