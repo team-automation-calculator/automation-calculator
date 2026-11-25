@@ -19,7 +19,7 @@ source = "https://github.com/stevenuray/repo-standards"   # upstream definition 
 python = false
 
 [overrides.ci]
-reason = "CI is CircleCI (.circleci/config.yml): it builds the Docker images on an arm64 machine executor, runs the Ruby compile check, RuboCop and RSpec in them, and publishes the multi-arch production image from main"
+reason = "CI is CircleCI (.circleci/config.yml): it builds the Docker images, runs the Ruby compile check, RuboCop and RSpec in them, and publishes the multi-arch production image from main"
 
 [overrides.claude-project]
 reason = "not yet adopted: no claude.ai Project named automation-calculator exists yet; create it in the UI and record it in iac/specs/claude/project.json"
