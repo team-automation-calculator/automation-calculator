@@ -2,18 +2,56 @@
 #
 # Check https://circleci.com/docs/language-ruby/ for more details
 #
-# The job runs on an arm64 Linux VM (machine executor, resource class
-# arm.medium), so the CI image build, RuboCop and the RSpec suite execute
-# natively on the architecture the EKS worker nodes are moving to
-# (core-iac PR #406, "arm64 worker node migration plan"). The VM has its own
-# Docker daemon, so there is no setup_remote_docker step. On main the
-# production image is published as one multi-arch manifest
-# (linux/amd64 + linux/arm64) under the same :latest and semver tags; the
-# amd64 half is cross-built under QEMU (tonistiigi/binfmt).
+# Three jobs run in parallel on every branch, each on a Linux VM (machine
+# executor) with its own Docker daemon, so there is no setup_remote_docker
+# step:
+#
+#   verify            arm64  CI image build, RuboCop, RSpec
+#   build_prod_arm64  arm64  production image build
+#   build_prod_amd64  amd64  production image build
+#
+# arm64 is the architecture the EKS worker nodes are moving to (core-iac
+# PR #406, "arm64 worker node migration plan"), so lint and tests run there.
+#
+# The production image is published as one multi-arch manifest
+# (linux/amd64 + linux/arm64). Each half is built on a runner of its own
+# architecture: nothing is emulated. Cross-building the amd64 half under
+# QEMU on the arm64 runner took about 29 minutes per main build (bundle
+# install alone ran 16 minutes emulated against under 2 native).
+#
+# On main each build_prod job pushes its image to Docker Hub untagged, by
+# digest only, and publish_manifest then joins the two digests into one
+# manifest carrying :latest and the semver tag. publish_manifest waits for
+# all three jobs, so no tag moves unless lint, tests and both image builds
+# passed.
 #
 version: 2.1
+
+commands:
+  # ./go is a Ruby script that only shells out to docker, so any Ruby 3+ on
+  # the host will do; the app's own Ruby (.ruby-version, 4.0.9) runs inside
+  # the Docker images. The machine image manages Ruby with rbenv, whose shim
+  # reads .ruby-version from the checkout and exits 1 because that version
+  # is not installed on the host. Pin the host to the image's global Ruby
+  # for every later step via BASH_ENV, and print the toolchain and
+  # architecture so the build log shows what ran.
+  use_host_ruby:
+    steps:
+      - run:
+          name: Use the machine image's Ruby for ./go and show the toolchain
+          command: |
+            echo "export RBENV_VERSION=$(rbenv global)" >> "$BASH_ENV"
+            source "$BASH_ENV"
+            uname -m && ruby --version && docker version && docker buildx version
+
+  docker_hub_login:
+    steps:
+      - run:
+          name: Login to Docker Hub
+          command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
+
 jobs:
-  build_verify_push:
+  verify:
     machine:
       image: ubuntu-2404:current
     resource_class: arm.medium
@@ -25,20 +63,7 @@ jobs:
 
     steps:
       - checkout
-
-      # ./go is a Ruby script that only shells out to docker, so any Ruby 3+
-      # on the host will do; the app's own Ruby (.ruby-version, 4.0.9) runs
-      # inside the Docker images. The machine image manages Ruby with rbenv,
-      # whose shim reads .ruby-version from the checkout and exits 1 because
-      # that version is not installed on the host. Pin the host to the
-      # image's global Ruby for every later step via BASH_ENV, and print the
-      # toolchain and architecture so the build log shows what ran.
-      - run:
-          name: Use the machine image's Ruby for ./go and show the toolchain
-          command: |
-            echo "export RBENV_VERSION=$(rbenv global)" >> "$BASH_ENV"
-            source "$BASH_ENV"
-            uname -m && ruby --version && docker version && docker buildx version
+      - use_host_ruby
 
       # build test image to test (native arm64)
       - run:
@@ -56,49 +81,93 @@ jobs:
           name: ./go test ci
           command: ./go test ci
 
-      # build prod image if tests pass (native arm64; proves the production
-      # Dockerfile builds on every branch without publishing anything)
-      - run:
-          name: ./go build prod
-          command: ./go build prod
+  # Builds the production image natively for the runner's architecture.
+  # Branches only prove that Dockerfile.production builds; nothing is
+  # published. main pushes the image by digest, with no tag, and hands the
+  # digest to publish_manifest through the workspace.
+  build_prod:
+    parameters:
+      resource_class:
+        type: string
 
-      # Publishing is gated to main. Every branch above verifies that the
-      # production image builds; only main gives it a semver tag, moves
-      # :latest and pushes to Docker Hub. Branch builds must never publish a
-      # tag matching ^\d+\.\d+\.\d+-\d+$, because core-iac opens a deploy
-      # bump PR for every such tag.
-      - when:
-          condition:
-            equal: [main, << pipeline.git.branch >>]
-          steps:
-            # Register the QEMU handler so buildx can cross-build the
-            # linux/amd64 half of the manifest on this arm64 host.
-            - run:
-                name: Register QEMU for linux/amd64
-                command: docker run --rm --privileged tonistiigi/binfmt --install amd64
+    machine:
+      image: ubuntu-2404:current
+    resource_class: << parameters.resource_class >>
 
-            # login to docker hub in preparation for pushing image
-            - run:
-                name: Login to Docker Hub
-                command: docker login --username $DOCKER_HUB_USER --password $DOCKER_HUB_PASSWORD
+    environment:
+      USER: "circleci"
 
-            # One buildx build for linux/amd64,linux/arm64, tagged with both
-            # :latest and the semver tag (SEMVER_* + this job's
-            # CIRCLE_BUILD_NUM, computed in scripts/docker_hub.rb), and
-            # pushed. This replaces the former ./go tag + ./go push pair.
-            - run:
-                name: Upload multi-arch Docker image to Docker Hub
-                command: ./go push prod --multi-platform
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - use_host_ruby
 
       - unless:
           condition:
             equal: [main, << pipeline.git.branch >>]
           steps:
             - run:
-                name: Skip Docker Hub publish (not main)
-                command: echo "Branch ${CIRCLE_BRANCH} is not main; skipping Docker Hub login and ./go push prod --multi-platform."
+                name: ./go build prod
+                command: ./go build prod
+
+      - when:
+          condition:
+            equal: [main, << pipeline.git.branch >>]
+          steps:
+            - docker_hub_login
+
+            # An untagged push cannot match ^\d+\.\d+\.\d+-\d+$, so core-iac
+            # opens no deploy bump PR for it.
+            - run:
+                name: ./go push prod --digest-only
+                command: ./go push prod --digest-only
+
+            - persist_to_workspace:
+                root: .
+                paths:
+                  - tmp/digests
+
+  # main only (see the workflow filter). Tags the two per-architecture
+  # images as one multi-arch manifest: :latest and the semver tag (SEMVER_*
+  # + this job's CIRCLE_BUILD_NUM, computed in scripts/docker_hub.rb).
+  # core-iac opens a deploy bump PR for every tag matching
+  # ^\d+\.\d+\.\d+-\d+$, so this is the only step that may create one.
+  publish_manifest:
+    machine:
+      image: ubuntu-2404:current
+    resource_class: arm.medium
+
+    environment:
+      USER: "circleci"
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - use_host_ruby
+      - attach_workspace:
+          at: .
+      - docker_hub_login
+      - run:
+          name: ./go push prod --manifest
+          command: ./go push prod --manifest
 
 workflows:
   build_verify_push:
     jobs:
-      - build_verify_push
+      - verify
+      - build_prod:
+          name: build_prod_arm64
+          resource_class: arm.medium
+      - build_prod:
+          name: build_prod_amd64
+          resource_class: medium
+      - publish_manifest:
+          requires:
+            - verify
+            - build_prod_arm64
+            - build_prod_amd64
+          filters:
+            branches:
+              only: main

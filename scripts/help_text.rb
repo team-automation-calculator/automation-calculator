@@ -51,7 +51,15 @@ class HelpText
         'Push the base image to Docker Hub.',
       '--multi-platform':
         'Push linux/amd64 and linux/arm64 images to Docker Hub ' \
-        'using docker buildx (applies to any subcommand).'
+        'using docker buildx (applies to any subcommand). ' \
+        'Slow: the non-native architecture is built under emulation.',
+      '--digest-only':
+        'Build for this machine\'s own architecture and push the image ' \
+        'untagged, recording its digest in tmp/digests/. ' \
+        'CI runs this once per architecture on native runners.',
+      '--manifest':
+        'Join the amd64 and arm64 images recorded in tmp/digests/ into ' \
+        'one multi-arch manifest and tag it (:latest and :semver tags).'
     }.freeze,
     restart: 'Stop and restart docker containers.',
     rm: 'Remove running or stopped docker containers for a clean restart.',

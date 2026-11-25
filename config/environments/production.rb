@@ -57,9 +57,10 @@ Rails.application.configure do
   # TLS terminates at the ALB, so trust the X-Forwarded-Proto header.
   config.assume_ssl = true
 
-  # Use the lowest log level to ensure availability of diagnostic information
-  # when problems arise.
-  config.log_level = :debug
+  # Defaults to the lowest log level to ensure availability of diagnostic
+  # information when problems arise; set RAILS_LOG_LEVEL (debug, info, warn,
+  # error, fatal, unknown) to change it without a code change.
+  config.log_level = ENV.fetch('RAILS_LOG_LEVEL', 'debug')
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
