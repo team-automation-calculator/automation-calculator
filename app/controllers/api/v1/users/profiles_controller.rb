@@ -11,6 +11,12 @@ module API
 
         def update
           current_user.update! permitted_params
+          if current_user.saved_change_to_email?
+            logger.info(
+              "API email changed: user=#{current_user.id} " \
+              "ip=#{request.remote_ip}"
+            )
+          end
 
           render json: current_user
         end

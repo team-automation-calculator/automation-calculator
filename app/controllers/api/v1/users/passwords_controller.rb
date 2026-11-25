@@ -7,6 +7,10 @@ module API
 
         def update
           current_user.update! password: params[:password]
+          logger.info(
+            "API password changed: user=#{current_user.id} " \
+            "ip=#{request.remote_ip}"
+          )
 
           render json: current_user
         end
