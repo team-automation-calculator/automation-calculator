@@ -3,7 +3,7 @@ class HealthCheckController < ApplicationController
     db_ok = database_reachable?
     render json: {
       current_time_in_unix: Time.current.to_i,
-      short_commit_hash: ENV['SHORT_COMMIT_HASH'],
+      short_commit_hash: AppConfig.current.short_commit_hash,
       database: db_ok ? 'ok' : 'unavailable'
     }, status: db_ok ? :ok : :service_unavailable
   end

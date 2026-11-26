@@ -1,3 +1,5 @@
+require 'app_config'
+
 # The hostnames this app answers to. One list feeds both Rails host
 # authorization (config/initializers/host_authorization.rb) and
 # OmniAuth.config.allowed_hosts (config/initializers/omniauth.rb), so
@@ -13,7 +15,7 @@ module AllowedHosts
   LOCAL = %w[localhost 127.0.0.1 dev www.example.com].freeze
 
   def self.list(production: Rails.env.production?,
-                app_hostname: ENV['APP_HOSTNAME'])
+                app_hostname: AppConfig.current.app_hostname)
     return LOCAL.dup unless production
 
     host = app_hostname.to_s

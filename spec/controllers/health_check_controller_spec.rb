@@ -20,9 +20,11 @@ RSpec.describe HealthCheckController, type: :controller do
       end
 
       it 'returns the short commit hash' do
+        allow(AppConfig).to receive(:current)
+          .and_return(AppConfig.new('SHORT_COMMIT_HASH' => 'abc1234'))
         get :health
         body = JSON.parse(response.body)
-        expect(body['short_commit_hash']).to eq(ENV['SHORT_COMMIT_HASH'])
+        expect(body['short_commit_hash']).to eq('abc1234')
       end
 
       it 'returns database ok' do

@@ -14,4 +14,6 @@ require 'allowed_hosts'
 # this is the second line. The two read the empty list differently: an
 # unset APP_HOSTNAME in production makes Rails pass every host, while
 # OmniAuth rejects every OAuth request rather than trust the header.
+# A production server logs an unset APP_HOSTNAME at ERROR on boot
+# (AppConfig::IMPORTANT, BootReport.boot).
 OmniAuth.config.allowed_hosts = AllowedHosts.list
