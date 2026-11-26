@@ -3,7 +3,8 @@ class HelpText
   HELP_HASH = {
     build: {
       dev:
-        '[Default] Build docker containers for your development environment.',
+        '[Default] Build the development image through docker compose: the ' \
+        'image ./go test, start and shell run. Run after a Gemfile change.',
       ci: 'Build docker containers to simulate the ci environment.',
       base: 'Build the base docker image used by ci and development.',
       prod: 'Build the production docker image.',
@@ -72,7 +73,8 @@ class HelpText
     }.freeze,
     restart: 'Stop and restart docker containers.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
-    rmi: 'Remove the development docker image.',
+    rmi: 'Stop the containers and remove the development image ' \
+         '(the images this checkout built; postgres and the database volume stay).',
     shell: {
       ci: 'Open a terminal inside of the CI container.',
       dev: '[Default] Open a terminal inside of the development container.',

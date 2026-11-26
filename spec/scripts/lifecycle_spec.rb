@@ -56,7 +56,7 @@ RSpec.describe Lifecycle do
     expect(run(:rm)).to eq(['docker compose down', 'docker ps -aq | xargs docker rm'])
   end
 
-  it 'removes the dev image on rmi' do
-    expect(run(:rmi)).to eq(['docker rmi automation-calculator_dev:latest'])
+  it 'stops the containers and removes the images this checkout built on rmi' do
+    expect(run(:rmi)).to eq(["docker compose #{dev} down --rmi local"])
   end
 end

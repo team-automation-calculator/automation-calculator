@@ -9,8 +9,11 @@ class DockerImages
   BASE_VERSION = '0.11.0'.freeze
 
   # tag: what `docker build` names it; push_tags: what `./go push` publishes
-  # (none for an image that is never pushed); uid: built for the current user.
-  Image = Struct.new(:tag, :file, :username, :repo, :push_tags, :uid, keyword_init: true) do
+  # (none for an image that is never pushed); uid: built for the current user;
+  # compose_service: the docker compose service that runs it, which builds
+  # and names the image itself (one per checkout), so `./go build` goes
+  # through compose and refreshes the image `./go test` and `start` run.
+  Image = Struct.new(:tag, :file, :username, :repo, :push_tags, :uid, :compose_service, keyword_init: true) do
     def pushable?
       !push_tags.empty?
     end
@@ -60,13 +63,19 @@ class DockerImages
 
   def images
     @images ||= {
-      'dev' => Image.new(tag: 'automation-calculator_dev', file: 'Dockerfile.development',
-                         username: @env['USERNAME'] || @env['USER'], push_tags: [], uid: true),
+      'dev' => dev_image,
       'ci' => app_image('Dockerfile.ci'),
       'base' => Image.new(tag: "#{BASE_REPO}:#{BASE_VERSION}", file: 'Dockerfile.base', username: 'circleci',
                           repo: BASE_REPO, push_tags: ["#{BASE_REPO}:#{BASE_VERSION}"]),
       'prod' => app_image('Dockerfile.production')
     }
+  end
+
+  # Built for the current user; tag is the name a --multi-platform build gives
+  # it, as compose names the image it builds after the checkout.
+  def dev_image
+    Image.new(tag: 'automation-calculator_dev', file: 'Dockerfile.development', push_tags: [],
+              username: @env['USERNAME'] || @env['USER'], uid: true, compose_service: 'dev')
   end
 
   def app_image(file)

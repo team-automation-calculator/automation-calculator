@@ -5,6 +5,6 @@ RSpec.describe Logs do
 
   it 'follows the dev service logs' do
     described_class.new(runner: runner).logs
-    expect(runner.commands).to eq(['docker compose logs --follow dev'])
+    expect(runner.commands).to eq(['docker compose -f docker-compose.yml -f docker-compose.dev.yml logs --follow dev'])
   end
 end

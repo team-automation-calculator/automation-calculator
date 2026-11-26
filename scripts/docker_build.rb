@@ -1,5 +1,6 @@
 # ./go build [dev|ci|base|prod] [--no-cache] [--multi-platform]
 require './scripts/utils/buildx'
+require './scripts/utils/compose_files'
 require './scripts/utils/docker_images'
 require './scripts/utils/runner'
 
@@ -24,7 +25,13 @@ class DockerBuild
   private
 
   def build_native(image, args)
-    @runner.run("docker build -t #{image.tag} -f #{image.file} #{args} .", check: true)
+    service = image.compose_service
+    command = if service
+                "docker compose #{ComposeFiles.flags(service)} build #{args} #{service}"
+              else
+                "docker build -t #{image.tag} -f #{image.file} #{args} ."
+              end
+    @runner.run(command, check: true)
   end
 
   # Both architectures, kept in the buildx builder's cache for a later push.

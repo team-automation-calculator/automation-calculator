@@ -11,11 +11,15 @@ RSpec.describe DockerBuild do
     runner.commands
   end
 
-  it 'builds the dev image by default, as the current user' do
+  it 'builds the dev image by default, through compose, as the current user' do
     expect(build).to eq(
-      ['docker build -t automation-calculator_dev -f Dockerfile.development ' \
-       '--build-arg username=steve --build-arg uid=501 --build-arg GIT_COMMIT=abc1234 .']
+      ['docker compose -f docker-compose.yml -f docker-compose.dev.yml build ' \
+       '--build-arg username=steve --build-arg uid=501 --build-arg GIT_COMMIT=abc1234 dev']
     )
+  end
+
+  it 'passes --no-cache through to the compose build' do
+    expect(build('dev', '--no-cache').first).to end_with('GIT_COMMIT=abc1234 --no-cache dev')
   end
 
   it 'builds the ci image' do

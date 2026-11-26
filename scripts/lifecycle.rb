@@ -52,8 +52,11 @@ class Lifecycle
     @runner.replace('docker ps -aq | xargs docker rm')
   end
 
+  # Stop this checkout's containers and remove the images its compose project
+  # built (the dev image); pulled images such as postgres and the database
+  # volume stay.
   def rmi
-    @runner.replace('docker rmi automation-calculator_dev:latest')
+    @runner.replace("docker compose #{ComposeFiles.flags('dev')} down --rmi local")
   end
 
   private
