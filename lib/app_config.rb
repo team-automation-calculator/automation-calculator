@@ -1,7 +1,7 @@
 # The settings this app reads from its environment, in one place: each
-# name, whether a production server can run without it, and what breaks
-# when it is unset. Application code asks an AppConfig rather than
-# reading ENV, so this file answers "what does production need set?".
+# name, how loudly a production server reports it unset, and what breaks
+# without it. Application code asks an AppConfig rather than reading ENV,
+# so this file answers "what does production need set?".
 #
 # Deployed environments get every one of these from the core-iac Helm
 # chart (helm/automation-calculator/templates/deployment.yaml).
@@ -13,36 +13,29 @@
 # (config/environments/production.rb), RAILS_MAX_THREADS,
 # RAILS_MIN_THREADS and RAILS_SERVER_PORT (config/puma.rb).
 #
-# Reading a value never raises: rake tasks, the console and the asset
-# precompile in the image build boot the app in production without most
-# of these. Only a production server checks them, through validate!
-# (BootReport.boot, config/initializers/boot_report.rb).
+# Nothing here stops the app: reading a value never raises, and a
+# production server (staging and prod) logs what is unset at boot and
+# keeps serving (BootReport.boot, config/initializers/boot_report.rb).
 class AppConfig
-  class MissingError < StandardError; end
-
   OAUTH_CREDENTIALS = {
     github: %w[GITHUB_OAUTH_APP_ID GITHUB_OAUTH_APP_SECRET],
     google: %w[GOOGLE_OAUTH_APP_ID GOOGLE_OAUTH_APP_SECRET]
   }.freeze
 
-  # A production server refuses to start without these: each one unset
-  # is a user-facing failure that would otherwise surface only later.
-  REQUIRED = {
+  # Unset, these break something users see: a production server logs an
+  # ERROR line for each one and keeps serving.
+  IMPORTANT = {
+    'APP_HOSTNAME' => 'host authorization is off and every OAuth sign-in ' \
+                      'will be rejected as invalid_host; set it to the ' \
+                      'public hostname (core-iac sets it from the ingress host)',
     'GITHUB_OAUTH_APP_ID' => 'sign-in with github will fail',
     'GITHUB_OAUTH_APP_SECRET' => 'sign-in with github will fail',
     'GOOGLE_OAUTH_APP_ID' => 'sign-in with google will fail',
     'GOOGLE_OAUTH_APP_SECRET' => 'sign-in with google will fail'
   }.freeze
 
-  # A production server starts without these but is broken for users, so
-  # it logs an ERROR line for each one unset and keeps serving.
-  IMPORTANT = {
-    'APP_HOSTNAME' => 'host authorization is off and every OAuth sign-in ' \
-                      'will be rejected as invalid_host; set it to the ' \
-                      'public hostname (core-iac sets it from the ingress host)'
-  }.freeze
-
-  # A production server starts without these and logs a WARN line.
+  # Unset, these cost diagnostics or analytics only: a production server
+  # logs a WARN line for each one.
   RECOMMENDED = {
     'SHORT_COMMIT_HASH' => '/health cannot report the build',
     'GOOGLE_ANALYTICS_TRACKING_ID' => 'no page views reach Google Analytics'
@@ -78,20 +71,13 @@ class AppConfig
   end
 
   # Unset names with what breaks without each, by the level a production
-  # server logs them at: REQUIRED and IMPORTANT at :error, RECOMMENDED at
-  # :warn. Names and effects only, never a value.
+  # server logs them at: IMPORTANT at :error, RECOMMENDED at :warn. Names
+  # and effects only, never a value.
   def unset
     {
-      error: REQUIRED.merge(IMPORTANT).reject { |name, _| read(name) },
+      error: IMPORTANT.reject { |name, _| read(name) },
       warn: RECOMMENDED.reject { |name, _| read(name) }
     }
-  end
-
-  def validate!
-    missing = REQUIRED.keys.reject { |name| read(name) }
-    return if missing.empty?
-
-    raise MissingError, "Missing required environment variables: #{missing.join(', ')}"
   end
 
   private

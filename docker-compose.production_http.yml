@@ -19,10 +19,6 @@ services:
     depends_on:
       - db
     environment:
-      - GITHUB_OAUTH_APP_ID=${GITHUB_OAUTH_APP_ID}
-      - GITHUB_OAUTH_APP_SECRET=${GITHUB_OAUTH_APP_SECRET}
-      - GOOGLE_OAUTH_APP_ID=${GOOGLE_OAUTH_APP_ID}
-      - GOOGLE_OAUTH_APP_SECRET=${GOOGLE_OAUTH_APP_SECRET}
       - DB_URL="postgresql://${USER}:${POSTGRES_PASSWORD}@db:5432/automation-calculator-production"
       - RAILS_ENV=production
       - RAILS_LOG_TO_STDOUT=true

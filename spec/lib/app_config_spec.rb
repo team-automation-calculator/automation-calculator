@@ -46,29 +46,15 @@ RSpec.describe AppConfig do
       expect(config.unset).to eq(error: {}, warn: {})
     end
 
-    it 'puts required and important settings under error when nothing is set' do
-      expect(described_class.new({}).unset[:error].keys)
-        .to match_array(described_class::REQUIRED.keys + described_class::IMPORTANT.keys)
+    it 'puts APP_HOSTNAME and every OAuth key under error when nothing is set' do
+      expect(described_class.new({}).unset[:error].keys).to contain_exactly(
+        'APP_HOSTNAME', *described_class::OAUTH_CREDENTIALS.values.flatten
+      )
     end
 
     it 'puts recommended settings under warn when nothing is set' do
       expect(described_class.new({}).unset[:warn].keys)
         .to match_array(described_class::RECOMMENDED.keys)
-    end
-  end
-
-  describe '#validate!' do
-    it 'passes without APP_HOSTNAME or the recommended settings' do
-      config = described_class.new(
-        complete_env.except('APP_HOSTNAME', *described_class::RECOMMENDED.keys)
-      )
-      expect { config.validate! }.not_to raise_error
-    end
-
-    it 'names every missing OAuth key' do
-      config = described_class.new(complete_env.except('GITHUB_OAUTH_APP_SECRET', 'GOOGLE_OAUTH_APP_ID'))
-      message = 'Missing required environment variables: GITHUB_OAUTH_APP_SECRET, GOOGLE_OAUTH_APP_ID'
-      expect { config.validate! }.to raise_error(AppConfig::MissingError, message)
     end
   end
 

@@ -106,38 +106,29 @@ RSpec.describe BootReport do
       expect(logger).not_to have_received(:info)
     end
 
-    it 'logs and starts when a production server has everything required' do
+    it 'logs the summary when a production server has everything set' do
       described_class.boot(server: 'constant', config: complete_config,
                            production: true, logger: logger)
       expect(logger).to have_received(:info).with(/\ABoot: /)
     end
 
-    it 'starts a production server without APP_HOSTNAME' do
-      expect do
-        described_class.boot(server: 'constant', config: no_hostname_config,
-                             production: true, logger: logger)
-      end.not_to raise_error
-    end
-
-    it 'logs the missing APP_HOSTNAME at error when it starts' do
+    it 'logs a missing APP_HOSTNAME at error' do
       described_class.boot(server: 'constant', config: no_hostname_config,
                            production: true, logger: logger)
       expect(logger).to have_received(:error).with(/\ABoot: APP_HOSTNAME is unset/)
     end
 
-    it 'refuses a production server missing an OAuth key' do
-      expect do
-        described_class.boot(server: 'constant', config: no_oauth_config,
-                             production: true, logger: logger)
-      end.to raise_error(AppConfig::MissingError, /GITHUB_OAUTH_APP_SECRET/)
+    it 'logs a missing OAuth key at error' do
+      described_class.boot(server: 'constant', config: no_oauth_config,
+                           production: true, logger: logger)
+      expect(logger).to have_received(:error).with(/\ABoot: GITHUB_OAUTH_APP_SECRET is unset/)
     end
 
-    it 'logs what is unset before refusing' do
-      suppress(AppConfig::MissingError) do
-        described_class.boot(server: 'constant', config: no_oauth_config,
+    it 'starts a production server with nothing set' do
+      expect do
+        described_class.boot(server: 'constant', config: AppConfig.new({}),
                              production: true, logger: logger)
-      end
-      expect(logger).to have_received(:error).with(/\ABoot: GITHUB_OAUTH_APP_SECRET is unset/)
+      end.not_to raise_error
     end
 
     it 'starts a development or test server whatever is missing, logging no error' do

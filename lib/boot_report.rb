@@ -9,21 +9,17 @@ require 'app_config'
 module BootReport
   module_function
 
-  # Only a server reports and checks its environment: rake tasks, the
-  # console and the asset precompile in the image build boot the app
-  # too, without most of AppConfig set. In production (staging and prod
-  # both run RAILS_ENV=production; development and test are never
-  # checked) a server logs every unset setting at ERROR or WARN (see
-  # AppConfig#unset), then refuses to start only when an
-  # AppConfig::REQUIRED one is missing: the pod crashloops instead of
-  # serving broken sign-ins. A missing APP_HOSTNAME
-  # (AppConfig::IMPORTANT) is logged at ERROR and the server keeps going.
+  # Only a server reports its environment: rake tasks, the console and
+  # the asset precompile in the image build boot the app too, without
+  # most of AppConfig set. In production (staging and prod both run
+  # RAILS_ENV=production; development and test are never checked) a
+  # server logs every unset setting at ERROR or WARN (see
+  # AppConfig#unset) and keeps serving.
   def boot(server:, config: AppConfig.current,
            production: Rails.env.production?, logger: Rails.logger)
     return unless server
 
     log(config: config, production: production, logger: logger)
-    config.validate! if production
   end
 
   def log(config: AppConfig.current, production: Rails.env.production?,
