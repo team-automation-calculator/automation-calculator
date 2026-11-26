@@ -33,6 +33,18 @@ class HelpText
     }.freeze,
     format:
       'Apply RuboCop safe autocorrections in the development container.',
+    'graphify-seed':
+      'In a git worktree, copy the main checkout\'s knowledge graph ' \
+      '(graphify-out/) and refresh its code layer to this branch. ' \
+      'Does nothing in the main checkout. Flags: --force, --no-update, --quiet.',
+    'graphify-status':
+      'How far the knowledge graph is behind HEAD, and which documents ' \
+      'wait for /graphify --update (exit 0 current, 3 behind, 1 no graph). ' \
+      '--brief prints one line only when it is behind.',
+    'graphify-update':
+      'Refresh the knowledge graph\'s code layer to HEAD (AST only, no LLM, ' \
+      'no Docker). Does nothing without a graph, in CI or a cloud session, ' \
+      'or when the main checkout is not on main.',
     init: 'Setup your development environment with docker.',
     lint: {
       dev:

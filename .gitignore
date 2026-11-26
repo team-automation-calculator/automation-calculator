@@ -76,3 +76,7 @@ docker-compose.local.yml
 
 # Claude Code worktrees live inside the repo, never as siblings in ~/git
 /.claude/worktrees/
+
+# graphify knowledge graph of main: a local artifact, like tmp/ (rule graphify
+# of repo-standards). Built with /graphify ., refreshed by ./go graphify-update
+graphify-out/

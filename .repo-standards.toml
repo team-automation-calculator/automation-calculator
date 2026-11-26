@@ -4,7 +4,7 @@
 # skipped by the audit and left alone by the conform flow.
 #
 # Rule ids: python-version, poetry, compile-check, black, lint, pytest, logging, ci,
-#           go-script, claude-project, routines, git-sync, agents-md, worktrees
+#           go-script, claude-project, routines, git-sync, graphify, agents-md, worktrees
 
 [standards]
 source = "https://github.com/stevenuray/repo-standards"   # upstream definition of the rules
@@ -23,3 +23,10 @@ reason = "CI is CircleCI (.circleci/config.yml): it builds the Docker images, ru
 
 [overrides.claude-project]
 reason = "not yet adopted: no claude.ai Project named automation-calculator exists yet; create it in the UI and record it in iac/specs/claude/project.json"
+
+# graphify: graphify-out/ is gitignored (a graph of main, kept on the laptop only).
+# After the git-sync agent fast-forwards main it runs this, which refreshes the
+# graph's code layer by AST: no LLM, no Docker, and a no-op until the graph has
+# been built once with /graphify . (AGENTS.md, "Knowledge graph").
+[git-sync]
+post_sync = "./go graphify-update"
