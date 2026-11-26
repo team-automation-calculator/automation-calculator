@@ -1,76 +1,75 @@
-# Main commands to run a container
+# ./go init, start, stop, restart, clean, rm and rmi: the containers' lifecycle.
+require './scripts/docker_build'
+require './scripts/environment_variables'
 require './scripts/utils/clear_rails_pid'
 require './scripts/utils/compose_files'
-require './scripts/utils/get_uid'
+require './scripts/utils/host'
+require './scripts/utils/runner'
+require './scripts/utils/subcommands'
 
 class Lifecycle
-  COMMAND_HASH = {
-    debug_production: -> { start_debug_production },
-    dev: lambda do
-      ClearRailsPid.clear_pid_file_if_it_exists
-      system(
-        "UID=#{GetUID.read_uid} docker compose #{ComposeFiles.flags('dev')} " \
-        'up -d dev'
-      )
-    end,
-    production: lambda do
-      system(
-        "docker compose #{ComposeFiles.flags('production_http')} up -d"
-      )
-    end
+  START_TARGETS = {
+    dev: :start_dev,
+    production: :start_production,
+    debug_production: :start_debug_production
   }.freeze
 
-  class << self
-    def clean
-      system('docker compose down --remove-orphans --rmi all --volumes')
-    end
+  def initialize(runner: Runner.new, env: ENV, host: Host.new(runner),
+                 docker_build: DockerBuild.new(runner: runner))
+    @runner = runner
+    @env = env
+    @host = host
+    @docker_build = docker_build
+  end
 
-    def init(cmds)
-      DockerBuild.build(['base'])
-      DockerBuild.build(cmds)
-      exec(
-        "UID=#{GetUID.read_uid} docker compose #{ComposeFiles.flags('dev')} " \
-        'run dev "/usr/src/app/bin/setup"'
-      )
-    end
+  def init(cmds)
+    @docker_build.build(['base'])
+    @docker_build.build(cmds)
+    @runner.replace(%(UID=#{@host.uid} docker compose #{ComposeFiles.flags('dev')} run dev "/usr/src/app/bin/setup"))
+  end
 
-    def restart
-      stop
-      start
-    end
+  def start(cmds = [])
+    table = START_TARGETS.transform_values { |name| method(name) }
+    Subcommands.dispatch(cmds, table, default: 'dev', help: 'start')
+  end
 
-    def rm
-      # stop, then remove
-      system('docker compose down')
-      exec('docker ps -aq | xargs docker rm')
-    end
+  def stop
+    @runner.run('docker compose down --remove-orphans')
+  end
 
-    def rmi
-      exec('docker rmi automation-calculator_dev:latest')
-    end
+  def restart
+    stop
+    start
+  end
 
-    def start(cmds = [])
-      sub_cmd = cmds.shift || 'dev'
+  def clean
+    @runner.run('docker compose down --remove-orphans --rmi all --volumes')
+  end
 
-      if COMMAND_HASH.key? sub_cmd.to_sym
-        COMMAND_HASH[sub_cmd.to_sym].call
-      else
-        HelpText.help(['start'])
-        puts
-        warn("Unrecognized command: #{sub_cmd}")
-      end
-    end
+  # Stop, then remove every container.
+  def rm
+    @runner.run('docker compose down')
+    @runner.replace('docker ps -aq | xargs docker rm')
+  end
 
-    def start_debug_production
-      EnvironmentVariables.set_mock_production_vars
-      system(
-        "docker compose #{ComposeFiles.flags('production_http')} " \
-        'up -d production'
-      )
-    end
+  def rmi
+    @runner.replace('docker rmi automation-calculator_dev:latest')
+  end
 
-    def stop
-      system('docker compose down --remove-orphans')
-    end
+  private
+
+  def start_dev
+    ClearRailsPid.clear_pid_file_if_it_exists
+    @runner.run("UID=#{@host.uid} docker compose #{ComposeFiles.flags('dev')} up -d dev")
+  end
+
+  def start_production
+    @runner.run("docker compose #{ComposeFiles.flags('production_http')} up -d")
+  end
+
+  # Production, locally, with mock secrets for whatever the shell lacks.
+  def start_debug_production
+    @runner.run("docker compose #{ComposeFiles.flags('production_http')} up -d production",
+                env: EnvironmentVariables.missing_production_vars(@env))
   end
 end

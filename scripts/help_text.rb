@@ -10,11 +10,8 @@ class HelpText
       '--multi-platform':
         'Build for linux/amd64 and linux/arm64 using docker buildx ' \
         '(applies to any subcommand). ' \
-        'Images are cached in the buildx builder for later pushing.',
-      '--push':
-        'Push the built image to Docker Hub immediately. ' \
-        'Required with --multi-platform since multi-platform ' \
-        'images cannot be loaded locally.',
+        'Images are cached in the buildx builder for later pushing ' \
+        '(./go push --multi-platform).',
       '--no-cache': 'Disable Docker layer caching (applies to any subcommand).'
     }.freeze,
     db: {
@@ -123,16 +120,13 @@ class HelpText
   }.freeze
 
   class << self
+    # Every command with no argument, else the one named.
     def help(cmds)
-      sub_cmd = cmds.shift
+      name = cmds.shift
+      return HELP_HASH.each_pair { |key, value| print_help_key_value(key, value) } if name.nil?
 
-      if sub_cmd.nil?
-        HELP_HASH.each_pair { |key, value| print_help_key_value(key, value) }
-      elsif HELP_HASH.key?(sub_cmd.to_sym)
-        print_help_key_value(sub_cmd.to_sym, HELP_HASH[sub_cmd.to_sym])
-      else
-        warn("Unrecognized command: #{sub_cmd}")
-      end
+      entry = HELP_HASH[name.to_sym]
+      entry ? print_help_key_value(name, entry) : warn("Unrecognized command: #{name}")
     end
 
     def print_help_key_value(key, value)

@@ -1,20 +1,24 @@
 require_relative 'support/script_helpers'
 
 RSpec.describe DockerHub do
-  include_context 'with ./go collaborators stubbed'
+  include_context 'with a recording runner'
 
   let(:repo) { 'automationcalculationsci/automation-calculator' }
   let(:tags) { "-t #{repo}:0.9.6-970 -t #{repo}:latest" }
   let(:build_args) { '--build-arg username=circleci --build-arg GIT_COMMIT=abc1234' }
-
-  before do
-    env_with('SEMVER_MAJOR_VERSION' => '0', 'SEMVER_MINOR_VERSION' => '9',
-             'SEMVER_PATCH' => '6', 'CIRCLE_BUILD_NUM' => '970')
-    allow(FileUtils).to receive(:mkdir_p)
+  let(:host_cpu) { 'aarch64' }
+  let(:images) do
+    DockerImages.new(env: { 'SEMVER_MAJOR_VERSION' => '0', 'SEMVER_MINOR_VERSION' => '9',
+                            'SEMVER_PATCH' => '6', 'CIRCLE_BUILD_NUM' => '970' },
+                     host: Host.new(runner))
   end
+  let(:hub) { described_class.new(runner: runner, images: images, host_cpu: host_cpu) }
+
+  before { allow(FileUtils).to receive(:mkdir_p) }
 
   def push(*args)
-    commands_run(responses: responses) { described_class.push_to_docker_hub(args) }
+    hub.push(args)
+    runner.commands
   end
 
   it 'pushes the prod image with its semver and latest tags by default' do
@@ -45,14 +49,16 @@ RSpec.describe DockerHub do
     end
 
     it 'pushes this host architecture by digest' do
-      stub_const('RbConfig::CONFIG', RbConfig::CONFIG.merge('host_cpu' => 'aarch64'))
       expect(push('--digest-only').last).to eq(by_digest)
     end
-  end
 
-  it 'refuses --digest-only on a CPU outside the manifest' do
-    stub_const('RbConfig::CONFIG', RbConfig::CONFIG.merge('host_cpu' => 'sparc'))
-    expect { push('--digest-only') }.to raise_error(KeyError)
+    context 'when the CPU is outside the manifest' do
+      let(:host_cpu) { 'sparc' }
+
+      it 'refuses' do
+        expect { push('--digest-only') }.to raise_error(KeyError)
+      end
+    end
   end
 
   describe '--manifest' do
@@ -77,11 +83,13 @@ RSpec.describe DockerHub do
   end
 
   it 'tags latest with the semver tag' do
-    expect(commands_run { described_class.tag_latest_with_semver })
-      .to eq(["docker tag #{repo}:latest #{repo}:0.9.6-970"])
+    hub.tag_latest_with_semver
+    expect(runner.commands).to eq(["docker tag #{repo}:latest #{repo}:0.9.6-970"])
   end
 
-  it 'warns about an unknown image and runs nothing', :aggregate_failures do
-    expect { expect(push('nope')).to be_empty }.to output(/Unrecognized image: nope/).to_stderr
+  it 'warns about an image it never pushes and runs nothing', :aggregate_failures do
+    %w[dev nope].each do |name|
+      expect { expect(push(name)).to be_empty }.to output(/Unrecognized image: #{name}/).to_stderr
+    end
   end
 end

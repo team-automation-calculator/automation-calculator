@@ -1,17 +1,16 @@
 require_relative 'support/script_helpers'
 
 RSpec.describe EnvironmentVariables do
-  include ScriptHelpers
+  describe '.missing_production_vars' do
+    it 'returns every mock the environment lacks' do
+      expect(described_class.missing_production_vars({}).keys).to eq(described_class::PRODUCTION_VARS.keys)
+    end
 
-  it 'sets the mock production variables that are missing' do
-    env_with('DOCKER_REPO_USER' => nil)
-    described_class.set_mock_production_vars
-    expect(ENV.fetch('DOCKER_REPO_USER')).to eq('automationcalculator')
-  end
-
-  it 'keeps a variable that is already set', :aggregate_failures do
-    env_with('DOCKER_REPO_USER' => 'real')
-    expect { described_class.set_mock_production_vars }.to output(/DOCKER_REPO_USER has already been set/).to_stdout
-    expect(ENV.fetch('DOCKER_REPO_USER')).to eq('real')
+    it 'keeps a variable that is already set, and says so', :aggregate_failures do
+      missing = nil
+      expect { missing = described_class.missing_production_vars('DOCKER_REPO_USER' => 'real') }
+        .to output("DOCKER_REPO_USER has already been set, not using mock for it.\n").to_stdout
+      expect(missing).not_to have_key('DOCKER_REPO_USER')
+    end
   end
 end

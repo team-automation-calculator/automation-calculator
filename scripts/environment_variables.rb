@@ -1,33 +1,22 @@
-# List all environment variables
+# Mock production environment variables, for ./go start debug_production.
 class EnvironmentVariables
-  EnvVar = Struct.new(:name, :value)
-
-  # Note secret key base is only set as a mock for production
-  # in the development environment,
-  # and should never be the real production secret key base.
-  PRODUCTION_VARS = [
-    EnvVar.new('DOCKER_REPO_PASS', 'password'),
-    EnvVar.new('DOCKER_REPO_USER', 'automationcalculator'),
-    EnvVar.new('LOGSPOUT_TARGET_URL', 'logs4.papertrailapp.com'),
-    EnvVar.new('POSTGRESS_PASSWORD', 'automation-calculator-production'),
-    EnvVar.new(
-      'SECRET_KEY_BASE', 'a588cf98f7e28d5024826d7142fe7b69582d9252218b2' \
+  # The secret key base here is a mock for running production locally, and
+  # must never be the real production secret key base.
+  PRODUCTION_VARS = {
+    'DOCKER_REPO_PASS' => 'password',
+    'DOCKER_REPO_USER' => 'automationcalculator',
+    'LOGSPOUT_TARGET_URL' => 'logs4.papertrailapp.com',
+    'POSTGRESS_PASSWORD' => 'automation-calculator-production',
+    'SECRET_KEY_BASE' => 'a588cf98f7e28d5024826d7142fe7b69582d9252218b2' \
                          '89df7b80366f9b19efdc56af2aa8820a8543cf2691313' \
                          '4014a41f3058ffdd5f3d5f1b93d964b3baba52'
-    )
-  ].freeze
+  }.freeze
 
-  class << self
-    def set_mock_production_vars
-      PRODUCTION_VARS.each { |var| create_if_not_already_defined(var) }
-    end
-
-    def create_if_not_already_defined(var)
-      if ENV.include? var.name
-        puts "#{var.name} has already been set, not using mock for it."
-      else
-        ENV[var.name] = var.value
-      end
-    end
+  # The mock variables env does not already set; the ones it does set are
+  # named on stdout and kept.
+  def self.missing_production_vars(env)
+    set, missing = PRODUCTION_VARS.partition { |name, _| env.key?(name) }.map(&:to_h)
+    set.each_key { |name| puts "#{name} has already been set, not using mock for it." }
+    missing
   end
 end

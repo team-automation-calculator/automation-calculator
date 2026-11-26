@@ -1,26 +1,23 @@
-# Commands to connect to a container database
+# ./go db [dev]: psql on a container database.
 require './scripts/utils/compose_files'
+require './scripts/utils/runner'
+require './scripts/utils/subcommands'
 
 class DatabaseTerminal
-  COMMAND_HASH = {
-    dev: -> { connect_dev_db }
-  }.freeze
+  DATABASES = { dev: :connect_dev_db }.freeze
 
-  class << self
-    def connect(cmds)
-      sub_cmd = cmds.shift || 'dev'
+  def initialize(runner: Runner.new)
+    @runner = runner
+  end
 
-      if COMMAND_HASH.key? sub_cmd.to_sym
-        COMMAND_HASH[sub_cmd.to_sym].call
-      else
-        HelpText.help(['db'])
-        puts
-        warn("Unrecognized command: #{sub_cmd}")
-      end
-    end
+  def connect(cmds)
+    table = DATABASES.transform_values { |name| method(name) }
+    Subcommands.dispatch(cmds, table, default: 'dev', help: 'db')
+  end
 
-    def connect_dev_db
-      exec("docker compose #{ComposeFiles.flags('dev')} run db_client")
-    end
+  private
+
+  def connect_dev_db
+    @runner.replace("docker compose #{ComposeFiles.flags('dev')} run db_client")
   end
 end

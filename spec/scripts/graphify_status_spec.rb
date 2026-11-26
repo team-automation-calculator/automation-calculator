@@ -31,20 +31,25 @@ RSpec.describe GraphifyStatus do
     end
   end
 
-  describe '.status' do
-    include_context 'with graphify git stubbed'
+  describe '#status' do
+    include_context 'with graphify on a recording runner'
 
+    let(:status) { described_class.new(graphify: graphify) }
     let(:verify_synced) { ['rev-parse', '--verify', '--quiet', '0123456789abcdef^{commit}'] }
 
-    it 'says nothing in --brief mode in a throwaway environment' do
-      env_with('CI' => '1')
-      expect { described_class.status(['--brief']) }.not_to output.to_stdout
+    it 'says nothing in --brief mode in a throwaway environment', :aggregate_failures do
+      env['CI'] = '1'
+      expect { expect(status.status(['--brief'])).to eq(0) }.not_to output.to_stdout
     end
 
-    it 'exits 1 with no graph' do
+    it 'says nothing in --brief mode with no graph', :aggregate_failures do
       graph_exists(false)
-      expect { described_class.status([]) }
-        .to raise_error(an_object_having_attributes(status: 1)).and output(/no graphify-out/).to_stdout
+      expect { expect(status.status(['--brief'])).to eq(0) }.not_to output.to_stdout
+    end
+
+    it 'is 1 with no graph', :aggregate_failures do
+      graph_exists(false)
+      expect { expect(status.status([])).to eq(1) }.to output(/no graphify-out/).to_stdout
     end
 
     context 'with a graph' do
@@ -53,22 +58,31 @@ RSpec.describe GraphifyStatus do
         allow(File).to receive(:file?).with(Graphify::SYNCED_FILE).and_return(true)
         allow(File).to receive(:read).and_call_original
         allow(File).to receive(:read).with(Graphify::SYNCED_FILE).and_return("0123456789abcdef\n")
-        allow(File).to receive(:read).with(described_class::MANIFEST).and_return('{}')
+        allow(File).to receive(:read).with(described_class::MANIFEST).and_return('{"README.md":{}}')
       end
 
-      it 'reports a graph that matches HEAD' do
-        git[verify_synced] = "0123456789abcdef\n"
-        git[%w[rev-parse --short HEAD]] = "0123456\n"
-        expect { described_class.status([]) }
+      it 'reports a graph that matches HEAD', :aggregate_failures do
+        git_answers(verify_synced => "0123456789abcdef\n", %w[rev-parse --short HEAD] => "0123456\n")
+        allow(File).to receive(:read).with(described_class::MANIFEST).and_return('{}')
+        expect { expect(status.status([])).to eq(0) }
           .to output("graphify: current: the graph matches HEAD 0123456\n").to_stdout
       end
 
-      it 'exits 3 when the graph is behind HEAD' do
-        git.merge!(verify_synced => "fedcba\n", %w[diff --name-only fedcba HEAD] => "README.md\napp/a.rb\n",
-                   %w[rev-list --count fedcba..HEAD] => "2\n")
-        expect { described_class.status([]) }
-          .to raise_error(an_object_having_attributes(status: 3))
-          .and output(/2 commit\(s\) behind HEAD \(2 file\(s\) changed, 1 of them documents\)/).to_stdout
+      it 'is 3 when the graph is behind HEAD', :aggregate_failures do
+        git_answers(verify_synced => "fedcba\n", %w[diff --name-only fedcba HEAD] => "README.md\napp/a.rb\n",
+                    %w[rev-list --count fedcba..HEAD] => "2\n")
+        expect { expect(status.status([])).to eq(3) }
+          .to output(/2 commit\(s\) behind HEAD \(2 file\(s\) changed, 1 of them documents\).*README.md/).to_stdout
+      end
+
+      it 'prints the same line in --brief mode, and is 0', :aggregate_failures do
+        git_answers(verify_synced => "0123456789abcdef\n")
+        expect { expect(status.status(['--brief'])).to eq(0) }
+          .to output(%r{1 document\(s\) wait for the LLM pass \(/graphify --update\): README.md}).to_stdout
+      end
+
+      it 'says so when the recorded commit is not in this checkout' do
+        expect { status.status([]) }.to output(/built from a commit this checkout does not have/).to_stdout
       end
     end
   end

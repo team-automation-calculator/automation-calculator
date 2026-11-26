@@ -1,14 +1,14 @@
 require_relative 'support/script_helpers'
 
 RSpec.describe DockerBuild do
-  include_context 'with ./go collaborators stubbed'
+  include_context 'with a recording runner'
 
   let(:repo) { 'automationcalculationsci/automation-calculator' }
-
-  before { env_with('USERNAME' => nil, 'USER' => 'steve') }
+  let(:images) { DockerImages.new(env: { 'USER' => 'steve' }, host: Host.new(runner)) }
 
   def build(*args)
-    commands_run(responses: responses) { described_class.build(args) }
+    described_class.new(runner: runner, images: images).build(args)
+    runner.commands
   end
 
   it 'builds the dev image by default, as the current user' do
@@ -53,12 +53,13 @@ RSpec.describe DockerBuild do
     it 'builds both architectures with buildx' do
       expect(build('prod', '--multi-platform')).to eq(['docker buildx inspect multiplatform > /dev/null 2>&1', buildx])
     end
-  end
 
-  it 'creates the buildx builder when it does not exist yet' do
-    allow(described_class).to receive(:system).and_return(false, true, true)
-    described_class.ensure_buildx_builder
-    expect(described_class).to have_received(:system).with('docker buildx use multiplatform', exception: true)
+    it 'creates the buildx builder when it does not exist yet' do
+      runner = RecordingRunner.new(results: { 'docker buildx inspect multiplatform > /dev/null 2>&1' => false })
+      Buildx.new(runner).ensure_builder
+      expect(runner.commands.last(2)).to eq(['docker buildx create --name multiplatform --driver docker-container ' \
+                                             '--bootstrap', 'docker buildx use multiplatform'])
+    end
   end
 
   it 'warns about an unknown image and runs nothing', :aggregate_failures do

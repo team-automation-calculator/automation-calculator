@@ -1,115 +1,36 @@
-# Build docker images for different environments
-require './scripts/utils/get_uid'
-require './scripts/utils/git_short_sha'
+# ./go build [dev|ci|base|prod] [--no-cache] [--multi-platform]
+require './scripts/utils/buildx'
+require './scripts/utils/docker_images'
+require './scripts/utils/runner'
 
 class DockerBuild
-  DOCKER_ORG = 'automationcalculationsci'.freeze
-  MULTI_PLATFORMS = 'linux/amd64,linux/arm64'.freeze
+  FLAGS = %w[--no-cache --multi-platform].freeze
 
-  class << self
-    def build(cmds)
-      sub_cmd = cmds.shift || 'dev'
-      opts = build_opts(cmds)
-      case sub_cmd
-      when 'dev'  then build_dev_image(**opts)
-      when 'ci'   then build_ci_image(**opts)
-      when 'base' then build_base_image(**opts)
-      when 'prod' then build_prod_image(**opts)
-      else warn "Unrecognized command: #{sub_cmd}"
-      end
-    end
+  def initialize(runner: Runner.new, images: DockerImages.new(host: Host.new(runner)))
+    @runner = runner
+    @images = images
+  end
 
-    def build_base_image(no_cache: false, multi_platform: false)
-      build_image(
-        "#{DOCKER_ORG}/automation-calculator-base:0.11.0",
-        'Dockerfile.base',
-        'circleci',
-        additional_build_arg: "--build-arg GIT_COMMIT=#{GitShortSha.read}",
-        no_cache: no_cache,
-        multi_platform: multi_platform
-      )
-    end
+  def build(cmds)
+    name = cmds.shift || 'dev'
+    image = @images[name]
+    return warn("Unrecognized command: #{name}") unless image
 
-    def build_ci_image(no_cache: false, multi_platform: false)
-      repo = "#{DOCKER_ORG}/automation-calculator"
-      image = "#{repo}:latest"
-      build_image(
-        image,
-        'Dockerfile.ci',
-        'circleci',
-        additional_build_arg: "--build-arg GIT_COMMIT=#{GitShortSha.read}",
-        no_cache: no_cache,
-        multi_platform: multi_platform
-      )
-    end
+    args = @images.build_args(image)
+    args += ' --no-cache' if cmds.delete('--no-cache')
+    cmds.delete('--multi-platform') ? build_multi_platform(image, args) : build_native(image, args)
+  end
 
-    def build_dev_image(no_cache: false, multi_platform: false)
-      build_image(
-        'automation-calculator_dev',
-        'Dockerfile.development',
-        ENV['USERNAME'] || ENV['USER'],
-        additional_build_arg: "--build-arg uid=#{GetUID.read_uid} " \
-                              "--build-arg GIT_COMMIT=#{GitShortSha.read}",
-        no_cache: no_cache,
-        multi_platform: multi_platform
-      )
-    end
+  private
 
-    def build_prod_image(no_cache: false, multi_platform: false)
-      repo = "#{DOCKER_ORG}/automation-calculator"
-      image = "#{repo}:latest"
-      build_image(
-        image,
-        'Dockerfile.production',
-        'circleci',
-        additional_build_arg: "--build-arg GIT_COMMIT=#{GitShortSha.read}",
-        no_cache: no_cache,
-        multi_platform: multi_platform
-      )
-    end
+  def build_native(image, args)
+    @runner.run("docker build -t #{image.tag} -f #{image.file} #{args} .", check: true)
+  end
 
-    def build_image(tag, file, username, **opts)
-      no_cache_flag = opts[:no_cache] ? '--no-cache' : ''
-      add_arg = opts.fetch(:additional_build_arg, '')
-      build_args = "--build-arg username=#{username} " \
-                   "#{add_arg} #{no_cache_flag}"
-      if opts[:multi_platform]
-        ensure_buildx_builder
-        run_buildx(tag, file, build_args)
-      else
-        run_docker_build(tag, file, build_args)
-      end
-    end
-
-    def ensure_buildx_builder
-      inspect = 'docker buildx inspect multiplatform > /dev/null 2>&1'
-      return if system(inspect)
-
-      system(
-        'docker buildx create --name multiplatform ' \
-        '--driver docker-container --bootstrap',
-        exception: true
-      )
-      system('docker buildx use multiplatform', exception: true)
-    end
-
-    def build_opts(cmds)
-      {
-        no_cache: !cmds.delete('--no-cache').nil?,
-        multi_platform: !cmds.delete('--multi-platform').nil?
-      }
-    end
-
-    def run_buildx(tag, file, build_args)
-      cmd = 'docker buildx build --builder multiplatform ' \
-            "--platform #{MULTI_PLATFORMS} -t #{tag} " \
-            "-f #{file} #{build_args} ."
-      system(cmd, exception: true)
-    end
-
-    def run_docker_build(tag, file, build_args)
-      cmd = "docker build -t #{tag} -f #{file} #{build_args} ."
-      system(cmd, exception: true)
-    end
+  # Both architectures, kept in the buildx builder's cache for a later push.
+  def build_multi_platform(image, args)
+    Buildx.new(@runner).ensure_builder
+    @runner.run("docker buildx build --builder #{Buildx::BUILDER} --platform #{Buildx::PLATFORMS} " \
+                "-t #{image.tag} -f #{image.file} #{args} .", check: true)
   end
 end

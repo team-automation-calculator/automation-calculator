@@ -1,12 +1,11 @@
 require_relative 'support/script_helpers'
 
 RSpec.describe Shell do
-  include_context 'with ./go collaborators stubbed'
+  include_context 'with a recording runner'
 
-  before { env_with('USER' => 'steve') }
-
-  def shell(*args)
-    commands_run(responses: responses) { described_class.shell(args) }
+  def shell(*args, env: { 'USER' => 'steve' })
+    described_class.new(runner: runner, env: env).shell(args)
+    runner.commands
   end
 
   it 'opens bash in the dev container by default' do
@@ -17,6 +16,10 @@ RSpec.describe Shell do
     expect(shell('ci')).to eq(
       ['USER=steve docker compose -f docker-compose.yml -f docker-compose.ci.yml run --entrypoint /bin/bash ci']
     )
+  end
+
+  it 'runs the ci shell as circleci when USER is unset' do
+    expect(shell('ci', env: {}).first).to start_with('USER=circleci ')
   end
 
   it 'opens bash in the production image' do

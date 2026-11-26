@@ -1,8 +1,12 @@
-# Commands to view logs
+# ./go logs: follow the dev container's logs.
+require './scripts/utils/runner'
+
 class Logs
-  class << self
-    def logs
-      system('docker compose logs --follow dev')
-    end
+  def initialize(runner: Runner.new)
+    @runner = runner
+  end
+
+  def logs
+    @runner.run('docker compose logs --follow dev')
   end
 end

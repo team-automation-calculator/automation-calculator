@@ -1,47 +1,35 @@
-# Using a shell in docker containers
+# ./go shell [dev|ci|production]: bash inside a container.
 require './scripts/utils/compose_files'
-require './scripts/utils/get_uid'
+require './scripts/utils/host'
+require './scripts/utils/runner'
+require './scripts/utils/subcommands'
 
 class Shell
-  COMMAND_HASH = {
-    ci: -> { ci_shell },
-    dev: -> { dev_shell },
-    production: -> { production_shell }
-  }.freeze
+  CONTAINERS = { dev: :dev_shell, ci: :ci_shell, production: :production_shell }.freeze
 
-  class << self
-    def shell(cmds)
-      sub_cmd = cmds.shift || 'dev'
+  def initialize(runner: Runner.new, env: ENV, host: Host.new(runner))
+    @runner = runner
+    @env = env
+    @host = host
+  end
 
-      if COMMAND_HASH.key? sub_cmd.to_sym
-        COMMAND_HASH[sub_cmd.to_sym].call
-      else
-        HelpText.help(['shell'])
-        puts
-        warn("Unrecognized command: #{sub_cmd}")
-      end
-    end
+  def shell(cmds)
+    table = CONTAINERS.transform_values { |name| method(name) }
+    Subcommands.dispatch(cmds, table, default: 'dev', help: 'shell')
+  end
 
-    def ci_shell
-      exec(
-        "USER=#{ENV.fetch('USER', 'circleci')} " \
-        "docker compose #{ComposeFiles.flags('ci')}" \
-        ' run --entrypoint /bin/bash ci'
-      )
-    end
+  private
 
-    def dev_shell
-      exec(
-        "UID=#{GetUID.read_uid} docker compose #{ComposeFiles.flags('dev')}" \
-        ' run dev /bin/bash'
-      )
-    end
+  def ci_shell
+    @runner.replace("USER=#{@env.fetch('USER', 'circleci')} docker compose #{ComposeFiles.flags('ci')} " \
+                    'run --entrypoint /bin/bash ci')
+  end
 
-    def production_shell
-      exec(
-        "docker compose #{ComposeFiles.flags('production_http')} " \
-        'run production /bin/bash'
-      )
-    end
+  def dev_shell
+    @runner.replace("UID=#{@host.uid} docker compose #{ComposeFiles.flags('dev')} run dev /bin/bash")
+  end
+
+  def production_shell
+    @runner.replace("docker compose #{ComposeFiles.flags('production_http')} run production /bin/bash")
   end
 end
