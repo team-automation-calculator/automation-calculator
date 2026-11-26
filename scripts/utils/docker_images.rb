@@ -10,7 +10,15 @@ class DockerImages
 
   # tag: what `docker build` names it; push_tags: what `./go push` publishes
   # (none for an image that is never pushed); uid: built for the current user.
-  Image = Struct.new(:tag, :file, :username, :repo, :push_tags, :uid, keyword_init: true)
+  Image = Struct.new(:tag, :file, :username, :repo, :push_tags, :uid, keyword_init: true) do
+    def pushable?
+      !push_tags.empty?
+    end
+
+    def tag_flags
+      push_tags.map { |tag| "-t #{tag}" }.join(' ')
+    end
+  end
 
   def initialize(env: ENV, host: Host.new)
     @env = env
@@ -24,7 +32,7 @@ class DockerImages
   # The named image when ./go push publishes it, else nil.
   def pushable(name)
     image = images[name]
-    image unless image.nil? || image.push_tags.empty?
+    image if image&.pushable?
   end
 
   def names

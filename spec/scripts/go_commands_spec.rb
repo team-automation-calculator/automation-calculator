@@ -32,6 +32,44 @@ RSpec.describe GoCommands do
     end
   end
 
+  describe 'the table' do
+    # command => [class, method, whether it gets the arguments after the name]
+    wiring = {
+      'build' => [DockerBuild, :build, true], 'clean' => [Lifecycle, :clean, false],
+      'compile' => [Verify, :compile, true], 'db' => [DatabaseTerminal, :connect, true],
+      'format' => [Verify, :autoformat, false], 'graphify-update' => [Graphify, :update, true],
+      'init' => [Lifecycle, :init, true], 'lint' => [Verify, :lint, true], 'logs' => [Logs, :logs, false],
+      'push' => [DockerHub, :push, true], 'restart' => [Lifecycle, :restart, false],
+      'rm' => [Lifecycle, :rm, false], 'rmi' => [Lifecycle, :rmi, false], 'shell' => [Shell, :shell, true],
+      'smoke' => [Verify, :smoke_test, true], 'start' => [Lifecycle, :start, true],
+      'stop' => [Lifecycle, :stop, false], 'tag' => [DockerHub, :tag_latest_with_semver, false],
+      'test' => [Verify, :rspec_test, true], 'validate' => [Verify, :validate, true]
+    }
+
+    wiring.each do |name, (klass, method, takes_args)|
+      it "runs #{klass}##{method} for #{name}" do
+        instance = instance_double(klass, method => nil)
+        allow(klass).to receive(:new).and_return(instance)
+        described_class.run([name, 'arg'])
+        expect(instance).to have_received(method).with(takes_args ? ['arg'] : no_args)
+      end
+    end
+
+    it 'runs HelpText for help' do
+      expect { described_class.run(%w[help stop]) }.to output(/ stop - /).to_stdout
+    end
+
+    it 'exits with the status graphify-status returns' do
+      allow(GraphifyStatus).to receive(:new).and_return(instance_double(GraphifyStatus, status: 3))
+      expect { described_class.run(['graphify-status']) }.to raise_error(an_object_having_attributes(status: 3))
+    end
+
+    it 'exits 1 when graphify-seed fails' do
+      allow(Graphify).to receive(:new).and_return(instance_double(Graphify, seed: false))
+      expect { described_class.run(['graphify-seed']) }.to raise_error(an_object_having_attributes(status: 1))
+    end
+  end
+
   describe '.run' do
     let(:calls) { [] }
     let(:table) { { init: ->(args) { calls << [:init, args] }, fail: ->(_) { raise CommandFailure, 'nope' } } }

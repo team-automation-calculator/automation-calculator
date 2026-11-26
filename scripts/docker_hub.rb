@@ -55,7 +55,7 @@ class DockerHub
   # Slow: the non-native architecture is built under emulation.
   def push_multi_platform(image)
     Buildx.new(@runner).ensure_builder
-    @runner.run("docker buildx build --platform #{Buildx::PLATFORMS} #{tag_flags(image)} " \
+    @runner.run("docker buildx build --platform #{Buildx::PLATFORMS} #{image.tag_flags} " \
                 "-f #{image.file} #{@images.build_args(image)} --push .", check: true)
   end
 
@@ -74,11 +74,7 @@ class DockerHub
   # multi-arch manifest and give it the image's tags. Nothing is rebuilt.
   def push_manifest(image)
     sources = MANIFEST_ARCHS.map { |arch| "#{image.repo}@#{digest(arch)}" }
-    @runner.run("docker buildx imagetools create #{tag_flags(image)} #{sources.join(' ')}", check: true)
-  end
-
-  def tag_flags(image)
-    image.push_tags.map { |tag| "-t #{tag}" }.join(' ')
+    @runner.run("docker buildx imagetools create #{image.tag_flags} #{sources.join(' ')}", check: true)
   end
 
   # Raises KeyError on a CPU that is neither half of the manifest.

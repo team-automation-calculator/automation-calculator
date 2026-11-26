@@ -18,7 +18,17 @@
 require 'pry'
 require 'simplecov'
 
-SimpleCov.start 'rails'
+SimpleCov.start 'rails' do
+  # scripts/ (the ./go commands) is reported as its own group, and a file no
+  # spec loads shows as 0% instead of missing.
+  cover '{app,lib,scripts}/**/*.rb'
+  group 'Scripts', 'scripts/'
+
+  # The solid rule's coverage check on scripts/. Only `./go test` sets
+  # COVERAGE_GATE: it runs the whole suite, and a single spec file never
+  # reaches the minimum.
+  coverage(:line) { minimum 100, per: group('Scripts') } if ENV['COVERAGE_GATE']
+end
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

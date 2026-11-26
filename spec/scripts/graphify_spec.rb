@@ -32,6 +32,25 @@ RSpec.describe Graphify do
       expect { graphify.update([]) }.to output(%r{skipping: no graphify-out/graph.json in this worktree}).to_stdout
     end
 
+    context 'when in the main checkout' do
+      before do
+        git_answers(%w[rev-parse --path-format=absolute --show-toplevel] => "/repo\n",
+                    %w[rev-parse --path-format=absolute --git-common-dir] => "/repo/.git\n")
+        allow(File).to receive(:realpath) { |path| path }
+      end
+
+      it 'skips with no graph, saying how to build one' do
+        graph_exists(false)
+        expect { graphify.update([]) }.to output(%r{no graphify-out/graph.json yet \(build it once}).to_stdout
+      end
+
+      it 'skips on a branch other than main' do
+        graph_exists(true)
+        git_answers(%w[rev-parse --abbrev-ref HEAD] => "feature\n")
+        expect { graphify.update([]) }.to output(/skipping: the main checkout is on feature, not main/).to_stdout
+      end
+    end
+
     it 'fails when graphify is not installed' do
       graph_exists(true)
       expect { graphify.update([]) }.to raise_error(CommandFailure, /not installed/)
@@ -64,6 +83,13 @@ RSpec.describe Graphify do
         runner.captures[update] = ['', 'boom', RecordingRunner::FAILED]
         expect { graphify.update([]) }.to raise_error(CommandFailure, "graphify: update failed\nboom")
       end
+    end
+  end
+
+  describe '#git' do
+    it 'is nil when git is not installed' do
+      allow(runner).to receive(:capture).and_raise(Errno::ENOENT)
+      expect(graphify.git('status')).to be_nil
     end
   end
 

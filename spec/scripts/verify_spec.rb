@@ -35,18 +35,20 @@ RSpec.describe Verify do
     expect(runner.commands).to eq(["#{dev} run --no-deps --rm dev rubocop --autocorrect"])
   end
 
-  it 'runs the compile check, then RuboCop, on lint' do
+  it 'runs the compile check, RuboCop, then Reek on the scripts, on lint' do
     expect(run(:lint)).to eq(["#{dev} run --no-deps --rm dev ruby scripts/utils/syntax_check.rb go Gemfile",
-                              "#{dev} run --no-deps --rm dev rubocop"])
+                              "#{dev} run --no-deps --rm dev rubocop",
+                              "#{dev} run --no-deps --rm dev reek scripts go"])
   end
 
   it 'runs lint, then the suite, on validate' do
-    expect(run(:validate, 'ci').last).to eq("#{ci} run --rm ci rspec")
+    expect(run(:validate, 'ci').last).to eq("#{ci} run --rm -e COVERAGE_GATE ci rspec")
   end
 
   describe '#rspec_test' do
-    it 'runs the suite in dev by default' do
-      expect(run(:rspec_test)).to eq(["#{dev} run --rm dev rspec"])
+    it 'runs the whole suite in dev by default, with the coverage gate on', :aggregate_failures do
+      expect(run(:rspec_test)).to eq(["#{dev} run --rm -e COVERAGE_GATE dev rspec"])
+      expect(runner.calls.last.env).to eq('COVERAGE_GATE' => '1')
     end
 
     it 'warns about an unknown container and runs nothing', :aggregate_failures do

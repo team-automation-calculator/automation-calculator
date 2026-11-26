@@ -11,7 +11,14 @@ class Verify
   # container: where the smoke specs run; url: the SMOKE_TARGET_URL they
   # hit, none to leave it to the caller; keep_set: an explicit
   # SMOKE_TARGET_URL in the environment wins.
-  SmokeTarget = Struct.new(:container, :url, :keep_set)
+  SmokeTarget = Struct.new(:container, :url, :keep_set) do
+    # What the smoke run adds to env: the target's URL, unless env's own wins.
+    def env_for(env)
+      return {} if url.nil? || (keep_set && env.key?('SMOKE_TARGET_URL'))
+
+      { 'SMOKE_TARGET_URL' => url }
+    end
+  end
   SMOKE_TARGETS = {
     # Inside the docker-compose network, the dev service resolves by service
     # name on its internal port (not the host-mapped 3001).
@@ -34,10 +41,12 @@ class Verify
     run_in(container, "ruby scripts/utils/syntax_check.rb #{files.shelljoin}")
   end
 
+  # The compile check, RuboCop, then Reek's code smells on the ./go scripts.
   def lint(cmds)
     container = shift_container(cmds)
     compile([container])
     run_in(container, 'rubocop')
+    run_in(container, 'reek scripts go')
   end
 
   # Apply RuboCop's safe autocorrections to the working tree.
@@ -49,7 +58,8 @@ class Verify
     container = cmds.shift || 'dev'
     return warn("Unrecognized command: #{container}") unless CONTAINERS.include?(container)
 
-    compose_run(container, "#{container} rspec")
+    # The whole suite, so spec/spec_helper.rb holds scripts/ to its coverage minimum.
+    compose_run(container, "-e COVERAGE_GATE #{container} rspec", env: { 'COVERAGE_GATE' => '1' })
   end
 
   # Everything CI checks before it builds the production image.
@@ -64,8 +74,9 @@ class Verify
     target = SMOKE_TARGETS[name]
     return warn("Unrecognized command: #{name}") unless target
 
-    compose_run(target.container, "-e SMOKE_TARGET_URL #{target.container} rspec spec/smoke/ --tag smoke",
-                env: smoke_env(target))
+    container = target.container
+    compose_run(container, "-e SMOKE_TARGET_URL #{container} rspec spec/smoke/ --tag smoke",
+                env: target.env_for(@env))
   end
 
   private
@@ -84,12 +95,6 @@ class Verify
   # name the service and its command.
   def compose_run(container, run_args, env: {})
     @runner.run("docker compose #{ComposeFiles.flags(container)} run --rm #{run_args}", env: env, check: true)
-  end
-
-  def smoke_env(target)
-    return {} if target.url.nil? || (target.keep_set && @env.key?('SMOKE_TARGET_URL'))
-
-    { 'SMOKE_TARGET_URL' => target.url }
   end
 
   def tracked_ruby_files

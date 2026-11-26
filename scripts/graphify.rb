@@ -93,16 +93,21 @@ class Graphify
       raise(CommandFailure, 'graphify: graphify is not installed (pip install graphifyy)')
   end
 
-  # graphify refuses a rebuild with fewer nodes than before. After a merge
-  # that deleted or moved code the smaller graph is the correct one.
   def refresh(command)
-    out, err, status = run_update(command)
-    if !status.success? && SHRINK_REFUSAL.match?(err)
-      note('the rebuild has fewer nodes than before; rebuilding with --force')
-      out, err, status = run_update(command, '--force')
-    end
+    out, err, status = update_allowing_shrink(command)
     print out
     raise CommandFailure, "graphify: update failed\n#{err}" unless status.success?
+  end
+
+  # graphify refuses a rebuild with fewer nodes than before. After a merge
+  # that deleted or moved code the smaller graph is the correct one.
+  def update_allowing_shrink(command)
+    result = run_update(command)
+    _out, err, status = result
+    return result if status.success? || !SHRINK_REFUSAL.match?(err)
+
+    note('the rebuild has fewer nodes than before; rebuilding with --force')
+    run_update(command, '--force')
   end
 
   def run_update(command, *flags)

@@ -84,6 +84,39 @@ RSpec.describe GraphifyStatus do
       it 'says so when the recorded commit is not in this checkout' do
         expect { status.status([]) }.to output(/built from a commit this checkout does not have/).to_stdout
       end
+
+      it 'lists five pending documents, then an ellipsis' do
+        manifest = %w[a b c d e f].to_h { |name| ["#{name}.md", {}] }
+        allow(File).to receive(:read).with(described_class::MANIFEST).and_return(manifest.to_json)
+        expect { status.status(['--brief']) }
+          .to output(/6 document\(s\).*: a.md, b.md, c.md, d.md, e.md \.\.\./).to_stdout
+      end
+
+      it 'leaves out the documents when the manifest is unreadable' do
+        git_answers(verify_synced => "0123456789abcdef\n", %w[rev-parse --short HEAD] => "0123456\n")
+        allow(File).to receive(:read).with(described_class::MANIFEST).and_raise(Errno::ENOENT)
+        expect { status.status([]) }.to output(/current: the graph matches HEAD/).to_stdout
+      end
+    end
+
+    context 'with a graph but no recorded refresh' do
+      before do
+        graph_exists(true)
+        allow(File).to receive(:file?).with(Graphify::SYNCED_FILE).and_return(false)
+        allow(File).to receive(:read).and_call_original
+        allow(File).to receive(:read).with(described_class::MANIFEST).and_return('{}')
+        git_answers(verify_synced => "0123456789abcdef\n", %w[rev-parse --short HEAD] => "0123456\n")
+      end
+
+      it 'reads the commit graph.json was built at' do
+        allow(File).to receive(:read).with(Graphify::GRAPH).and_return('{"built_at_commit":"0123456789abcdef"}')
+        expect { status.status([]) }.to output(/current: the graph matches HEAD 0123456/).to_stdout
+      end
+
+      it 'treats an unreadable graph.json as built from an unknown commit' do
+        allow(File).to receive(:read).with(Graphify::GRAPH).and_return('not json')
+        expect { status.status([]) }.to output(/built from a commit this checkout does not have/).to_stdout
+      end
     end
   end
 end
