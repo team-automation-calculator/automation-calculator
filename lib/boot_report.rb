@@ -11,10 +11,13 @@ module BootReport
 
   # Only a server reports and checks its environment: rake tasks, the
   # console and the asset precompile in the image build boot the app
-  # too, without most of AppConfig set. In production a server missing a
-  # required setting logs what is unset and then refuses to start, so a
-  # rollout with a bad environment fails its readiness probe instead of
-  # serving broken sign-ins.
+  # too, without most of AppConfig set. In production (staging and prod
+  # both run RAILS_ENV=production; development and test are never
+  # checked) a server logs every unset setting at ERROR or WARN (see
+  # AppConfig#unset), then refuses to start only when an
+  # AppConfig::REQUIRED one is missing: the pod crashloops instead of
+  # serving broken sign-ins. A missing APP_HOSTNAME
+  # (AppConfig::IMPORTANT) is logged at ERROR and the server keeps going.
   def boot(server:, config: AppConfig.current,
            production: Rails.env.production?, logger: Rails.logger)
     return unless server
@@ -26,8 +29,9 @@ module BootReport
   def log(config: AppConfig.current, production: Rails.env.production?,
           logger: Rails.logger)
     logger.info(summary(config: config))
-    warnings(config: config, production: production)
-      .each { |warning| logger.warn("Boot: #{warning}") }
+    problems(config: config, production: production).each do |level, lines|
+      lines.each { |line| logger.public_send(level, "Boot: #{line}") }
+    end
   end
 
   def summary(config: AppConfig.current, hosts: AllowedHosts.list)
@@ -39,12 +43,15 @@ module BootReport
       "oauth=#{oauth_status(config)}"
   end
 
-  # Development and test run without these on purpose, so only
-  # production is checked.
-  def warnings(config:, production:)
-    return [] unless production
+  # { error: [lines], warn: [lines] }, one line per unset setting, naming
+  # it and what breaks; never a value. Development and test run without
+  # these on purpose, so only production is checked.
+  def problems(config:, production:)
+    return { error: [], warn: [] } unless production
 
-    config.unset.map { |name, effect| "#{name} is unset: #{effect}" }
+    config.unset.transform_values do |unset|
+      unset.map { |name, effect| "#{name} is unset: #{effect}" }
+    end
   end
 
   def oauth_status(config)

@@ -28,15 +28,21 @@ class AppConfig
   # A production server refuses to start without these: each one unset
   # is a user-facing failure that would otherwise surface only later.
   REQUIRED = {
-    'APP_HOSTNAME' => 'host authorization is off and every OAuth sign-in ' \
-                      'will be rejected as invalid_host',
     'GITHUB_OAUTH_APP_ID' => 'sign-in with github will fail',
     'GITHUB_OAUTH_APP_SECRET' => 'sign-in with github will fail',
     'GOOGLE_OAUTH_APP_ID' => 'sign-in with google will fail',
     'GOOGLE_OAUTH_APP_SECRET' => 'sign-in with google will fail'
   }.freeze
 
-  # A production server starts without these and logs a warning.
+  # A production server starts without these but is broken for users, so
+  # it logs an ERROR line for each one unset and keeps serving.
+  IMPORTANT = {
+    'APP_HOSTNAME' => 'host authorization is off and every OAuth sign-in ' \
+                      'will be rejected as invalid_host; set it to the ' \
+                      'public hostname (core-iac sets it from the ingress host)'
+  }.freeze
+
+  # A production server starts without these and logs a WARN line.
   RECOMMENDED = {
     'SHORT_COMMIT_HASH' => '/health cannot report the build',
     'GOOGLE_ANALYTICS_TRACKING_ID' => 'no page views reach Google Analytics'
@@ -71,9 +77,14 @@ class AppConfig
     oauth_credentials(provider).all?
   end
 
-  # Every unset REQUIRED or RECOMMENDED name, with what breaks without it.
+  # Unset names with what breaks without each, by the level a production
+  # server logs them at: REQUIRED and IMPORTANT at :error, RECOMMENDED at
+  # :warn. Names and effects only, never a value.
   def unset
-    REQUIRED.merge(RECOMMENDED).reject { |name, _| read(name) }
+    {
+      error: REQUIRED.merge(IMPORTANT).reject { |name, _| read(name) },
+      warn: RECOMMENDED.reject { |name, _| read(name) }
+    }
   end
 
   def validate!
