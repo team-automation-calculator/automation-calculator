@@ -28,3 +28,7 @@ version_dates/*.json
 # Binary site assets
 public/*.png
 public/favicon.ico
+
+# Logos and UI images: each image costs a vision subagent in the LLM pass
+# and adds nothing to the graph
+app/assets/images/
