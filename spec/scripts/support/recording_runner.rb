@@ -1,7 +1,7 @@
 # Stands in for Runner (scripts/utils/runner.rb) in specs: records what would
 # run instead of running it.
 class RecordingRunner
-  Call = Struct.new(:kind, :command, :env)
+  Call = Struct.new(:kind, :command, :env, :check)
   Status = Struct.new(:exitstatus) do
     def success?
       exitstatus.zero?
@@ -22,7 +22,7 @@ class RecordingRunner
   end
 
   def run(command, env: {}, check: false)
-    record(:run, command, env)
+    record(:run, command, env: env, check: check)
     result = @results.fetch(squeeze(command), true)
     raise "#{squeeze(command)} failed" if check && !result
 
@@ -43,7 +43,7 @@ class RecordingRunner
 
   # An unanswered argument list fails.
   def capture(*argv, env: {})
-    record(:capture, argv, env)
+    record(:capture, argv, env: env)
     @captures.fetch(argv) { ['', '', FAILED] }
   end
 
@@ -54,8 +54,8 @@ class RecordingRunner
 
   private
 
-  def record(kind, command, env = {})
-    calls << Call.new(kind, squeeze(command), env)
+  def record(kind, command, env: {}, check: false)
+    calls << Call.new(kind, squeeze(command), env, check)
   end
 
   def squeeze(command)

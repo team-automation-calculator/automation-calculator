@@ -33,11 +33,13 @@ RSpec.describe DockerHub do
     expect(push('base')).to eq(["docker push #{repo}-base:0.11.0"])
   end
 
-  it 'builds and pushes both architectures under --multi-platform' do
+  it 'builds and pushes both architectures under --multi-platform, failing the job if it fails',
+     :aggregate_failures do
     expect(push('prod', '--multi-platform').last).to eq(
       "docker buildx build --platform linux/amd64,linux/arm64 #{tags} " \
       "-f Dockerfile.production #{build_args} --push ."
     )
+    expect(runner.calls.last.check).to be(true)
   end
 
   describe '--digest-only' do
@@ -48,8 +50,9 @@ RSpec.describe DockerHub do
         "name=#{repo} --metadata-file tmp/digests/arm64.json ."
     end
 
-    it 'pushes this host architecture by digest' do
+    it 'pushes this host architecture by digest, failing the job if it fails', :aggregate_failures do
       expect(push('--digest-only').last).to eq(by_digest)
+      expect(runner.calls.last.check).to be(true)
     end
 
     context 'when the CPU is outside the manifest' do
@@ -70,10 +73,11 @@ RSpec.describe DockerHub do
       end
     end
 
-    it 'joins the recorded digests into one tagged manifest' do
+    it 'joins the recorded digests into one tagged manifest, failing the job if it fails', :aggregate_failures do
       expect(push('--manifest')).to eq(
         ["docker buildx imagetools create #{tags} #{repo}@sha256:amd64 #{repo}@sha256:arm64"]
       )
+      expect(runner.calls.last.check).to be(true)
     end
 
     it 'names the architecture whose digest is missing' do
