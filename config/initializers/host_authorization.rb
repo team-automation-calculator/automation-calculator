@@ -9,7 +9,8 @@ require 'allowed_hosts'
 #
 # In production an unset APP_HOSTNAME leaves the list empty, which this
 # middleware treats as "no restriction": every request passes, as it
-# did before this initializer. (OmniAuth treats the same empty list as
+# did before this initializer. A production server no longer starts that
+# way (AppConfig::REQUIRED, BootReport.boot); rake and the console still do. (OmniAuth treats the same empty list as
 # "reject every OAuth request", see config/initializers/omniauth.rb.)
 #
 # The Kubernetes liveness and readiness probes and the ALB target-group
