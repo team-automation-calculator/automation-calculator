@@ -1,5 +1,9 @@
 #! /usr/bin/env ruby
 
+# The single entry point for this repo's commands (`./go help` lists them).
+# It runs on the host's own Ruby, which can be older than the app's:
+# scripts/.rubocop.yml keeps scripts/ to that older syntax.
+
 # macOS exposes USERNAME; Linux exposes USER.
 # Normalize to USER for docker-compose.
 ENV['USER'] ||= ENV['USERNAME']
@@ -7,37 +11,4 @@ ENV['UID'] ||= Process.uid.to_s
 
 Dir['./scripts/*.rb'].each { |file| require file }
 
-cmds = ARGF.argv
-main_arg = cmds.shift || 'init'
-
-COMMAND_HASH = {
-  build: -> { DockerBuild.build(cmds) },
-  clean: -> { Lifecycle.clean },
-  compile: -> { Verify.compile(cmds) },
-  db: -> { DatabaseTerminal.connect(cmds) },
-  format: -> { Verify.autoformat },
-  'graphify-seed': -> { Graphify.seed(cmds) },
-  'graphify-status': -> { GraphifyStatus.status(cmds) },
-  'graphify-update': -> { Graphify.update(cmds) },
-  help: -> { HelpText.help(cmds) },
-  init: -> { Lifecycle.init(cmds) },
-  lint: -> { Verify.lint(cmds) },
-  logs: -> { Logs.logs },
-  push: -> { DockerHub.push_to_docker_hub(cmds) },
-  restart: -> { Lifecycle.restart },
-  rm: -> { Lifecycle.rm },
-  rmi: -> { Lifecycle.rmi },
-  shell: -> { Shell.shell(cmds) },
-  smoke: -> { Verify.smoke_test(cmds) },
-  start: -> { Lifecycle.start(cmds) },
-  stop: -> { Lifecycle.stop },
-  tag: -> { DockerHub.tag_latest_with_semver },
-  test: -> { Verify.rspec_test(cmds) },
-  validate: -> { Verify.validate(cmds) }
-}.freeze
-
-if COMMAND_HASH.key? main_arg.to_sym
-  COMMAND_HASH[main_arg.to_sym].call
-else
-  warn "Unrecognized command: #{main_arg}"
-end
+GoCommands.run(ARGV)

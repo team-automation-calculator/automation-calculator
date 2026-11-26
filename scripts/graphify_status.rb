@@ -9,81 +9,101 @@ require './scripts/graphify'
 
 class GraphifyStatus
   MANIFEST = File.join(Graphify::OUT, 'manifest.json').freeze
-  DOCUMENT = /\.(md|markdown|txt|rst|apib|pdf|png|jpe?g|gif|webp|svg)\z/i
+  DOCUMENT = /\.(md|markdown|txt|rst|apib|pdf|png|jpe?g|gif|webp|svg)\z/i.freeze
   NO_GRAPH_EXIT = 1
   STALE_EXIT = 3
 
-  class << self
-    def status(cmds)
-      brief = cmds.include?('--brief')
-      return if brief && Graphify.ephemeral_reason
-      return report_no_graph(brief) unless File.file?(Graphify::GRAPH)
+  def self.document?(path)
+    DOCUMENT.match?(path)
+  end
 
-      report(brief, [behind_line, pending_line].compact)
+  # Documents the manifest lists without a semantic hash: graphify clears
+  # it when the content changed since the last LLM pass.
+  def self.pending_documents(manifest)
+    manifest.select do |path, entry|
+      document?(path) && entry.is_a?(Hash) && entry['semantic_hash'].to_s.empty?
+    end.keys.sort
+  end
+
+  def initialize(graphify: Graphify.new)
+    @graphify = graphify
+  end
+
+  # The exit status: see the top of this file.
+  def status(cmds)
+    cmds.include?('--brief') ? brief_status : full_status
+  end
+
+  private
+
+  def brief_status
+    return 0 if @graphify.ephemeral_reason || !File.file?(Graphify::GRAPH)
+
+    lines = stale_lines
+    @graphify.note(lines.join('; ')) unless lines.empty?
+    0
+  end
+
+  def full_status
+    unless File.file?(Graphify::GRAPH)
+      @graphify.note(@graphify.no_graph_reason)
+      return NO_GRAPH_EXIT
     end
+    lines = stale_lines
+    return current_status if lines.empty?
 
-    def document?(path)
-      DOCUMENT.match?(path)
-    end
+    @graphify.note(lines.join('; '))
+    STALE_EXIT
+  end
 
-    # Documents the manifest lists without a semantic hash: graphify clears
-    # it when the content changed since the last LLM pass.
-    def pending_documents(manifest)
-      manifest.select do |path, entry|
-        document?(path) && entry.is_a?(Hash) && entry['semantic_hash'].to_s.empty?
-      end.keys.sort
-    end
+  def current_status
+    @graphify.note("current: the graph matches HEAD #{git('rev-parse', '--short', 'HEAD')}")
+    0
+  end
 
-    private
+  def stale_lines
+    [behind_line, pending_line].compact
+  end
 
-    def git(*args)
-      Graphify.git(*args)
-    end
+  def git(*args)
+    @graphify.git(*args)
+  end
 
-    def report_no_graph(brief)
-      return if brief
+  def synced_commit
+    recorded = recorded_commit
+    git('rev-parse', '--verify', '--quiet', "#{recorded}^{commit}") unless recorded.empty?
+  end
 
-      Graphify.note(Graphify.no_graph_reason)
-      exit(NO_GRAPH_EXIT)
-    end
+  # The commit the last refresh recorded, else the one graph.json was built at.
+  def recorded_commit
+    file = Graphify::SYNCED_FILE
+    recorded = File.file?(file) ? File.read(file).strip : ''
+    return recorded unless recorded.empty?
 
-    def report(brief, lines)
-      if lines.empty?
-        Graphify.note("current: the graph matches HEAD #{git('rev-parse', '--short', 'HEAD')}") unless brief
-      else
-        Graphify.note(lines.join('; '))
-        exit(STALE_EXIT) unless brief
-      end
-    end
+    JSON.parse(File.read(Graphify::GRAPH))['built_at_commit'].to_s
+  rescue JSON::ParserError
+    ''
+  end
 
-    def synced_commit
-      file = Graphify::SYNCED_FILE
-      recorded = File.file?(file) ? File.read(file).strip : ''
-      recorded = JSON.parse(File.read(Graphify::GRAPH))['built_at_commit'].to_s if recorded.empty?
-      git('rev-parse', '--verify', '--quiet', "#{recorded}^{commit}") unless recorded.empty?
-    rescue JSON::ParserError
-      nil
-    end
+  def behind_line
+    built = synced_commit
+    return 'built from a commit this checkout does not have: run ./go graphify-update' unless built
+    return if built == git('rev-parse', 'HEAD')
 
-    def behind_line
-      built = synced_commit
-      return 'built from a commit this checkout does not have: run ./go graphify-update' unless built
-      return if built == git('rev-parse', 'HEAD')
+    changed = git('diff', '--name-only', built, 'HEAD').to_s.split("\n")
+    "#{git('rev-list', '--count', "#{built}..HEAD")} commit(s) behind HEAD " \
+      "(#{changed.size} file(s) changed, #{changed.count { |path| self.class.document?(path) }} " \
+      'of them documents): run ./go graphify-update before relying on the graph'
+  end
 
-      changed = git('diff', '--name-only', built, 'HEAD').to_s.split("\n")
-      "#{git('rev-list', '--count', "#{built}..HEAD")} commit(s) behind HEAD " \
-        "(#{changed.size} file(s) changed, #{changed.count { |path| document?(path) }} " \
-        'of them documents): run ./go graphify-update before relying on the graph'
-    end
+  def pending_line
+    pending = self.class.pending_documents(JSON.parse(File.read(MANIFEST)))
+    return if pending.empty?
 
-    def pending_line
-      pending = pending_documents(JSON.parse(File.read(MANIFEST)))
-      return if pending.empty?
-
-      "#{pending.size} document(s) wait for the LLM pass (/graphify --update): " \
-        "#{pending.first(5).join(', ')}#{' ...' if pending.size > 5}"
-    rescue JSON::ParserError, SystemCallError
-      nil
-    end
+    count = pending.size
+    "#{count} document(s) wait for the LLM pass (/graphify --update): " \
+      "#{pending.first(5).join(', ')}#{' ...' if count > 5}"
+  rescue JSON::ParserError, SystemCallError
+    nil
   end
 end

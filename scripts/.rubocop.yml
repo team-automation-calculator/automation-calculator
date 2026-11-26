@@ -1,0 +1,44 @@
+# scripts/ (the ./go commands) follows the solid rule of repo-standards
+# (AGENTS.md, "Conventions"). On top of the repo's config:
+# - tighter Metrics limits, so a class or method that takes on a second job
+#   shows up in `./go lint`;
+# - Scripts/ShellBoundary: only Runner reaches the shell, so every command
+#   can be specced with a recorder in its place;
+# - parsed as Ruby 2.6, the oldest Ruby that runs ./go (the host's own Ruby,
+#   e.g. macOS /usr/bin/ruby, not the app's): newer syntax is a lint error
+#   here instead of a crash on the host.
+inherit_from: ../.rubocop.yml
+
+require:
+  - ./rubocop/shell_boundary.rb
+
+AllCops:
+  TargetRubyVersion: 2.6
+
+# No Rails or ActiveSupport is loaded by ./go.
+Rails:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 12
+
+Metrics/ClassLength:
+  Max: 80
+
+Metrics/CyclomaticComplexity:
+  Max: 5
+
+Metrics/MethodLength:
+  Max: 8
+
+Metrics/ParameterLists:
+  Max: 4
+  CountKeywordArgs: true
+
+Metrics/PerceivedComplexity:
+  Max: 5
+
+Scripts/ShellBoundary:
+  Enabled: true
+  Exclude:
+    - utils/runner.rb

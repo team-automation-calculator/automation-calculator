@@ -1,0 +1,48 @@
+# Reek, run by `./go lint` on scripts/ and ./go: code smells as a check on
+# the solid rule of repo-standards (AGENTS.md, "Conventions"). RuboCop's
+# Metrics cops (scripts/.rubocop.yml) cover size and complexity; Reek adds
+# the design smells: feature envy, control parameters, utility functions,
+# repeated conditionals, data clumps.
+---
+detectors:
+  # Style/Documentation is off for the whole repo; each file in scripts/
+  # opens with a comment on what its command does instead.
+  IrresponsibleModule:
+    enabled: false
+  # `x.nil?` and `&.` are ordinary Ruby here, not a missing null object.
+  NilCheck:
+    enabled: false
+  # Metrics/MethodLength (8 lines in scripts/) already bounds a method.
+  TooManyStatements:
+    max_statements: 7
+  # Matches Metrics/ParameterLists (4, keyword arguments included).
+  LongParameterList:
+    max_params: 4
+  # Graphify's constants are the paths of graphify-out/, named once.
+  TooManyConstants:
+    max_constants: 8
+  # A private helper that needs no state is fine; a public one should live
+  # with the data it works on.
+  UtilityFunction:
+    public_methods_only: true
+  UncommunicativeVariableName:
+    accept:
+      - e
+      - _
+  FeatureEnvy:
+    exclude:
+      # Builds a list from the image's fields: the list is a local.
+      - DockerImages#build_args
+      - DockerBuild#build_native
+      - GraphifyStatus#pending_line
+
+directories:
+  # Runner is the shell boundary: it wraps Kernel and Open3, holds no
+  # state, and its check: keyword mirrors system's exception:.
+  "scripts/utils":
+    BooleanParameter:
+      exclude:
+        - Runner#run
+    UtilityFunction:
+      exclude:
+        - Runner#capture

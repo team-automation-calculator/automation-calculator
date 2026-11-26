@@ -3,18 +3,16 @@ class HelpText
   HELP_HASH = {
     build: {
       dev:
-        '[Default] Build docker containers for your development environment.',
+        '[Default] Build the development image through docker compose: the ' \
+        'image ./go test, start and shell run. Run after a Gemfile change.',
       ci: 'Build docker containers to simulate the ci environment.',
       base: 'Build the base docker image used by ci and development.',
       prod: 'Build the production docker image.',
       '--multi-platform':
         'Build for linux/amd64 and linux/arm64 using docker buildx ' \
         '(applies to any subcommand). ' \
-        'Images are cached in the buildx builder for later pushing.',
-      '--push':
-        'Push the built image to Docker Hub immediately. ' \
-        'Required with --multi-platform since multi-platform ' \
-        'images cannot be loaded locally.',
+        'Images are cached in the buildx builder for later pushing ' \
+        '(./go push --multi-platform).',
       '--no-cache': 'Disable Docker layer caching (applies to any subcommand).'
     }.freeze,
     db: {
@@ -48,9 +46,9 @@ class HelpText
     init: 'Setup your development environment with docker.',
     lint: {
       dev:
-        '[Default] Run the compile check, then RuboCop, ' \
-        'in the development container.',
-      ci: 'Run the compile check, then RuboCop, in the ci container.'
+        '[Default] Run the compile check, RuboCop, then Reek (on scripts/ ' \
+        'and ./go), in the development container.',
+      ci: 'Run the compile check, RuboCop, then Reek, in the ci container.'
     }.freeze,
     logs: 'Tail logs from the dev container.',
     push: {
@@ -75,7 +73,8 @@ class HelpText
     }.freeze,
     restart: 'Stop and restart docker containers.',
     rm: 'Remove running or stopped docker containers for a clean restart.',
-    rmi: 'Remove the development docker image.',
+    rmi: 'Stop the containers and remove the development image ' \
+         '(the images this checkout built; postgres and the database volume stay).',
     shell: {
       ci: 'Open a terminal inside of the CI container.',
       dev: '[Default] Open a terminal inside of the development container.',
@@ -111,8 +110,10 @@ class HelpText
         'production (https://automation-calculations.io).'
     }.freeze,
     test: {
-      dev: '[Default] Run the RSpec suite in the development container.',
-      ci: 'Run the RSpec suite in the ci container.'
+      dev:
+        '[Default] Run the RSpec suite in the development container. ' \
+        'Fails unless every line of scripts/ is covered.',
+      ci: 'Run the RSpec suite in the ci container, with the same coverage check.'
     }.freeze,
     validate: {
       dev:
@@ -123,16 +124,13 @@ class HelpText
   }.freeze
 
   class << self
+    # Every command with no argument, else the one named.
     def help(cmds)
-      sub_cmd = cmds.shift
+      name = cmds.shift
+      return HELP_HASH.each_pair { |key, value| print_help_key_value(key, value) } if name.nil?
 
-      if sub_cmd.nil?
-        HELP_HASH.each_pair { |key, value| print_help_key_value(key, value) }
-      elsif HELP_HASH.key?(sub_cmd.to_sym)
-        print_help_key_value(sub_cmd.to_sym, HELP_HASH[sub_cmd.to_sym])
-      else
-        warn("Unrecognized command: #{sub_cmd}")
-      end
+      entry = HELP_HASH[name.to_sym]
+      entry ? print_help_key_value(name, entry) : warn("Unrecognized command: #{name}")
     end
 
     def print_help_key_value(key, value)

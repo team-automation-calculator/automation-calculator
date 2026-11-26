@@ -59,6 +59,8 @@ group :development, :test do
   gem 'rubocop-capybara', '~> 3.1', require: false
   gem 'rubocop-factory_bot', '~> 2.28', require: false
   gem 'rubocop-rails', '~> 2.38', require: false
+  # Code smell detector, run on scripts/ and ./go by `./go lint`
+  gem 'reek', '~> 6.6', require: false
 end
 
 group :development do

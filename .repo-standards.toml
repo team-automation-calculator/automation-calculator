@@ -3,8 +3,9 @@
 # listed under [overrides] is expected to be met; a rule listed with a reason is
 # skipped by the audit and left alone by the conform flow.
 #
-# Rule ids: python-version, poetry, compile-check, black, lint, pytest, logging, ci,
-#           go-script, claude-project, routines, git-sync, graphify, agents-md, worktrees
+# Rule ids: python-version, poetry, compile-check, black, lint, pytest, logging, solid,
+#           ci, go-script, claude-project, routines, git-sync, graphify, agents-md,
+#           worktrees
 
 [standards]
 source = "https://github.com/stevenuray/repo-standards"   # upstream definition of the rules

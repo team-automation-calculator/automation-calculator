@@ -9,9 +9,9 @@ All commands run via the `./go` script (a Ruby dispatcher into `scripts/`):
 ```bash
 ./go init              # First-time setup: build images and run db setup
 ./go start             # Start dev server at http://localhost:3001/
-./go test              # Run full RSpec suite in Docker
+./go test              # Run full RSpec suite in Docker; fails unless scripts/ is 100% covered
 ./go compile           # Check that every tracked Ruby file parses (ruby -c); takes file paths too
-./go lint              # Run the compile check, then RuboCop, in Docker
+./go lint              # Run the compile check, RuboCop, then Reek (scripts/ and ./go), in Docker
 ./go format            # Apply RuboCop safe autocorrections
 ./go validate          # lint, then test: what CI checks; changes nothing
 ./go shell             # Open a shell in the dev container
@@ -38,10 +38,10 @@ Or from the host:
 docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm dev rspec spec/path/to/file_spec.rb
 ```
 
-**Before committing:** Run `./go lint` and fix every syntax error and RuboCop offense (`./go format` applies the safe autocorrections). CI runs lint and will fail on any offense, including in scripts and config files.
+**Before committing:** Run `./go lint` and fix every syntax error, RuboCop offense and Reek warning (`./go format` applies the safe autocorrections). CI runs lint and will fail on any offense, including in scripts and config files.
 
 **Troubleshooting:**
-- After updating the Gemfile, run `./go build` before `./go test` or `./go start`.
+- After updating the Gemfile, run `./go build` before `./go test` or `./go start`. It rebuilds the dev image through docker compose, so the image it refreshes is the one compose runs: compose names it after the checkout (`<checkout directory>-dev`), so each git worktree has its own.
 - If `./go start` exits with "A server is already running", run `./go shell` then `rm /usr/src/app/tmp/pids/server.pid`.
 - When running more than one checkout (e.g. several git worktrees) at once, `cp docker-compose.local.example.yml docker-compose.local.yml` in each; it drops the fixed `db` container name and host port 5434 that make the second checkout's `docker compose run` fail. `./go` picks the file up automatically and it is gitignored.
 - If the `db` container exits right after `./go init` or `./go start` with `Error: in 18+, these Docker images are configured to store database data ...` (or `database files are incompatible with server`), this checkout's `postgres` volume still holds a PostgreSQL 16 data directory from before the `postgres:18-alpine` bump. Dev data is disposable and nothing is migrated: drop the volume with `docker compose down --volumes` and run `./go init` again. `./go clean` also works but removes every image as well, so the next `./go init` rebuilds from scratch. No `./go` command drops only the volume.
@@ -106,6 +106,16 @@ RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Mat
 - Smoke tests (`spec/smoke/`) are tagged `:smoke` and excluded from the regular suite via `config.filter_run_excluding :smoke` in `spec/spec_helper.rb`. The `./go smoke` command re-includes them with `--tag smoke`. Never remove that exclusion — smoke tests make live HTTP calls and will fail with `ECONNREFUSED` when run without a live server.
 - When app behavior changes (new HTTP status codes, response bodies, URL paths, UI text), update **both** the unit/feature tests and the smoke tests in the same commit. The two suites test the same contracts from different angles.
 - The smoke spec `spec/smoke/visitor_api_flow_spec.rb` documents the expected API contract (status codes, response shapes, break-even math). Keep it in sync with `spec/requests/api/v1/` request specs and `spec/support/api_schemas/*.json` JSON schemas.
+
+### Conventions
+
+- New and changed code follows the SOLID principles where they pay, without speculative abstraction: see the `solid` rule in https://github.com/stevenuray/repo-standards. That covers the `./go` scripts in `scripts/` as well as `app/`: keep controllers thin, put logic in models or plain objects, and pass collaborators (runners, clocks, `ENV`, paths) in rather than reaching for them inside, so they can be tested without monkeypatching. Bring existing code in line when you touch it for another reason, not in a dedicated rewrite.
+- `scripts/` is checked mechanically, so keep it passing:
+  - **Shell access:** only `Runner` (`scripts/utils/runner.rb`) reaches the shell. Every command class takes its runner and its other collaborators in `initialize`. Its spec passes a `RecordingRunner` (`spec/scripts/support/`) and asserts the exact command lines. The `Scripts/ShellBoundary` cop (`scripts/rubocop/`) rejects `system`, `exec`, backticks and `Open3` anywhere else.
+  - **Lint:** `scripts/.rubocop.yml` sets tighter Metrics limits. `./go lint` also runs Reek on `scripts/` and `./go` (`.reek.yml` says why each detector setting is there). Split a class or method that trips them; don't raise the limit.
+  - **Coverage:** `./go test` fails unless every line of `scripts/` is covered (`COVERAGE_GATE`, `spec/spec_helper.rb`).
+  - **New commands:** a new command or subcommand also goes in `HelpText::HELP_HASH`; `spec/scripts/go_commands_spec.rb` fails until it does. Images go in `DockerImages` (`scripts/utils/docker_images.rb`), the one table that `build` and `push` read.
+  - **Host Ruby:** `./go` runs on the host's own Ruby, which can be as old as macOS's 2.6, not the app's 4.0. `scripts/.rubocop.yml` parses `scripts/` as 2.6, so newer syntax there is a lint error instead of a crash on the host.
 
 ## Dockerfile Changes
 

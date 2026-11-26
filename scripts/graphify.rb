@@ -5,7 +5,9 @@
 # layer is refreshed here (AST, seconds). Nothing in this file calls an LLM;
 # documents wait for `/graphify --update` in a session.
 # `./go graphify-status` is in graphify_status.rb.
-require 'open3'
+require './scripts/utils/command_failure'
+require './scripts/utils/graphify_binary'
+require './scripts/utils/runner'
 
 class Graphify
   OUT = 'graphify-out'.freeze
@@ -18,110 +20,105 @@ class Graphify
   SEED_SCRIPT = File.join('scripts', 'graphify', 'graphify_seed.py').freeze
   # Environments thrown away when they end: a graph built there is wasted.
   EPHEMERAL_VARIABLES = %w[CLAUDE_CODE_REMOTE GITHUB_ACTIONS CI].freeze
-  SHRINK_REFUSAL = /Refusing to overwrite/
+  SHRINK_REFUSAL = /Refusing to overwrite/.freeze
 
-  class << self
-    # ./go graphify-update: refresh the code layer to HEAD. Safe unattended
-    # (git-sync's post_sync): exits 0 with a note when there is nothing to do.
-    def update(_cmds)
-      reason = ephemeral_reason || no_graph_reason || off_main_reason
-      return note("skipping: #{reason}") if reason
+  def initialize(runner: Runner.new, env: ENV)
+    @runner = runner
+    @env = env
+  end
 
-      command = recorded_python || binary_on_path
-      abort('graphify: graphify is not installed (pip install graphifyy)') unless command
+  # ./go graphify-update: refresh the code layer to HEAD. Safe unattended
+  # (git-sync's post_sync): a note, not a failure, when there is nothing to do.
+  def update(_cmds)
+    reason = ephemeral_reason || no_graph_reason || off_main_reason
+    return note("skipping: #{reason}") if reason
 
-      refresh(command)
-      record_synced_commit
+    refresh(graphify_command)
+    record_synced_commit
+  end
+
+  # ./go graphify-seed [--force] [--no-update] [--quiet]: give a worktree
+  # its own copy of the main checkout's graph. True when the seed succeeds.
+  def seed(cmds)
+    @runner.run(['python3', SEED_SCRIPT, *cmds])
+  end
+
+  def ephemeral_reason
+    name = EPHEMERAL_VARIABLES.find do |variable|
+      !['', '0', 'false'].include?(@env[variable].to_s.strip.downcase)
     end
+    name && "#{name} is set (the graph lives only on a persistent machine)"
+  end
 
-    # ./go graphify-seed [--force] [--no-update] [--quiet]: give a worktree
-    # its own copy of the main checkout's graph.
-    def seed(cmds)
-      exit(1) unless system('python3', SEED_SCRIPT, *cmds)
-    end
+  def no_graph_reason
+    return if File.file?(GRAPH)
+    return "no #{GRAPH} in this worktree (./go graphify-seed copies main's)" unless main_checkout?
 
-    def ephemeral_reason(env = ENV)
-      name = EPHEMERAL_VARIABLES.find do |variable|
-        !['', '0', 'false'].include?(env[variable].to_s.strip.downcase)
-      end
-      name && "#{name} is set (the graph lives only on a persistent machine)"
-    end
+    "no #{GRAPH} yet (build it once: /graphify . in this checkout, on main)"
+  end
 
-    def no_graph_reason
-      return if File.file?(GRAPH)
-      return "no #{GRAPH} in this worktree (./go graphify-seed copies main's)" unless main_checkout?
+  def note(message)
+    puts "graphify: #{message}"
+  end
 
-      "no #{GRAPH} yet (build it once: /graphify . in this checkout, on main)"
-    end
+  # git's stripped output, or nil when it fails or git is missing.
+  def git(*args)
+    out, _err, status = @runner.capture('git', *args)
+    status.success? ? out.strip : nil
+  rescue Errno::ENOENT
+    nil
+  end
 
-    def note(message)
-      puts "graphify: #{message}"
-    end
+  private
 
-    def git(*args)
-      out, status = Open3.capture2('git', *args, err: File::NULL)
-      status.success? ? out.strip : nil
-    rescue Errno::ENOENT
-      nil
-    end
+  def main_checkout?
+    top = git('rev-parse', '--path-format=absolute', '--show-toplevel')
+    common = git('rev-parse', '--path-format=absolute', '--git-common-dir')
+    return false unless top && common
 
-    private
+    File.realpath(File.dirname(common)) == File.realpath(top)
+  end
 
-    def main_checkout?
-      top = git('rev-parse', '--path-format=absolute', '--show-toplevel')
-      common = git('rev-parse', '--path-format=absolute', '--git-common-dir')
-      return false unless top && common
+  # The graph is main's: the main checkout never rebuilds it on a branch.
+  # A seeded worktree refreshes its own copy on whatever branch it is on.
+  def off_main_reason
+    return unless main_checkout?
 
-      File.realpath(File.dirname(common)) == File.realpath(top)
-    end
+    branch = git('rev-parse', '--abbrev-ref', 'HEAD')
+    "the main checkout is on #{branch}, not main (the graph is main's)" unless branch == 'main'
+  end
 
-    # The graph is main's: the main checkout never rebuilds it on a branch.
-    # A seeded worktree refreshes its own copy on whatever branch it is on.
-    def off_main_reason
-      return unless main_checkout?
+  def graphify_command
+    GraphifyBinary.new(python_file: PYTHON_FILE, env: @env).command ||
+      raise(CommandFailure, 'graphify: graphify is not installed (pip install graphifyy)')
+  end
 
-      branch = git('rev-parse', '--abbrev-ref', 'HEAD')
-      "the main checkout is on #{branch}, not main (the graph is main's)" unless branch == 'main'
-    end
+  def refresh(command)
+    out, err, status = update_allowing_shrink(command)
+    print out
+    raise CommandFailure, "graphify: update failed\n#{err}" unless status.success?
+  end
 
-    # launchd's PATH (git-sync) has no pyenv or pipx shim, so the recorded
-    # interpreter comes first.
-    def recorded_python
-      return unless File.file?(PYTHON_FILE)
+  # graphify refuses a rebuild with fewer nodes than before. After a merge
+  # that deleted or moved code the smaller graph is the correct one.
+  def update_allowing_shrink(command)
+    result = run_update(command)
+    _out, err, status = result
+    return result if status.success? || !SHRINK_REFUSAL.match?(err)
 
-      python = File.read(PYTHON_FILE).strip
-      [python, '-m', 'graphify'] if File.file?(python) && File.executable?(python)
-    end
+    note('the rebuild has fewer nodes than before; rebuilding with --force')
+    run_update(command, '--force')
+  end
 
-    def binary_on_path
-      binary = ENV.fetch('PATH', '').split(File::PATH_SEPARATOR)
-                  .map { |dir| File.join(dir, 'graphify') }
-                  .find { |path| File.file?(path) && File.executable?(path) }
-      binary && [binary]
-    end
+  def run_update(command, *flags)
+    @runner.capture(*command, 'update', '.', *flags, env: { 'GRAPHIFY_NO_TIPS' => '1' })
+  end
 
-    def run_update(command, *flags)
-      Open3.capture3({ 'GRAPHIFY_NO_TIPS' => '1' }, *command, 'update', '.', *flags)
-    end
+  def record_synced_commit
+    head = git('rev-parse', 'HEAD')
+    return unless head
 
-    # graphify refuses a rebuild with fewer nodes than before. After a merge
-    # that deleted or moved code the smaller graph is the correct one.
-    def refresh(command)
-      out, err, status = run_update(command)
-      if !status.success? && SHRINK_REFUSAL.match?(err)
-        note('the rebuild has fewer nodes than before; rebuilding with --force')
-        out, err, status = run_update(command, '--force')
-      end
-      print out
-      abort("graphify: update failed\n#{err}") unless status.success?
-    end
-
-    def record_synced_commit
-      head = git('rev-parse', 'HEAD')
-      return unless head
-
-      File.write(SYNCED_FILE, "#{head}\n")
-      note("code layer refreshed to #{head[0, 7]} (no LLM)")
-    end
+    File.write(SYNCED_FILE, "#{head}\n")
+    note("code layer refreshed to #{head[0, 7]} (no LLM)")
   end
 end
