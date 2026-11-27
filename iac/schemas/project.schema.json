@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/stevenuray/repo-standards/templates/project/project.schema.json",
+  "title": "claude.ai Project spec",
+  "description": "The one claude.ai Project of this repo, named after it: iac/specs/claude/project.json. A Project is created and edited only in the claude.ai UI (https://claude.ai/code), so the spec is applied by hand and verified by hand; the audit (scripts/audit_repo.py, rule claude-project) checks that the file exists, that the name is the repo's, and that every routine spec's hearth_channel_id is this id. The claude-project rule in stevenuray/repo-standards standards.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_version", "id", "name", "description", "verified_on"],
+  "properties": {
+    "spec_version": { "const": 1 },
+    "id": {
+      "description": "The Project's channel id, the one every routine spec names in hearth_channel_id and that RemoteTrigger accepts. It is the last path segment of the Project's URL, https://claude.ai/code/project/chan_...",
+      "type": "string",
+      "pattern": "^chan_[0-9A-Za-z]+$"
+    },
+    "name": {
+      "description": "The Project's name in the claude.ai UI: the repo's name (the last segment of the origin URL without .git), exactly.",
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "description": "Repo-side note on what the Project holds: the repo's routines and their run threads, the ad hoc cloud sessions started for it, any knowledge uploaded by hand.",
+      "type": "string",
+      "minLength": 1
+    },
+    "verified_on": {
+      "description": "The day a human last opened the Project in the UI and found its name and settings equal to this spec (ISO 8601 date), or null until that has happened.",
+      "type": ["string", "null"],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "notes": { "type": "string" }
+  }
+}
