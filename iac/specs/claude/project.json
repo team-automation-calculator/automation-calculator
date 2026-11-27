@@ -1,0 +1,8 @@
+{
+  "spec_version": 1,
+  "id": "chan_0179pnjfpmLxLTMcmZeryEmT",
+  "name": "automation-calculator",
+  "description": "The claude.ai Project of automation-calculator (team-automation-calculator/automation-calculator): ad hoc cloud sessions for the repo are started in it, and any future routine spec names its id in hearth_channel_id. Created by hand in the claude.ai UI, named after the repo; the id read off the Project's URL.",
+  "verified_on": "2026-11-26",
+  "notes": "One Project per repo, named after it. A second Project for the same repo, or a Project named differently, is drift: rename or remove it in the UI, never adjust the spec to match."
+}

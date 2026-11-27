@@ -159,3 +159,7 @@ If `graphify` is not on the `PATH`, the interpreter recorded in `graphify-out/.g
 ## Repo standards
 
 This repo follows https://github.com/stevenuray/repo-standards; `.repo-standards.toml` lists the rules it does not adopt, with reasons. Audit with `python3 ~/git/repo-standards/scripts/audit_repo.py .` (needs Python 3.11+).
+
+## claude.ai Project
+
+The repo's one claude.ai Project is `automation-calculator`, https://claude.ai/code/project/chan_0179pnjfpmLxLTMcmZeryEmT (`claude-project` rule). Start ad hoc cloud sessions for the repo there; a future routine names its id in `hearth_channel_id`. Projects are created and edited only in the UI, so the Project is recorded as code in `iac/specs/claude/project.json` (valid against `iac/schemas/project.schema.json`, copied unchanged from repo-standards `templates/project/`) and applied by hand: change the spec in a PR, then the UI, never the UI first. After checking the UI against the spec, set `verified_on` to that day. The Project has no custom instructions; if some are added, version their text in `iac/`.

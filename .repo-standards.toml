@@ -22,9 +22,6 @@ python = false
 [overrides.ci]
 reason = "CI is CircleCI (.circleci/config.yml): it builds the Docker images, runs the Ruby compile check, RuboCop and RSpec in them, and publishes the multi-arch production image from main"
 
-[overrides.claude-project]
-reason = "not yet adopted: no claude.ai Project named automation-calculator exists yet; create it in the UI and record it in iac/specs/claude/project.json"
-
 # graphify: graphify-out/ is gitignored (a graph of main, kept on the laptop only).
 # After the git-sync agent fast-forwards main it runs this, which refreshes the
 # graph's code layer by AST: no LLM, no Docker, and a no-op until the graph has
