@@ -3,9 +3,9 @@
 # listed under [overrides] is expected to be met; a rule listed with a reason is
 # skipped by the audit and left alone by the conform flow.
 #
-# Rule ids: python-version, poetry, compile-check, black, lint, pytest, logging, solid,
-#           ci, go-script, claude-project, routines, git-sync, graphify, agents-md,
-#           worktrees
+# Rule ids: python-version, poetry, compile-check, black, lint, pytest, coverage,
+#           logging, solid, twelve-factor, ci, go-script, claude-project, routines,
+#           git-sync, graphify, agents-md, worktrees
 
 [standards]
 source = "https://github.com/stevenuray/repo-standards"   # upstream definition of the rules
@@ -13,7 +13,8 @@ source = "https://github.com/stevenuray/repo-standards"   # upstream definition 
 [repo]
 # A Ruby on Rails app. Its only Python is two standard-library helper scripts in
 # version_dates/, so the Python rules (python-version, poetry, compile-check, black,
-# lint, pytest) are skipped. Those two scripts are still kept to the standard by
+# lint, pytest, coverage) are skipped. Ruby coverage is SimpleCov, with a 100% gate
+# on scripts/ (COVERAGE_GATE, spec/spec_helper.rb). Those two scripts are still kept to the standard by
 # hand (logging module, Black, Ruff), just not enforced in CI.
 # The Ruby side follows the conventions: `./go compile` (ruby -c), `./go lint`
 # (compile check, then RuboCop), `./go format`, `./go validate`, and RSpec.
