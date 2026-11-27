@@ -9,3 +9,6 @@ node_modules/
 coverage/
 log/*.log
 graphify-out/
+# Environment files hold secrets; keep them out of every image.
+.env
+.env.*

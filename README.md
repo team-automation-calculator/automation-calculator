@@ -28,7 +28,7 @@ To help people make and communicate automation decisions quickly and effectively
 
 ### Run the tests
 * `./go test`
-* `./go lint` runs the compile check (`./go compile`), then RuboCop. `./go format` applies RuboCop's safe autocorrections.
+* `./go lint` fails if git tracks a `.env` file, then runs the compile check (`./go compile`), RuboCop, then Reek. `./go format` applies RuboCop's safe autocorrections.
 * `./go validate` runs lint, then test.
 * `./go smoke` runs the smoke tests against the running dev server (`./go start` first); `./go smoke staging` and `./go smoke prod` target the deployed sites.
 

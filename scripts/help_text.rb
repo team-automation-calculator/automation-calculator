@@ -46,9 +46,11 @@ class HelpText
     init: 'Setup your development environment with docker.',
     lint: {
       dev:
-        '[Default] Run the compile check, RuboCop, then Reek (on scripts/ ' \
-        'and ./go), in the development container.',
-      ci: 'Run the compile check, RuboCop, then Reek, in the ci container.'
+        '[Default] Fail on a git-tracked .env file, then run the compile ' \
+        'check, RuboCop, then Reek (on scripts/ and ./go), in the ' \
+        'development container.',
+      ci: 'Fail on a git-tracked .env file, then run the compile check, ' \
+          'RuboCop, then Reek, in the ci container.'
     }.freeze,
     logs: 'Tail logs from the dev container.',
     push: {

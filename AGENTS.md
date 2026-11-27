@@ -11,7 +11,7 @@ All commands run via the `./go` script (a Ruby dispatcher into `scripts/`):
 ./go start             # Start dev server at http://localhost:3001/
 ./go test              # Run full RSpec suite in Docker; fails unless scripts/ is 100% covered
 ./go compile           # Check that every tracked Ruby file parses (ruby -c); takes file paths too
-./go lint              # Run the compile check, RuboCop, then Reek (scripts/ and ./go), in Docker
+./go lint              # Fail on a tracked .env file, then the compile check, RuboCop, then Reek (scripts/ and ./go), in Docker
 ./go format            # Apply RuboCop safe autocorrections
 ./go validate          # lint, then test: what CI checks; changes nothing
 ./go shell             # Open a shell in the dev container
@@ -111,6 +111,7 @@ RSpec with Capybara (feature tests), FactoryBot (`spec/factories/`), Shoulda Mat
 ### Conventions
 
 - New and changed code follows the SOLID principles where they pay, without speculative abstraction: see the `solid` rule in https://github.com/stevenuray/repo-standards. That covers the `./go` scripts in `scripts/` as well as `app/`: keep controllers thin, put logic in models or plain objects, and pass collaborators (runners, clocks, `ENV`, paths) in rather than reaching for them inside, so they can be tested without monkeypatching. Bring existing code in line when you touch it for another reason, not in a dedicated rewrite.
+- Apps follow the Twelve-Factor App where it applies (config from the environment, no committed `.env`): see the `twelve-factor` rule in https://github.com/stevenuray/repo-standards. Here that means app settings come from environment variables through `AppConfig` (`lib/app_config.rb`), never a checked-in `.env` or a secret in `config/settings.yml`. `.gitignore` and `.dockerignore` keep `.env` and `.env.*` out of git and every image, and `./go lint` fails if git tracks one anyway (`scripts/utils/tracked_env_files.rb`); only `.env.example`, with placeholder values, may be committed.
 - `scripts/` is checked mechanically, so keep it passing:
   - **Shell access:** only `Runner` (`scripts/utils/runner.rb`) reaches the shell. Every command class takes its runner and its other collaborators in `initialize`. Its spec passes a `RecordingRunner` (`spec/scripts/support/`) and asserts the exact command lines. The `Scripts/ShellBoundary` cop (`scripts/rubocop/`) rejects `system`, `exec`, backticks and `Open3` anywhere else.
   - **Lint:** `scripts/.rubocop.yml` sets tighter Metrics limits. `./go lint` also runs Reek on `scripts/` and `./go` (`.reek.yml` says why each detector setting is there). Split a class or method that trips them; don't raise the limit.

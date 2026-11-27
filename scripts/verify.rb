@@ -2,6 +2,7 @@
 require 'shellwords'
 require './scripts/utils/compose_files'
 require './scripts/utils/runner'
+require './scripts/utils/tracked_env_files'
 
 class Verify
   CONTAINERS = %w[dev ci].freeze
@@ -41,9 +42,11 @@ class Verify
     run_in(container, "ruby scripts/utils/syntax_check.rb #{files.shelljoin}")
   end
 
-  # The compile check, RuboCop, then Reek's code smells on the ./go scripts.
+  # No tracked .env file (checked on the host, where git is), then the
+  # compile check, RuboCop, then Reek's code smells on the ./go scripts.
   def lint(cmds)
     container = shift_container(cmds)
+    TrackedEnvFiles.new(runner: @runner).check
     compile([container])
     run_in(container, 'rubocop')
     run_in(container, 'reek scripts go')

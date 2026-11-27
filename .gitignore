@@ -15,8 +15,12 @@
 *.swp
 *.swo
 
-# Used by dotenv library to load environment variables.
-# .env
+# Environment files hold secrets: never commit one (twelve-factor rule in
+# repo-standards). Config comes from the environment through AppConfig
+# (lib/app_config.rb). A .env.example with placeholder values may be committed.
+.env
+.env.*
+!.env.example
 
 ## Specific to RubyMotion:
 .dat*

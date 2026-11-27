@@ -4,7 +4,7 @@ RSpec.describe Verify do
   include_context 'with a recording runner'
 
   let(:ls_files) { 'git ls-files -z -- \*.rb \*.rake bin/\* go Gemfile Rakefile config.ru Guardfile' }
-  let(:outputs) { { ls_files => "go\0Gemfile\0" } }
+  let(:outputs) { { ls_files => "go\0Gemfile\0", 'git ls-files -z' => "go\0.env.example\0" } }
   let(:env) { {} }
   let(:dev) { 'docker compose -f docker-compose.yml -f docker-compose.dev.yml' }
   let(:ci) { 'docker compose -f docker-compose.yml -f docker-compose.ci.yml' }
@@ -39,6 +39,12 @@ RSpec.describe Verify do
     expect(run(:lint)).to eq(["#{dev} run --no-deps --rm dev ruby scripts/utils/syntax_check.rb go Gemfile",
                               "#{dev} run --no-deps --rm dev rubocop",
                               "#{dev} run --no-deps --rm dev reek scripts go"])
+  end
+
+  it 'stops lint before any container runs when git tracks a .env file', :aggregate_failures do
+    outputs['git ls-files -z'] = "go\0.env\0"
+    expect { run(:lint) }.to raise_error(CommandFailure, /tracked by git: \.env$/)
+    expect(runner.commands).to be_empty
   end
 
   it 'runs lint, then the suite, on validate' do
